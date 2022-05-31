@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="Hello World!">
+        <message><![CDATA[My first Joomla! page]]></message>
+    </layout>
+    <fields name="request">
+        <fieldset name="request">
+            <field  name="testField"
+                    type="string"
+                    label="Test Label"
+                    description="Test Description"/>
+        </fieldset>
+    </fields>
+</metadata>

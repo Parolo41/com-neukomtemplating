@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" method="upgrade">
+    <name>Neukom Templating</name>
+    <creationDate>2022</creationDate>
+    <author>Neukom</author>
+    <version>0.1.0</version>
+    <description>
+    </description>
+    <namespace path="src/">Neukom\Component\NeukomTemplating</namespace>
+
+    <files folder="site/">
+        <folder>src</folder>
+        <folder>tmpl</folder>
+    </files>
+            
+    <administration>
+        <menu view="templates">Neukom Templating</menu>
+        <files folder="admin/">
+            <folder>forms</folder>
+            <folder>services</folder>
+            <folder>src</folder>
+            <folder>sql</folder>
+            <folder>tmpl</folder>
+        </files>
+    </administration>
+    
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
+
+</extension>
