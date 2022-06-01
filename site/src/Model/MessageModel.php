@@ -18,8 +18,19 @@ class MessageModel extends ItemModel {
         $input = Factory::getApplication()->getInput();
         $testField = $input->getString('testField');
 
+        $db = $this->getDbo();
+        $query = $db->getQuery(true);
+        $query->select(
+            $db->quoteName(['template'])
+        );
+        $query->from($db->quoteName('#__neukomtemplating_templates'));
+        $query->where('name = "'.$testField.'"');
+        $db->setQuery($query);
+        $template = $db->loadObject();
+
         $item = new \stdClass();
         $item->message = 'This is my message, and this is my message: ' . $testField;
+        $item->template = $template->template;
         return $item;
     }
 }

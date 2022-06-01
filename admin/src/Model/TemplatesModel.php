@@ -15,7 +15,7 @@ class TemplatesModel extends ListModel {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['id', 'name'])
+            $db->quoteName(['id', 'name', 'template'])
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         return $query;

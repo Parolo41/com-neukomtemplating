@@ -16,5 +16,12 @@
 			size="40"
 			required="true"
 		 />
+		<field
+			name="template"
+			type="text"
+			label="Template"
+			size="120"
+			required="true"
+		 />
 	</fieldset>
 </form>
