@@ -18,9 +18,11 @@
 		 />
 		<field
 			name="template"
-			type="text"
+			type="textarea"
+			rows="10"
+			cols="5"
+			filter="raw"
 			label="Template"
-			size="120"
 			required="true"
 		 />
 	</fieldset>
