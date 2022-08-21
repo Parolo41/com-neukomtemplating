@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-    <layout title="Hello World!">
-        <message><![CDATA[My first Joomla! page]]></message>
+    <layout title="Neukom Templating">
+        <message><![CDATA[A Neukom Templating page]]></message>
     </layout>
     <fields name="request">
         <fieldset name="request">
-            <field  name="testField"
+            <field  name="templateConfigName"
                     type="string"
-                    label="Test Label"
-                    description="Test Description"/>
+                    label="Template Config Name"
+                    description="Name of the config to load"/>
         </fieldset>
     </fields>
 </metadata>

@@ -17,6 +17,35 @@
 			required="true"
 		 />
 		<field
+			name="tablename"
+			type="text"
+			label="Tablename"
+			size="40"
+			required="true"
+		 />
+		<field
+			name="fields"
+			type="text"
+			label="Fields"
+			size="200"
+			required="true"
+		 />
+		<field
+			name="condition"
+			type="text"
+			label="SQL Condition"
+			size="500"
+			required="true"
+		 />
+		<field
+			name="header"
+			type="textarea"
+			rows="10"
+			cols="5"
+			filter="raw"
+			label="Header"
+		 />
+		<field
 			name="template"
 			type="textarea"
 			rows="10"
@@ -24,6 +53,29 @@
 			filter="raw"
 			label="Template"
 			required="true"
+		 />
+		<field
+			name="footer"
+			type="textarea"
+			rows="10"
+			cols="5"
+			filter="raw"
+			label="Footer"
+		 />
+		<field
+			name="show_detail_page"
+			type="checkbox"
+			label="Show detail page"
+		 />
+		<field
+			name="allow_create"
+			type="checkbox"
+			label="Allow create"
+		 />
+		<field
+			name="allow_edit"
+			type="checkbox"
+			label="Allow edit"
 		 />
 	</fieldset>
 </form>
