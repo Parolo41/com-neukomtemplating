@@ -21,7 +21,7 @@ class TemplateModel extends ItemModel {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['header', 'template', 'footer', 'tablename', 'fields', 'condition'])
+            $db->quoteName(['id', 'header', 'template', 'footer', 'tablename', 'fields', 'condition'])
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         $query->where('name = "' . $templateConfigName . '"');
@@ -30,9 +30,11 @@ class TemplateModel extends ItemModel {
 
         error_log(print_r($templateConfig, true));
 
+        $idFieldName = 'id';
+
         $dataQuery = $db->getQuery(true);
         $dataQuery->select(
-            $db->quoteName(explode(',', $templateConfig->fields))
+            $db->quoteName(array_merge(array($idFieldName), explode(',', $templateConfig->fields)))
         );
         $dataQuery->from($db->quoteName('#__' . $templateConfig->tablename));
         $dataQuery->where($templateConfig->condition);
@@ -40,6 +42,9 @@ class TemplateModel extends ItemModel {
         $data = $db->loadObjectList();
 
         $item = new \stdClass();
+        $item->id = $templateConfig->id;
+        $item->templateName = $templateConfigName;
+        $item->fields = $templateConfig->fields;
         $item->header = $templateConfig->header;
         $item->template = $templateConfig->template;
         $item->footer = $templateConfig->footer;
