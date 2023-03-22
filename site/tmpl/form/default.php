@@ -4,6 +4,10 @@
 defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+
+Factory::getApplication()->enqueueMessage('edit.php');
 
 $root = dirname(dirname(dirname(__FILE__)));
 require_once($root . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
@@ -13,11 +17,13 @@ $recordId = JFactory::getApplication()->input->get('recordId', '', 'int')
 
 <form action="<?php echo Route::_('index.php?option=com_neukomtemplating&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="adminForm" class="form-validate form-vertical">
     <?php
-    foreach (explode(',', $this->getModel->getItem->fields) as $field)
+    error_log(print_r($this->item->data, true));
+
+    foreach (explode(',', $this->item->fields) as $field)
     {
         echo '<div id="field-' . $field . '>';
         echo '<label for="' . $field . '">' . $field . ':</label>';
-        echo '<input type="text" id="' . $field . '" name="' . $field . '" ><br>';
+        echo '<input type="text" id="' . $field . '" name="' . $field . '" value="' . $this->item->data[$this->item->id]->{$field} . '"><br>';
     }
     ?>
 

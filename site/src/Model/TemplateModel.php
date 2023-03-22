@@ -6,6 +6,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ItemModel;
+use Joomla\CMS\Uri\Uri;
 
 class TemplateModel extends ItemModel {
 
@@ -29,6 +30,7 @@ class TemplateModel extends ItemModel {
         $templateConfig = $db->loadObject();
 
         error_log(print_r($templateConfig, true));
+		error_log("uri: " . Uri::getInstance()->toString());
 
         $idFieldName = 'id';
 
