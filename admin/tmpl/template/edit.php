@@ -21,6 +21,10 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('name'); ?>
     <?php echo $this->getForm()->renderField('tablename'); ?>
     <?php echo $this->getForm()->renderField('fields'); ?>
+    Format: fieldname:fieldtype <br/>
+    For required fields: fieldname:fieldtype_req <br/>
+    Accepted types: text, textarea, date, number, checkbox<br/>
+    <br/>
     <?php echo $this->getForm()->renderField('condition'); ?>
     <?php echo $this->getForm()->renderField('header'); ?>
     <?php echo $this->getForm()->renderField('template'); ?>
