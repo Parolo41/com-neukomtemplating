@@ -6,6 +6,7 @@ defined('_JEXEC') or die('Restricted Access');
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Uri\Uri;
 
 $root = dirname(dirname(dirname(__FILE__)));
 require_once($root . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
@@ -15,7 +16,7 @@ $loader = new \Twig\Loader\ArrayLoader([
 ]);
 $twig = new \Twig\Environment($loader);
 
-function validateInput($value, $type) {
+function validateInputFormat($value, $type) {
     $validationPatterns = array(
         'text' => "/.*/",
         'textarea' => "/(?s).*/",
@@ -27,21 +28,39 @@ function validateInput($value, $type) {
     return preg_match($validationPatterns[$type], $value);
 }
 
+function validateInput($value, $name, $type, $required) {
+    if ($required && $value == '') {
+        JFactory::getApplication()->enqueueMessage("Validierungsfehler: $name kann nicht leer sein", 'error');
+        return false;
+    } 
+    
+    if (!$required && $value == '') {
+        return true;
+    }
+
+    if (!validateInputFormat($value, $type)) {
+        JFactory::getApplication()->enqueueMessage("Validierungsfehler: $value passt nicht zum Format $type", 'error');
+        return false;
+    }
+
+    return true;
+}
+
 function dbInsert($input, $db, $self) {
     $query = $db->getQuery(true);
 
     $insertColumns = array();
     $insertValues = array();
 
+    $validationFailed = false;
+
     foreach ($self->getModel()->getItem()->fields as $field) {
         $fieldName = $field[0];
         $fieldType = $field[1];
+        $fieldRequired = $field[2];
         $fieldValue = $input->get($fieldName, '', 'string');
 
-        $validationFailed = false;
-
-        if (!validateInput($fieldValue, $fieldType)) {
-            JFactory::getApplication()->enqueueMessage("Validation Error: $fieldValue does not match $fieldType", 'error');
+        if (!validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
             $validationFailed = true;
         }
 
@@ -52,7 +71,7 @@ function dbInsert($input, $db, $self) {
     if ($validationFailed) {return 0;}
 
     $query
-        ->insert('#__' . $self->getModel()->getItem()->templateName)
+        ->insert('#__' . $self->getModel()->getItem()->tableName)
         ->columns($db->quoteName($insertColumns))
         ->values(implode(',', $insertValues));
 
@@ -65,15 +84,15 @@ function dbUpdate($input, $db, $self) {
 
     $updateFields = array();
 
+    $validationFailed = false;
+
     foreach ($self->getModel()->getItem()->fields as $field) {
         $fieldName = $field[0];
         $fieldType = $field[1];
+        $fieldRequired = $field[2];
         $fieldValue = $input->get($fieldName, '', 'string');
 
-        $validationFailed = false;
-
-        if (!validateInput($fieldValue, $fieldType)) {
-            JFactory::getApplication()->enqueueMessage("Validation Error: $fieldValue does not match $fieldType", 'error');
+        if (!validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
             $validationFailed = true;
         }
 
@@ -87,7 +106,7 @@ function dbUpdate($input, $db, $self) {
     );
 
     $query
-        ->update('#__' . $self->getModel()->getItem()->templateName)
+        ->update('#__' . $self->getModel()->getItem()->tableName)
         ->set($updateFields)
         ->where($updateConditions);
 
@@ -102,7 +121,7 @@ function dbDelete($input, $db, $self) {
     $deleteConditions = array($db->quoteName('id') . " = " . $input->get('recordId', '', 'string'));
 
     $query
-        ->delete('#__' . $self->getModel()->getItem()->templateName)
+        ->delete('#__' . $self->getModel()->getItem()->tableName)
         ->where($deleteConditions);
 
     $db->setQuery($query);
@@ -231,8 +250,8 @@ $item = $this->getModel()->getItem();
 
 <div id="neukomtemplating-listview">
     <?php
-    echo $item->header;
     echo $this->getModel()->getItem()->allowEdit ? '<button onClick="openNewForm()">New</button>' : "";
+    echo $item->header;
     foreach ($item->data as $data) {
         echo $twig->render('template', ['data' => $data]);
         echo $this->getModel()->getItem()->allowEdit ? '<button onClick="openEditForm(' . $data->id . ')">Edit</button>' : "";
@@ -244,7 +263,7 @@ $item = $this->getModel()->getItem();
 <?php if ($this->getModel()->getItem()->allowEdit) { ?>
 
 <div id="neukomtemplating-editform" style="display: none">
-    <form action="<?php echo Route::_('index.php?option=com_neukomtemplating&view=main&layout=default'); ?>" method="post" name="adminForm" id="adminForm" class="form-vertical">
+    <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-vertical">
         <?php
         foreach ($item->fields as $field) {
             $fieldName = $field[0];
