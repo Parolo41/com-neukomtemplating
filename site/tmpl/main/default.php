@@ -46,6 +46,19 @@ function validateInput($value, $name, $type, $required) {
     return true;
 }
 
+function formatInputValue($value, $type, $db) {
+    switch ($type) {
+        case "number":
+            return ($value == "" ? "NULL" : $db->quote($value));
+        case "date":
+            return ($value == "" ? "NULL" : $db->quote($value));
+        case "checkbox":
+            return ($value == "on" ? "'1'" : "'0'");
+        default:
+            return $db->quote($value);
+    }
+}
+
 function dbInsert($input, $db, $self) {
     $query = $db->getQuery(true);
 
@@ -65,7 +78,7 @@ function dbInsert($input, $db, $self) {
         }
 
         $insertColumns[] = $fieldName;
-        $insertValues[] = $db->quote($fieldValue);
+        $insertValues[] = formatInputValue($fieldValue, $fieldType, $db);
     }
 
     if ($validationFailed) {return 0;}
@@ -96,7 +109,7 @@ function dbUpdate($input, $db, $self) {
             $validationFailed = true;
         }
 
-        $updateFields[] = $db->quoteName($fieldName) . " = " . $db->quote($fieldValue);
+        $updateFields[] = $db->quoteName($fieldName) . " = " . formatInputValue($fieldValue, $fieldType, $db);
     }
 
     if ($validationFailed) {return 0;}
@@ -162,8 +175,6 @@ $item = $this->getModel()->getItem();
         }
     ?>
 
-    console.log(fields);
-
     const data = [];
 
     <?php
@@ -191,7 +202,7 @@ $item = $this->getModel()->getItem();
 
         fields.forEach((field) => {
             if(field[1] == "checkbox") {
-                document.getElementById("neukomtemplating-input-" + field[0]).checked = (data[recordId][field[0]] == "on");
+                document.getElementById("neukomtemplating-input-" + field[0]).checked = (data[recordId][field[0]] == "1");
             } else {
                 document.getElementById("neukomtemplating-input-" + field[0]).value = data[recordId][field[0]];
             }

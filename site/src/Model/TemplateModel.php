@@ -37,18 +37,18 @@ class TemplateModel extends ItemModel {
         $fields = [];
         $fieldNames = [$idFieldName];
 
-        foreach (explode(',', str_replace(' ', '', $templateConfig->fields)) as $field) {
-            $nameTypeArray = explode(':', $field);
+        foreach (explode(';', str_replace(' ', '', $templateConfig->fields)) as $field) {
+            $fieldConfigArray = explode(':', $field);
 
-            $fieldName = $nameTypeArray[0];
-            $fieldTypeReq = (isset($nameTypeArray[1])) ? $nameTypeArray[1] : "text";
+            $fieldName = $fieldConfigArray[0];
+            $fieldType = isset($fieldConfigArray[1]) ? $fieldConfigArray[1] : "text";
+            $fieldRequired = isset($fieldConfigArray[2]) ? $fieldConfigArray[2] == "1" : false;
+            $showFieldInForm = isset($fieldConfigArray[3]) ? $fieldConfigArray[3] == "1" : true;
 
-            $typeReqArray = explode('_', $fieldTypeReq);
-
-            $fieldType = $typeReqArray[0];
-            $fieldRequired = (isset($typeReqArray[1]) && $typeReqArray[1] == "req") ? true : false;
-
-            $fields[] = [$fieldName, $fieldType, $fieldRequired];
+            if ($showFieldInForm) {
+                $fields[] = [$fieldName, $fieldType, $fieldRequired, $showFieldInForm];
+            }
+            
             $fieldNames[] = $fieldName;
         }
 
