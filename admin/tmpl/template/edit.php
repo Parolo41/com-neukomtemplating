@@ -18,6 +18,9 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 ?>
 
 <form action="<?php echo Route::_('index.php?option=com_neukomtemplating&layout=' . $layout . $tmpl . '&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="template-form" class="form-validate" hidden>
+    <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', []); ?>
+
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', 'Details'); ?>
     <?php echo $this->getForm()->renderField('name'); ?>
     <?php echo $this->getForm()->renderField('tablename'); ?>
     <?php echo $this->getForm()->renderField('fields'); ?>
@@ -28,11 +31,22 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('show_detail_page'); ?>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'joined_tables', 'Joined Tables'); ?>
+    <?php echo $this->getForm()->renderField('joined_tables'); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+    <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
+
     <input type="hidden" name="task" value="">
     <?php echo HTMLHelper::_('form.token'); ?>
 </form>
 
 <form id="dummyForm" name="dummyForm" onchange="updateValues()">
+    <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', []); ?>
+
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', 'Details'); ?>
     <?php echo $this->getForm()->renderField('name'); ?>
     <?php echo $this->getForm()->renderField('tablename'); ?>
     <label>Fields</label>
@@ -45,6 +59,14 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('show_detail_page'); ?>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'joined_tables', 'Joined Tables'); ?>
+    <?php echo $this->getForm()->renderField('joined_tables'); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+    <?php echo HTMLHelper::_('uitab.endTabSet'); ?>
+    
     <input type="hidden" name="task" value="">
     <?php echo HTMLHelper::_('form.token'); ?>
 </form>
@@ -147,7 +169,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         for (let i = 0; i < document.adminForm.length; i++) {
             if (document.adminForm[i].type == "checkbox") {
                 document.adminForm[i].checked = retrieveFormValue(i);
-            } else {
+            } else if (document.adminForm[i].type != "button") {
                 document.adminForm[i].value = retrieveFormValue(i);
             }
         }

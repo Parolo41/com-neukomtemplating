@@ -63,6 +63,12 @@
 			label="Footer"
 		 />
 		<field
+			name="joined_tables"
+			type="text"
+			label="Joined Tables"
+			size="500"
+		/>
+		<field
 			name="show_detail_page"
 			type="checkbox"
 			label="Show detail page"

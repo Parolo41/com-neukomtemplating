@@ -1,0 +1,1 @@
+ALTER TABLE `#__neukomtemplating_templates` ADD `joined_tables` VARCHAR(500);
