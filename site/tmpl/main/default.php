@@ -175,6 +175,17 @@ $item = $this->getModel()->getItem();
         }
     ?>
 
+    const joinedTables = [];
+
+    <?php
+        foreach ($item->joinedTables as $joinedTable) {
+            $joinedTableName = $joinedTable->name;
+            $joinedTableConnectionType = $joinedTable->connectionType;
+
+            echo 'joinedTables.push(["' . $joinedTableName . '", "' . $joinedTableConnectionType . '"]);';
+        }
+    ?>
+
     const data = [];
 
     <?php
@@ -186,6 +197,17 @@ $item = $this->getModel()->getItem();
                 $fieldType = $field[1];
 
                 echo 'data[' . $data->id . ']["' . $fieldName . '"] = "' . str_replace(["\r\n", "\r", "\n", "\t"], "\\n", $data->{$fieldName}) . '";';
+            }
+
+            foreach ($item->joinedTables as $joinedTable) {
+                $joinedTableName = $joinedTable->name;
+                $joinedTableConnectionType = $joinedTable->connectionType;
+
+                if ($joinedTableConnectionType = "NToOne") {
+                    $joinedTableForeignId = (count($data->{$joinedTableName}) > 0 ? $data->{$joinedTableName}[0]->{$joinedTable->connectionInfo[1]} : "0");
+
+                    echo 'data[' . $data->id . ']["' . $joinedTableName . '"] = "' . $joinedTableForeignId . '";';
+                }
             }
         }
     ?>
@@ -205,6 +227,14 @@ $item = $this->getModel()->getItem();
                 document.getElementById("neukomtemplating-input-" + field[0]).checked = (data[recordId][field[0]] == "1");
             } else {
                 document.getElementById("neukomtemplating-input-" + field[0]).value = data[recordId][field[0]];
+            }
+        })
+
+        joinedTables.forEach((joinedTable) => {
+            if (Array.isArray(data[recordId][joinedTable[0]])) {
+
+            } else {
+                document.getElementById("neukomtemplating-select-" + joinedTable[0]).value = data[recordId][joinedTable[0]];
             }
         })
 
@@ -289,6 +319,28 @@ $item = $this->getModel()->getItem();
                 echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" rows="4" cols="50"></textarea><br>';
             } else {
                 echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" /><br>';
+            }
+
+            echo '</div>';
+        }
+
+        foreach ($item->joinedTables as $joinedTable) {
+            if ($joinedTable->showInForm == false) {
+                continue;
+            }
+
+            echo '<div id="neukomtemplating-joinedTable-' . $joinedTable->name . '>';
+            echo '<label for="neukomtemplating-joinedTable-' . $joinedTable->name . '">' . $joinedTable->name . ':</label><br>';
+
+            if ($joinedTable->connectionType == "NToOne") {
+                echo '<select id="neukomtemplating-select-' . $joinedTable->name . '" name="' . $joinedTable->name . '">';
+                echo '<option value="0">Null</option>';
+
+                foreach ($joinedTable->options as $option) {
+                    echo '<option value="' . $option->{$joinedTable->connectionInfo[1]} . '">' . $option->{$joinedTable->displayField} . '</option>';
+                }
+                
+                echo '</select><br>';
             }
 
             echo '</div>';
