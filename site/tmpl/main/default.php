@@ -54,6 +54,8 @@ function formatInputValue($value, $type, $db) {
             return ($value == "" ? "NULL" : $db->quote($value));
         case "checkbox":
             return ($value == "on" ? "'1'" : "'0'");
+        case "foreignId":
+            return ($value == "0" ? "NULL" : $db->quote($value));
         default:
             return $db->quote($value);
     }
@@ -79,6 +81,15 @@ function dbInsert($input, $db, $self) {
 
         $insertColumns[] = $fieldName;
         $insertValues[] = formatInputValue($fieldValue, $fieldType, $db);
+    }
+
+    foreach ($self->getModel()->getItem()->joinedTables as $joinedTable) {
+        if ($joinedTable->connectionType == "NToOne") {
+            $foreignId = $input->get($joinedTable->name, '', 'string');
+
+            $insertColumns[] = $joinedTable->connectionInfo[0];
+            $insertValues[] = formatInputValue($foreignId, "foreignId", $db);
+        }
     }
 
     if ($validationFailed) {return 0;}
@@ -110,6 +121,14 @@ function dbUpdate($input, $db, $self) {
         }
 
         $updateFields[] = $db->quoteName($fieldName) . " = " . formatInputValue($fieldValue, $fieldType, $db);
+    }
+
+    foreach ($self->getModel()->getItem()->joinedTables as $joinedTable) {
+        if ($joinedTable->connectionType == "NToOne") {
+            $foreignId = $input->get($joinedTable->name, '', 'string');
+
+            $updateFields[] = $db->quoteName($joinedTable->connectionInfo[0]) . " = " . formatInputValue($foreignId, "foreignId", $db);
+        }
     }
 
     if ($validationFailed) {return 0;}

@@ -64,8 +64,6 @@ class TemplateModel extends ItemModel {
             $this->queryJoinedTables($record, $joinedTables);
         }
 
-        error_log(var_export($data, true));
-
         $item = new \stdClass();
         $item->id = $templateConfig->id;
         $item->templateName = $templateConfigName;
