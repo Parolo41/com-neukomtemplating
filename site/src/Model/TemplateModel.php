@@ -61,7 +61,7 @@ class TemplateModel extends ItemModel {
         }
 
         foreach ($data as $record) {
-            $this->queryJoinedTables($record, $joinedTables);
+            $this->queryJoinedTables($record, $joinedTables, $idFieldName);
         }
 
         $item = new \stdClass();
@@ -102,12 +102,11 @@ class TemplateModel extends ItemModel {
         return $joinedTables;
     }
 
-    private function queryJoinedTables($record, $joinedTables) {
+    private function queryJoinedTables($record, $joinedTables, $idFieldName) {
         $db = $this->getDbo();
 
         foreach ($joinedTables as $joinedTable) {
             if ($joinedTable->connectionType == "NToOne") {
-
                 $joinedTableQuery = $db->getQuery(true);
 
                 $foreignKeyName = $joinedTable->connectionInfo[0];
@@ -126,6 +125,29 @@ class TemplateModel extends ItemModel {
                 $data = $db->loadObjectList();
     
                 $record->{$joinedTable->name} = $data;
+            } else if ($joinedTable->connectionType == "NToN") {
+                $joinedTableQuery = $db->getQuery(true);
+
+                $intermediateTableName = $joinedTable->connectionInfo[0];
+                $localForeignKeyField = 'interm.' . $joinedTable->connectionInfo[1];
+                $remoteForeignKeyField = 'interm.' . $joinedTable->connectionInfo[2];
+                $remoteIdField = 'remote.' . $joinedTable->connectionInfo[3];
+
+                $selectedFields = [$localForeignKeyField, $remoteForeignKeyField];
+
+                foreach ($joinedTable->fields as $field) {
+                    $selectedFields[] = 'remote.' . $field;
+                }
+
+                $joinedTableQuery->select($db->quoteName($selectedFields));
+                $joinedTableQuery->from($db->quoteName('#__' . $intermediateTableName, 'interm'));
+                $joinedTableQuery->where($db->quoteName($localForeignKeyField) . ' = ' . $record->{$idFieldName});
+                $joinedTableQuery->join('INNER', $db->quoteName('#__' . $joinedTable->name, 'remote') . ' ON ' . $db->quoteName($remoteIdField) . ' = ' . $db->quoteName($remoteForeignKeyField));
+                
+                $db->setQuery($joinedTableQuery);
+                $data = $db->loadObjectList();
+                
+                $record->{$joinedTable->name} = $data;
             }
         }
     }
@@ -143,6 +165,18 @@ class TemplateModel extends ItemModel {
             $idFieldName = $joinedTable->connectionInfo[1];
 
             $joinedTableOptionsQuery->select($db->quoteName([$idFieldName, $joinedTable->displayField]));
+            $joinedTableOptionsQuery->from($db->quoteName('#__' . $joinedTable->name));
+
+            $db->setQuery($joinedTableOptionsQuery);
+            $data = $db->loadObjectList();
+
+            return $data;
+        } else if ($joinedTable->connectionType == "NToN") {
+            $joinedTableOptionsQuery = $db->getQuery(true);
+
+            $remoteIdField = $joinedTable->connectionInfo[3];
+
+            $joinedTableOptionsQuery->select($db->quoteName([$remoteIdField, $joinedTable->displayField]));
             $joinedTableOptionsQuery->from($db->quoteName('#__' . $joinedTable->name));
 
             $db->setQuery($joinedTableOptionsQuery);

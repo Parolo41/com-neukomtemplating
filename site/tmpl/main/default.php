@@ -63,13 +63,14 @@ function formatInputValue($value, $type, $db) {
 
 function dbInsert($input, $db, $self) {
     $query = $db->getQuery(true);
+    $item = $self->getModel()->getItem();
 
     $insertColumns = array();
     $insertValues = array();
 
     $validationFailed = false;
 
-    foreach ($self->getModel()->getItem()->fields as $field) {
+    foreach ($item->fields as $field) {
         $fieldName = $field[0];
         $fieldType = $field[1];
         $fieldRequired = $field[2];
@@ -83,7 +84,7 @@ function dbInsert($input, $db, $self) {
         $insertValues[] = formatInputValue($fieldValue, $fieldType, $db);
     }
 
-    foreach ($self->getModel()->getItem()->joinedTables as $joinedTable) {
+    foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable->connectionType == "NToOne") {
             $foreignId = $input->get($joinedTable->name, '', 'string');
 
@@ -95,22 +96,37 @@ function dbInsert($input, $db, $self) {
     if ($validationFailed) {return 0;}
 
     $query
-        ->insert('#__' . $self->getModel()->getItem()->tableName)
+        ->insert('#__' . $item->tableName)
         ->columns($db->quoteName($insertColumns))
         ->values(implode(',', $insertValues));
 
     $db->setQuery($query);
     $db->execute();
+
+    foreach ($item->joinedTables as $joinedTable) {
+        if ($joinedTable->connectionType == "NToN") {
+            $localForeignKey = $db->insertid();
+
+            foreach ($joinedTable->options as $option) {
+                $remoteForeignKey = $input->get($joinedTable->name . '-' . $option->{$joinedTable->connectionInfo[3]}, '', 'string');
+
+                if ($remoteForeignKey != '') {
+                    addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeignKey);
+                }
+            }
+        }
+    }
 }
 
 function dbUpdate($input, $db, $self) {
     $query = $db->getQuery(true);
+    $item = $self->getModel()->getItem();
 
     $updateFields = array();
 
     $validationFailed = false;
 
-    foreach ($self->getModel()->getItem()->fields as $field) {
+    foreach ($item->fields as $field) {
         $fieldName = $field[0];
         $fieldType = $field[1];
         $fieldRequired = $field[2];
@@ -123,11 +139,21 @@ function dbUpdate($input, $db, $self) {
         $updateFields[] = $db->quoteName($fieldName) . " = " . formatInputValue($fieldValue, $fieldType, $db);
     }
 
-    foreach ($self->getModel()->getItem()->joinedTables as $joinedTable) {
+    foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable->connectionType == "NToOne") {
             $foreignId = $input->get($joinedTable->name, '', 'string');
 
             $updateFields[] = $db->quoteName($joinedTable->connectionInfo[0]) . " = " . formatInputValue($foreignId, "foreignId", $db);
+        } else if ($joinedTable->connectionType == "NToN") {
+            dropIntermediateEntries($db, $joinedTable, $input->get('recordId', '', 'string'));
+
+            foreach ($joinedTable->options as $option) {
+                $remoteForeignKey = $input->get($joinedTable->name . '-' . $option->{$joinedTable->connectionInfo[3]}, '', 'string');
+
+                if ($remoteForeignKey != '') {
+                    addIntermediateEntry($db, $joinedTable, $input->get('recordId', '', 'string'), $remoteForeignKey);
+                }
+            }
         }
     }
 
@@ -138,7 +164,7 @@ function dbUpdate($input, $db, $self) {
     );
 
     $query
-        ->update('#__' . $self->getModel()->getItem()->tableName)
+        ->update('#__' . $item->tableName)
         ->set($updateFields)
         ->where($updateConditions);
 
@@ -149,11 +175,32 @@ function dbUpdate($input, $db, $self) {
 
 function dbDelete($input, $db, $self) {
     $query = $db->getQuery(true);
+    $item = $self->getModel()->getItem();
 
     $deleteConditions = array($db->quoteName('id') . " = " . $input->get('recordId', '', 'string'));
 
     $query
-        ->delete('#__' . $self->getModel()->getItem()->tableName)
+        ->delete('#__' . $item->tableName)
+        ->where($deleteConditions);
+
+    $db->setQuery($query);
+
+    $result = $db->execute();
+
+    foreach ($item->joinedTables as $joinedTable) {
+        if ($joinedTable->connectionType == "NToN") {
+            dropIntermediateEntries($db, $joinedTable, $input->get('recordId', '', 'string'));
+        }
+    }
+}
+
+function dropIntermediateEntries($db, $joinedTable, $localForeignKey) {
+    $query = $db->getQuery(true);
+
+    $deleteConditions = array($db->quoteName($joinedTable->connectionInfo[1]) . " = " . $localForeignKey);
+
+    $query
+        ->delete('#__' . $joinedTable->connectionInfo[0])
         ->where($deleteConditions);
 
     $db->setQuery($query);
@@ -161,9 +208,26 @@ function dbDelete($input, $db, $self) {
     $result = $db->execute();
 }
 
+function addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeignKey) {
+    $query = $db->getQuery(true);
+
+    $insertColumns = [$joinedTable->connectionInfo[1], $joinedTable->connectionInfo[2]];
+    $insertValues = [$localForeignKey, $remoteForeignKey];
+
+    $query
+        ->insert('#__' . $joinedTable->connectionInfo[0])
+        ->columns($db->quoteName($insertColumns))
+        ->values(implode(',', $insertValues));
+
+    $db->setQuery($query);
+    $db->execute();
+}
+
 if ($this->getModel()->getItem()->allowEdit && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = Factory::getDbo();
     $input = Factory::getApplication()->input;
+
+    error_log(var_export($input, true));
 
     if ($input->get('formAction', '', 'string') == "insert") {
         dbInsert($input, $db, $this);
@@ -222,18 +286,22 @@ $item = $this->getModel()->getItem();
                 $joinedTableName = $joinedTable->name;
                 $joinedTableConnectionType = $joinedTable->connectionType;
 
-                if ($joinedTableConnectionType = "NToOne") {
+                if ($joinedTableConnectionType == "NToOne") {
                     $joinedTableForeignId = (count($data->{$joinedTableName}) > 0 ? $data->{$joinedTableName}[0]->{$joinedTable->connectionInfo[1]} : "0");
 
                     echo 'data[' . $data->id . ']["' . $joinedTableName . '"] = "' . $joinedTableForeignId . '";';
+                } else if ($joinedTableConnectionType == "NToN") {
+                    echo 'data[' . $data->id . ']["' . $joinedTableName . '"] = [];';
+
+                    foreach ($data->{$joinedTableName} as $joinedTableData) {
+                        echo 'data[' . $data->id . ']["' . $joinedTableName . '"].push("' . $joinedTableData->{$joinedTable->connectionInfo[3]} . '");';
+                    }
                 }
             }
         }
     ?>
 
-    console.log(data);
-
-    <?php if ($this->getModel()->getItem()->allowEdit) { ?>
+    <?php if ($item->allowEdit) { ?>
 
     function openEditForm(recordId) {
         document.getElementById("neukomtemplating-listview").style.display = "none";
@@ -251,7 +319,13 @@ $item = $this->getModel()->getItem();
 
         joinedTables.forEach((joinedTable) => {
             if (Array.isArray(data[recordId][joinedTable[0]])) {
+                multiselectDiv = document.getElementById("neukomtemplating-select-" + joinedTable[0]);
 
+                for (i = 0; i < multiselectDiv.querySelectorAll('input').length; i++) {
+                    multiselectOption = multiselectDiv.querySelectorAll('input')[i];
+                    
+                    multiselectOption.checked = data[recordId][joinedTable[0]].indexOf(multiselectOption.value) != -1;
+                }
             } else {
                 document.getElementById("neukomtemplating-select-" + joinedTable[0]).value = data[recordId][joinedTable[0]];
             }
@@ -275,6 +349,20 @@ $item = $this->getModel()->getItem();
                 document.getElementById("neukomtemplating-input-" + field[0]).checked = false;
             } else {
                 document.getElementById("neukomtemplating-input-" + field[0]).value = "";
+            }
+        })
+
+        joinedTables.forEach((joinedTable) => {
+            if (joinedTable[1] == "NToN") {
+                multiselectDiv = document.getElementById("neukomtemplating-select-" + joinedTable[0]);
+
+                for (i = 0; i < multiselectDiv.querySelectorAll('input').length; i++) {
+                    multiselectOption = multiselectDiv.querySelectorAll('input')[i];
+                    
+                    multiselectOption.checked = false;
+                }
+            } else {
+                document.getElementById("neukomtemplating-select-" + joinedTable[0]).value = '0';
             }
         })
 
@@ -310,17 +398,17 @@ $item = $this->getModel()->getItem();
 
 <div id="neukomtemplating-listview">
     <?php
-    echo $this->getModel()->getItem()->allowEdit ? '<button onClick="openNewForm()">New</button>' : "";
+    echo $item->allowEdit ? '<button onClick="openNewForm()">New</button>' : "";
     echo $item->header;
     foreach ($item->data as $data) {
         echo $twig->render('template', ['data' => $data]);
-        echo $this->getModel()->getItem()->allowEdit ? '<button onClick="openEditForm(' . $data->id . ')">Edit</button>' : "";
+        echo $item->allowEdit ? '<button onClick="openEditForm(' . $data->id . ')">Edit</button>' : "";
     }
     echo $item->footer;
     ?>
 </div>
 
-<?php if ($this->getModel()->getItem()->allowEdit) { ?>
+<?php if ($item->allowEdit) { ?>
 
 <div id="neukomtemplating-editform" style="display: none">
     <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-vertical">
@@ -360,6 +448,15 @@ $item = $this->getModel()->getItem();
                 }
                 
                 echo '</select><br>';
+            } else if ($joinedTable->connectionType == "NToN") {
+                echo '<div id="neukomtemplating-select-' . $joinedTable->name . '">';
+
+                foreach ($joinedTable->options as $option) {
+                    echo '<input type="checkbox" name="' . $joinedTable->name . '-' . $option->{$joinedTable->connectionInfo[3]} . '" value="' . $option->{$joinedTable->connectionInfo[3]} . '"></input>';
+                    echo '<label>' . $option->{$joinedTable->displayField} . '</label><br>';
+                }
+                
+                echo '</div><br>';
             }
 
             echo '</div>';
