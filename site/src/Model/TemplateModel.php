@@ -22,22 +22,25 @@ class TemplateModel extends ItemModel {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['id', 'header', 'template', 'footer', 'tablename', 'fields', 'condition', 'allow_edit', 'joined_tables'])
+            $db->quoteName(['id', 'header', 'template', 'footer', 'tablename', 'id_field_name', 'fields', 'condition', 'allow_edit', 'joined_tables'])
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         $query->where('name = "' . $templateConfigName . '"');
         $db->setQuery($query);
         $templateConfig = $db->loadObject();
 
-        $idFieldName = 'id';
-
         $fields = [];
-        $fieldNames = [$idFieldName];
+        $fieldNames = [$templateConfig->id_field_name];
 
         foreach (explode(';', str_replace(' ', '', $templateConfig->fields)) as $field) {
             $fieldConfigArray = explode(':', $field);
 
             $fieldName = $fieldConfigArray[0];
+
+            if ($fieldName == $templateConfig->id_field_name) {
+                continue;
+            }
+
             $fieldType = isset($fieldConfigArray[1]) ? $fieldConfigArray[1] : "text";
             $fieldRequired = isset($fieldConfigArray[2]) ? $fieldConfigArray[2] == "1" : false;
             $showFieldInForm = isset($fieldConfigArray[3]) ? $fieldConfigArray[3] == "1" : true;
@@ -61,13 +64,14 @@ class TemplateModel extends ItemModel {
         }
 
         foreach ($data as $record) {
-            $this->queryJoinedTables($record, $joinedTables, $idFieldName);
+            $this->queryJoinedTables($record, $joinedTables, $templateConfig->id_field_name);
         }
 
         $item = new \stdClass();
         $item->id = $templateConfig->id;
         $item->templateName = $templateConfigName;
         $item->tableName = $templateConfig->tablename;
+        $item->idFieldName = $templateConfig->id_field_name;
         $item->header = $templateConfig->header;
         $item->template = $templateConfig->template;
         $item->footer = $templateConfig->footer;
@@ -117,7 +121,13 @@ class TemplateModel extends ItemModel {
                     continue;
                 }
 
-                $joinedTableQuery->select($db->quoteName($joinedTable->fields));
+                $selectedFields = $joinedTable->fields;
+
+                if (!in_array($idFieldName, $selectedFields)) {
+                    $selectedFields[] = $idFieldName;
+                }
+
+                $joinedTableQuery->select($db->quoteName($selectedFields));
                 $joinedTableQuery->from($db->quoteName('#__' . $joinedTable->name));
                 $joinedTableQuery->where($db->quoteName($idFieldName) . ' = ' . $record->{$foreignKeyName});
 
@@ -137,6 +147,10 @@ class TemplateModel extends ItemModel {
 
                 foreach ($joinedTable->fields as $field) {
                     $selectedFields[] = 'remote.' . $field;
+                }
+
+                if (!in_array($remoteIdField, $selectedFields)) {
+                    $selectedFields[] = $remoteIdField;
                 }
 
                 $joinedTableQuery->select($db->quoteName($selectedFields));

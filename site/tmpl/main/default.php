@@ -160,7 +160,7 @@ function dbUpdate($input, $db, $self) {
     if ($validationFailed) {return 0;}
 
     $updateConditions = array(
-        $db->quoteName('id') . ' = ' . $input->get('recordId', '', 'string')
+        $db->quoteName($item->idFieldName) . ' = ' . $input->get('recordId', '', 'string')
     );
 
     $query
@@ -177,7 +177,7 @@ function dbDelete($input, $db, $self) {
     $query = $db->getQuery(true);
     $item = $self->getModel()->getItem();
 
-    $deleteConditions = array($db->quoteName('id') . " = " . $input->get('recordId', '', 'string'));
+    $deleteConditions = array($db->quoteName($item->idFieldName) . " = " . $input->get('recordId', '', 'string'));
 
     $query
         ->delete('#__' . $item->tableName)
@@ -226,8 +226,6 @@ function addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeig
 if ($this->getModel()->getItem()->allowEdit && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = Factory::getDbo();
     $input = Factory::getApplication()->input;
-
-    error_log(var_export($input, true));
 
     if ($input->get('formAction', '', 'string') == "insert") {
         dbInsert($input, $db, $this);

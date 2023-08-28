@@ -23,6 +23,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', 'Details'); ?>
     <?php echo $this->getForm()->renderField('name'); ?>
     <?php echo $this->getForm()->renderField('tablename'); ?>
+    <?php echo $this->getForm()->renderField('id_field_name'); ?>
     <?php echo $this->getForm()->renderField('fields'); ?>
     <?php echo $this->getForm()->renderField('condition'); ?>
     <?php echo $this->getForm()->renderField('header'); ?>
@@ -49,6 +50,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', 'Details'); ?>
     <?php echo $this->getForm()->renderField('name'); ?>
     <?php echo $this->getForm()->renderField('tablename'); ?>
+    <?php echo $this->getForm()->renderField('id_field_name'); ?>
     <label>Fields</label>
     <div id="template-fields-area"></div>
     <button type="button" onclick="addField()">Add Field</button>
