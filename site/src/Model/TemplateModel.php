@@ -22,7 +22,7 @@ class TemplateModel extends ItemModel {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['id', 'header', 'template', 'footer', 'tablename', 'id_field_name', 'fields', 'condition', 'allow_edit', 'joined_tables'])
+            $db->quoteName(['id', 'header', 'template', 'footer', 'tablename', 'id_field_name', 'fields', 'condition', 'allow_edit', 'allow_create', 'joined_tables'])
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         $query->where('name = "' . $templateConfigName . '"');
@@ -59,12 +59,14 @@ class TemplateModel extends ItemModel {
         $db->setQuery($dataQuery);
         $data = $db->loadObjectList();
 
+        $joinedTables = [];
+
         if ($templateConfig->joined_tables != "") {
             $joinedTables = $this->parseJoinedTables($templateConfig->joined_tables);
-        }
 
-        foreach ($data as $record) {
-            $this->queryJoinedTables($record, $joinedTables, $templateConfig->id_field_name);
+            foreach ($data as $record) {
+                $this->queryJoinedTables($record, $joinedTables, $templateConfig->id_field_name);
+            }
         }
 
         $item = new \stdClass();
@@ -75,7 +77,8 @@ class TemplateModel extends ItemModel {
         $item->header = $templateConfig->header;
         $item->template = $templateConfig->template;
         $item->footer = $templateConfig->footer;
-        $item->allowEdit = $templateConfig->allow_edit;
+        $item->allowEdit = ($templateConfig->allow_edit == "1");
+        $item->allowCreate = ($templateConfig->allow_create == "1");
         $item->data = $data;
         
         $item->fields = $fields;

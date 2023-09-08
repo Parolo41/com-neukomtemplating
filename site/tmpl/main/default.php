@@ -65,6 +65,10 @@ function dbInsert($input, $db, $self) {
     $query = $db->getQuery(true);
     $item = $self->getModel()->getItem();
 
+    if (!$item->allowCreate) {
+        return;
+    }
+
     $insertColumns = array();
     $insertValues = array();
 
@@ -122,6 +126,10 @@ function dbUpdate($input, $db, $self) {
     $query = $db->getQuery(true);
     $item = $self->getModel()->getItem();
 
+    if (!$item->allowEdit) {
+        return;
+    }
+
     $updateFields = array();
 
     $validationFailed = false;
@@ -176,6 +184,10 @@ function dbUpdate($input, $db, $self) {
 function dbDelete($input, $db, $self) {
     $query = $db->getQuery(true);
     $item = $self->getModel()->getItem();
+
+    if (!$item->allowEdit) {
+        return;
+    }
 
     $deleteConditions = array($db->quoteName($item->idFieldName) . " = " . $input->get('recordId', '', 'string'));
 
@@ -277,7 +289,7 @@ $item = $this->getModel()->getItem();
                 $fieldName = $field[0];
                 $fieldType = $field[1];
 
-                echo 'data[' . $data->id . ']["' . $fieldName . '"] = "' . str_replace(["\r\n", "\r", "\n", "\t"], "\\n", $data->{$fieldName}) . '";';
+                echo 'data[' . $data->id . ']["' . $fieldName . '"] = "' . str_replace(["\""], "\\\"", str_replace(["\r\n", "\r", "\n", "\t"], "\\n", $data->{$fieldName})) . '";';
             }
 
             foreach ($item->joinedTables as $joinedTable) {
@@ -299,7 +311,7 @@ $item = $this->getModel()->getItem();
         }
     ?>
 
-    <?php if ($item->allowEdit) { ?>
+    <?php if ($item->allowEdit || $item->allowCreate) { ?>
 
     function openEditForm(recordId) {
         document.getElementById("neukomtemplating-listview").style.display = "none";
@@ -396,7 +408,7 @@ $item = $this->getModel()->getItem();
 
 <div id="neukomtemplating-listview">
     <?php
-    echo $item->allowEdit ? '<button onClick="openNewForm()">New</button>' : "";
+    echo $item->allowCreate ? '<button onClick="openNewForm()">New</button>' : "";
     echo $item->header;
     foreach ($item->data as $data) {
         echo $twig->render('template', ['data' => $data]);
@@ -406,7 +418,7 @@ $item = $this->getModel()->getItem();
     ?>
 </div>
 
-<?php if ($item->allowEdit) { ?>
+<?php if ($item->allowEdit || $item->allowCreate) { ?>
 
 <div id="neukomtemplating-editform" style="display: none">
     <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-vertical">
