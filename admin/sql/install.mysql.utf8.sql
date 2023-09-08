@@ -12,5 +12,7 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `show_detail_page` BOOLEAN,
     `allow_create` BOOLEAN,
     `allow_edit` BOOLEAN,
+    `joined_tables` VARCHAR(500),
+    `id_field_name` VARCHAR(40) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB; 
