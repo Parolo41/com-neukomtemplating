@@ -429,8 +429,8 @@ $item = $this->getModel()->getItem();
             $permittedTypes = ["text", "textarea", "date", "number", "checkbox"];
             $fieldType = in_array($field[1], $permittedTypes) ? $field[1] : "text";
 
-            echo '<div id="neukomtemplating-field-' . $fieldName . '>';
-            echo '<label for="neukomtemplating-field-' . $fieldName . '">' . $fieldName . ':</label><br>';
+            echo '<div id="neukomtemplating-field-' . $fieldName . '">';
+            echo '<label for="neukomtemplating-input-' . $fieldName . '">' . $fieldName . ':</label><br>';
 
             if ($fieldType == "textarea") {
                 echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" rows="4" cols="50"></textarea><br>';
@@ -446,7 +446,7 @@ $item = $this->getModel()->getItem();
                 continue;
             }
 
-            echo '<div id="neukomtemplating-joinedTable-' . $joinedTable->name . '>';
+            echo '<div id="neukomtemplating-joinedTable-' . $joinedTable->name . '">';
             echo '<label for="neukomtemplating-joinedTable-' . $joinedTable->name . '">' . $joinedTable->name . ':</label><br>';
 
             if ($joinedTable->connectionType == "NToOne") {

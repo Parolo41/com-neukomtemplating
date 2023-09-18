@@ -22,7 +22,7 @@ class TemplateModel extends ItemModel {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['id', 'header', 'template', 'footer', 'tablename', 'id_field_name', 'fields', 'condition', 'allow_edit', 'allow_create', 'joined_tables'])
+            $db->quoteName(['id', 'header', 'template', 'footer', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'allow_edit', 'allow_create', 'joined_tables'])
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         $query->where('name = "' . $templateConfigName . '"');
@@ -55,7 +55,15 @@ class TemplateModel extends ItemModel {
         $dataQuery = $db->getQuery(true);
         $dataQuery->select($db->quoteName($fieldNames));
         $dataQuery->from($db->quoteName('#__' . $templateConfig->tablename));
-        $dataQuery->where($templateConfig->condition);
+
+        if (trim($templateConfig->condition) != "") {
+            $dataQuery->where($templateConfig->condition);
+        }
+
+        if (trim($templateConfig->sorting) != "") {
+            $dataQuery->order($templateConfig->sorting);
+        }
+
         $db->setQuery($dataQuery);
         $data = $db->loadObjectList();
 

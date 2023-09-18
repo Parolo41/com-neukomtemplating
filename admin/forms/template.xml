@@ -42,7 +42,14 @@
 			type="text"
 			label="SQL Condition"
 			size="500"
-			required="true"
+			required="false"
+		 />
+		<field
+			name="sorting"
+			type="text"
+			label="Sorting"
+			size="80"
+			required="false"
 		 />
 		<field
 			name="header"

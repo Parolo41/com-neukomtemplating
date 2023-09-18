@@ -14,5 +14,6 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `allow_edit` BOOLEAN,
     `joined_tables` VARCHAR(500),
     `id_field_name` VARCHAR(40) NOT NULL,
+    `sorting` VARCHAR(80) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB; 
