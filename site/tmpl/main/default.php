@@ -429,8 +429,10 @@ $item = $this->getModel()->getItem();
             $permittedTypes = ["text", "textarea", "date", "number", "checkbox"];
             $fieldType = in_array($field[1], $permittedTypes) ? $field[1] : "text";
 
+            $fieldDisplayName = $field[4];
+
             echo '<div id="neukomtemplating-field-' . $fieldName . '">';
-            echo '<label for="neukomtemplating-input-' . $fieldName . '">' . $fieldName . ':</label><br>';
+            echo '<label for="neukomtemplating-input-' . $fieldName . '">' . $fieldDisplayName . ':</label><br>';
 
             if ($fieldType == "textarea") {
                 echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" rows="4" cols="50"></textarea><br>';

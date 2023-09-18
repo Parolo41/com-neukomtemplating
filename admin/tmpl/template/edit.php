@@ -85,6 +85,9 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <input type="checkbox" name="showInForm" onchange="updateFieldInputVisibility()" checked /> <br/>
 
     <div name="show-on-showInForm">
+        <span name="displayName-label">Label: </span>
+        <input type="text" name="displayName" /> <br/>
+
         <span name="type-label">Type: </span>
         <select name="type">
             <option value="text">Text</option>
@@ -244,6 +247,10 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             } else {
                 fieldString = fieldString.concat("0");
             }
+            
+            fieldString = fieldString.concat(":");
+
+            fieldString = fieldString.concat(field.querySelector('input[name="displayName"]').value);
         }
 
         return fieldString;
@@ -342,7 +349,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     for (let i = 0; i < loadedFields.length; i++) {
         fieldValues = loadedFields[i].split(":");
 
-        if (fieldValues.length != 4) {
+        if (fieldValues.length < 4) {
             continue;
         }
 
@@ -353,6 +360,8 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         newField.querySelector('select[name="type"]').value = fieldValues[1];
         newField.querySelector('input[name="required"]').checked = (fieldValues[2] == "1");
         newField.querySelector('input[name="showInForm"]').checked = (fieldValues[3] == "1");
+
+        if (typeof fieldValues[4] != 'undefined') {newField.querySelector('input[name="displayName"]').value = fieldValues[4];}
     }
 
     for (let i = 0; i < loadedJoinedTables.length; i++) {
