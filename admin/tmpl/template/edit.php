@@ -17,6 +17,11 @@ $layout  = 'edit';
 $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 ?>
 
+<style>
+    .field-info-label {display: inline-block;width: 120px;}
+    .joined-table-info-label {display: inline-block;width: 200px;}
+</style>
+
 <form action="<?php echo Route::_('index.php?option=com_neukomtemplating&layout=' . $layout . $tmpl . '&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="template-form" class="form-validate" hidden>
     <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', []); ?>
 
@@ -78,17 +83,17 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 </form>
 
 <div id="template-field-blueprint" style="margin-bottom: 16px" hidden>
-    <span name="name-label">Name: </span>
+    <span class="field-info-label" name="name-label">Name: </span>
     <input type="text" name="name" /> <br/>
 
-    <span name="showInForm-label">Show in form: </span>
+    <span class="field-info-label" name="showInForm-label">Show in form: </span>
     <input type="checkbox" name="showInForm" onchange="updateFieldInputVisibility()" checked /> <br/>
 
     <div name="show-on-showInForm">
-        <span name="displayName-label">Label: </span>
+        <span class="field-info-label" name="displayName-label">Label: </span>
         <input type="text" name="displayName" /> <br/>
 
-        <span name="type-label">Type: </span>
+        <span class="field-info-label" name="type-label">Type: </span>
         <select name="type">
             <option value="text">Text</option>
             <option value="textarea">Textarea</option>
@@ -97,56 +102,56 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             <option value="checkbox">Checkbox</option>
         </select> <br/>
 
-        <span name="required-label">Required: </span>
+        <span class="field-info-label" name="required-label">Required: </span>
         <input type="checkbox" name="required" /> <br/>
     </div>
 </div>
 
 <div id="joined-table-blueprint" style="margin-bottom: 16px" hidden>
-    <span name="name-label">Table name: </span>
+    <span class="joined-table-info-label" name="name-label" title="DB name of the joined table">Table name: </span>
     <input type="text" name="name" /> <br/>
     
-    <span name="displayField-label">Display field: </span>
+    <span class="joined-table-info-label" name="displayField-label" title="DB name of the field containing the display name of joined table records">Display field: </span>
     <input type="text" name="displayField" /> <br/>
 
-    <span name="type-label">Connection type: </span>
+    <span class="joined-table-info-label" name="type-label" title="Connection type between local and joined table">Connection type: </span>
     <select name="type" onchange="updateJoinedTableInputVisibility()">
         <option value="NToOne">n:1</option>
-        <option value="OneToN">1:n</option>
         <option value="NToN">n:n</option>
     </select> <br/>
     
     <div name="show-on-NToOne">
-        <span name="NToOne-foreignKey-label">Local foreign key field: </span>
+        <span class="joined-table-info-label" name="NToOne-foreignKey-label" title="DB name of the foreign key field at the local table, connecting to the joined table">
+            Local foreign key field: </span>
         <input type="text" name="NToOne-foreignKey" /> <br/>
 
-        <span name="NToOne-remoteId-label">Remote ID field: </span>
+        <span class="joined-table-info-label" name="NToOne-remoteId-label" title="DB name of the ID field at the joined table">
+            Joined table ID field: </span>
         <input type="text" name="NToOne-remoteId" /> <br/>
     </div>
     
-    <div name="show-on-OneToN" hidden>
-        <span name="OneToN-foreignKey-label">Remote foreign key field: </span>
-        <input type="text" name="OneToN-foreignKey" /> <br/>
-    </div>
-    
     <div name="show-on-NToN" hidden>
-        <span name="NToN-intermediateTable-label">Intermediate table name: </span>
+        <span class="joined-table-info-label" name="NToN-intermediateTable-label" title="DB name of the connecting table between the local and joined table">
+            Intermediate table name: </span>
         <input type="text" name="NToN-intermediateTable" /> <br/>
 
-        <span name="NToN-intermediateLocalKey-label">Intermediate foreign key to local table: </span>
+        <span class="joined-table-info-label" name="NToN-intermediateLocalKey-label" title="DB name of the foreign key field at the connecting table, connecting to the local table">
+            Intermediate foreign key to local table: </span>
         <input type="text" name="NToN-intermediateLocalKey" /> <br/>
 
-        <span name="NToN-intermediateRemoteKey-label">Intermediate foreign key to remote table: </span>
+        <span class="joined-table-info-label" name="NToN-intermediateRemoteKey-label" title="DB name of the foreign key field at the connecting table, connecting to the joined table">
+            Intermediate foreign key to joined table: </span>
         <input type="text" name="NToN-intermediateRemoteKey" /> <br/>
 
-        <span name="NToN-remoteId-label">Remote ID field: </span>
+        <span class="joined-table-info-label" name="NToN-remoteId-label" title="DB name of the ID field at the joined table">
+            Joined table ID field: </span>
         <input type="text" name="NToN-remoteId" /> <br/>
     </div>
     
-    <span name="foreignFields-label">Fields (comma separated): </span>
+    <span class="joined-table-info-label" name="foreignFields-label" title="Fields to load from joined table">Fields (comma separated): </span>
     <input type="text" name="foreignFields" /> <br/>
 
-    <span name="showInForm-label">Show in form: </span>
+    <span class="joined-table-info-label" name="showInForm-label" title="Display joined table options in edit form">Show in form: </span>
     <input type="checkbox" name="showInForm" /> <br/>
 </div>
 
@@ -334,7 +339,6 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             joinedTable = joinedTablesArea.childNodes[i];
 
             joinedTable.querySelector('div[name="show-on-NToOne"]').hidden = true;
-            joinedTable.querySelector('div[name="show-on-OneToN"]').hidden = true;
             joinedTable.querySelector('div[name="show-on-NToN"]').hidden = true;
 
             visibleInput = joinedTable.querySelector('select[name="type"]').value;
