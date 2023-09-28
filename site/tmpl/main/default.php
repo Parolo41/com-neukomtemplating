@@ -272,6 +272,14 @@ $item = $this->getModel()->getItem();
 
     <?php
         foreach ($item->joinedTables as $joinedTable) {
+            if ($joinedTable->showInForm == false) {
+                continue;
+            }
+
+            if ($joinedTable->connectionType == "OneToN") {
+                continue;
+            }
+
             $joinedTableName = $joinedTable->name;
             $joinedTableConnectionType = $joinedTable->connectionType;
 
@@ -445,6 +453,10 @@ $item = $this->getModel()->getItem();
 
         foreach ($item->joinedTables as $joinedTable) {
             if ($joinedTable->showInForm == false) {
+                continue;
+            }
+
+            if ($joinedTable->connectionType == "OneToN") {
                 continue;
             }
 

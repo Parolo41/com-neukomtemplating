@@ -117,6 +117,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <span class="joined-table-info-label" name="type-label" title="Connection type between local and joined table">Connection type: </span>
     <select name="type" onchange="updateJoinedTableInputVisibility()">
         <option value="NToOne">n:1</option>
+        <option value="OneToN">1:n</option>
         <option value="NToN">n:n</option>
     </select> <br/>
     
@@ -128,6 +129,12 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         <span class="joined-table-info-label" name="NToOne-remoteId-label" title="DB name of the ID field at the joined table">
             Joined table ID field: </span>
         <input type="text" name="NToOne-remoteId" /> <br/>
+    </div>
+
+    <div name="show-on-OneToN">
+        <span class="joined-table-info-label" name="OneToN-foreignKey-label" title="DB name of the foreign key field at the joined table, connecting to the main table">
+            Joined foreign key field: </span>
+        <input type="text" name="OneToN-foreignKey" /> <br/>
     </div>
     
     <div name="show-on-NToN" hidden>
@@ -339,6 +346,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             joinedTable = joinedTablesArea.childNodes[i];
 
             joinedTable.querySelector('div[name="show-on-NToOne"]').hidden = true;
+            joinedTable.querySelector('div[name="show-on-OneToN"]').hidden = true;
             joinedTable.querySelector('div[name="show-on-NToN"]').hidden = true;
 
             visibleInput = joinedTable.querySelector('select[name="type"]').value;

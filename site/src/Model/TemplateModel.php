@@ -126,7 +126,7 @@ class TemplateModel extends ItemModel {
                 $joinedTableQuery = $db->getQuery(true);
 
                 $foreignKeyName = $joinedTable->connectionInfo[0];
-                $idFieldName = $joinedTable->connectionInfo[1];
+                $joinedIdFieldName = $joinedTable->connectionInfo[1];
                 
                 if ($record->{$foreignKeyName} == "") {
                     $record->{$joinedTable->name} = [];
@@ -135,13 +135,28 @@ class TemplateModel extends ItemModel {
 
                 $selectedFields = $joinedTable->fields;
 
-                if (!in_array($idFieldName, $selectedFields)) {
-                    $selectedFields[] = $idFieldName;
+                if (!in_array($joinedIdFieldName, $selectedFields)) {
+                    $selectedFields[] = $joinedIdFieldName;
                 }
 
                 $joinedTableQuery->select($db->quoteName($selectedFields));
                 $joinedTableQuery->from($db->quoteName('#__' . $joinedTable->name));
-                $joinedTableQuery->where($db->quoteName($idFieldName) . ' = ' . $record->{$foreignKeyName});
+                $joinedTableQuery->where($db->quoteName($joinedIdFieldName) . ' = ' . $record->{$foreignKeyName});
+
+                $db->setQuery($joinedTableQuery);
+                $data = $db->loadObjectList();
+    
+                $record->{$joinedTable->name} = $data;
+            } else if ($joinedTable->connectionType == "OneToN") {
+                $joinedTableQuery = $db->getQuery(true);
+
+                $foreignKeyName = $joinedTable->connectionInfo[0];
+
+                $selectedFields = $joinedTable->fields;
+
+                $joinedTableQuery->select($db->quoteName($selectedFields));
+                $joinedTableQuery->from($db->quoteName('#__' . $joinedTable->name));
+                $joinedTableQuery->where($db->quoteName($foreignKeyName) . ' = ' . $record->{$idFieldName});
 
                 $db->setQuery($joinedTableQuery);
                 $data = $db->loadObjectList();
