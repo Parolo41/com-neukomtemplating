@@ -7,7 +7,7 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `header` TEXT NOT NULL,
     `footer` TEXT NOT NULL,
     `tablename` VARCHAR(40) NOT NULL,
-    `fields` VARCHAR(200) NOT NULL,
+    `fields` VARCHAR(500) NOT NULL,
     `condition` VARCHAR(500) NOT NULL,
     `show_detail_page` BOOLEAN,
     `allow_create` BOOLEAN,
