@@ -94,13 +94,19 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         <input type="text" name="displayName" /> <br/>
 
         <span class="field-info-label" name="type-label">Type: </span>
-        <select name="type">
+        <select name="type" onchange="updateFieldInputVisibility()">
             <option value="text">Text</option>
             <option value="textarea">Textarea</option>
             <option value="number">Number</option>
             <option value="date">Date</option>
             <option value="checkbox">Checkbox</option>
+            <option value="select">Select</option>
         </select> <br/>
+
+        <div name="show-on-typeSelect" hidden>
+            <span class="field-info-label" name="type-label">Options (comma separated): </span>
+            <input type="text" name="selectOptions" /> <br/>
+        </div>
 
         <span class="field-info-label" name="required-label">Required: </span>
         <input type="checkbox" name="required" /> <br/>
@@ -268,7 +274,8 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             
             fieldString = fieldString.concat(":");
 
-            fieldString = fieldString.concat(field.querySelector('select[name="type"]').value);
+            inputType = field.querySelector('select[name="type"]').value;
+            fieldString = fieldString.concat(inputType);
             
             fieldString = fieldString.concat(":");
 
@@ -289,6 +296,16 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             fieldString = fieldString.concat(":");
 
             fieldString = fieldString.concat(field.querySelector('input[name="displayName"]').value);
+            
+            fieldString = fieldString.concat(":");
+
+            additionalInfo = "";
+
+            if (inputType == 'select') {
+                additionalInfo = field.querySelector('input[name="selectOptions"]').value;
+            }
+            
+            fieldString = fieldString.concat(additionalInfo);
         }
 
         return fieldString;
@@ -362,6 +379,10 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             inputHidden = !field.querySelector('input[name="showInForm"]').checked;
 
             field.querySelector('div[name="show-on-showInForm"]').hidden = inputHidden;
+
+            inputType = field.querySelector('select[name="type"]').value;
+
+            field.querySelector('div[name="show-on-typeSelect"]').hidden = !(inputType == "select");
         }
     }
 
@@ -400,6 +421,9 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         newField.querySelector('input[name="showInForm"]').checked = (fieldValues[3] == "1");
 
         if (typeof fieldValues[4] != 'undefined') {newField.querySelector('input[name="displayName"]').value = fieldValues[4];}
+        if (typeof fieldValues[5] != 'undefined' && fieldValues[1] == 'select') {
+            newField.querySelector('input[name="selectOptions"]').value = fieldValues[5];
+        }
     }
 
     for (let i = 0; i < loadedJoinedTables.length; i++) {

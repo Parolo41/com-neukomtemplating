@@ -23,6 +23,7 @@ function validateInputFormat($value, $type) {
         'date' => "/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/",
         'number' => "/^[0-9]*$/",
         'checkbox' => "/^(on)?$/",
+        'select' => "/.*/",
     );
 
     return preg_match($validationPatterns[$type], $value);
@@ -434,7 +435,7 @@ $item = $this->getModel()->getItem();
         foreach ($item->fields as $field) {
             $fieldName = $field[0];
 
-            $permittedTypes = ["text", "textarea", "date", "number", "checkbox"];
+            $permittedTypes = ["text", "textarea", "date", "number", "checkbox", "select"];
             $fieldType = in_array($field[1], $permittedTypes) ? $field[1] : "text";
 
             $fieldDisplayName = $field[4];
@@ -444,6 +445,14 @@ $item = $this->getModel()->getItem();
 
             if ($fieldType == "textarea") {
                 echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-textarea" rows="4" cols="50"></textarea><br>';
+            } else if ($fieldType == "select") {
+                echo '<select id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-select">';
+
+                foreach (explode(',', $field[5]) as $selectOption) {
+                    echo '<option value="' . $selectOption . '">' . $selectOption . '</option>';
+                }
+
+                echo '</select>';
             } else {
                 echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-' . $fieldType . '" /><br>';
             }

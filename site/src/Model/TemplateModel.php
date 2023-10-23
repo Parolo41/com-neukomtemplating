@@ -47,9 +47,10 @@ class TemplateModel extends ItemModel {
             $fieldRequired = isset($fieldConfigArray[2]) ? $fieldConfigArray[2] == "1" : false;
             $showFieldInForm = isset($fieldConfigArray[3]) ? $fieldConfigArray[3] == "1" : true;
             $displayName = isset($fieldConfigArray[4]) ? $fieldConfigArray[4] : $fieldName;
+            $additionalInfo = isset($fieldConfigArray[5]) ? $fieldConfigArray[5] : "";
 
             if ($showFieldInForm) {
-                $fields[] = [$fieldName, $fieldType, $fieldRequired, $showFieldInForm, $displayName];
+                $fields[] = [$fieldName, $fieldType, $fieldRequired, $showFieldInForm, $displayName, $additionalInfo];
             }
             
             $fieldNames[] = $fieldName;
