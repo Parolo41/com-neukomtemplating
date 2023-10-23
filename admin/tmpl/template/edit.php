@@ -173,9 +173,17 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         clone.id = "template-field-" + fieldNumber;
         clone.hidden = false;
 
-        div = document.createElement('DIV');
-        div.innerHTML = '<button type="button" onclick="removeField(' + fieldNumber + ')">Remove Field</button>'
-        clone.appendChild(div.firstChild);
+        remDiv = document.createElement('DIV');
+        remDiv.innerHTML = '<button type="button" onclick="removeField(' + fieldNumber + ')">Remove Field</button>'
+        clone.appendChild(remDiv.firstChild);
+
+        moveUpDiv = document.createElement('DIV');
+        moveUpDiv.innerHTML = '<button type="button" onclick="moveUp(' + fieldNumber + ')">Up</button>'
+        clone.appendChild(moveUpDiv.firstChild);
+
+        moveDownDiv = document.createElement('DIV');
+        moveDownDiv.innerHTML = '<button type="button" onclick="moveDown(' + fieldNumber + ')">Down</button>'
+        clone.appendChild(moveDownDiv.firstChild);
 
         document.getElementById("template-fields-area").appendChild(clone);
         
@@ -190,6 +198,24 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             updateValues();
         }
 
+    }
+
+    function moveUp(fieldId) {
+        fieldElement = document.getElementById("template-field-" + fieldId);
+
+        if (fieldElement.previousElementSibling)
+            fieldElement.parentNode.insertBefore(fieldElement, fieldElement.previousElementSibling);
+        
+        updateValues();
+    }
+
+    function moveDown(fieldId) {
+        fieldElement = document.getElementById("template-field-" + fieldId);
+
+        if (fieldElement.nextElementSibling)
+            fieldElement.parentNode.insertBefore(fieldElement.nextElementSibling, fieldElement);
+        
+        updateValues();
     }
 
     function addJoinedTable() {
