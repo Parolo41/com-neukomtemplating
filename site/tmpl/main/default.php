@@ -416,11 +416,11 @@ $item = $this->getModel()->getItem();
 
 <div id="neukomtemplating-listview">
     <?php
-    echo $item->allowCreate ? '<button onClick="openNewForm()">New</button>' : "";
+    echo $item->allowCreate ? '<button onClick="openNewForm()">Neu</button>' : "";
     echo $item->header;
     foreach ($item->data as $data) {
         echo $twig->render('template', ['data' => $data]);
-        echo $item->allowEdit ? '<button onClick="openEditForm(' . $data->id . ')">Edit</button>' : "";
+        echo $item->allowEdit ? '<button onClick="openEditForm(' . $data->id . ')">Editieren</button>' : "";
     }
     echo $item->footer;
     ?>
@@ -440,12 +440,12 @@ $item = $this->getModel()->getItem();
             $fieldDisplayName = $field[4];
 
             echo '<div id="neukomtemplating-field-' . $fieldName . '">';
-            echo '<label for="neukomtemplating-input-' . $fieldName . '">' . $fieldDisplayName . ':</label><br>';
+            echo '<label for="neukomtemplating-input-' . $fieldName . '">' . $fieldDisplayName . '</label>';
 
             if ($fieldType == "textarea") {
-                echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" rows="4" cols="50"></textarea><br>';
+                echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-textarea" rows="4" cols="50"></textarea><br>';
             } else {
-                echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" /><br>';
+                echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-' . $fieldType . '" /><br>';
             }
 
             echo '</div>';
@@ -461,7 +461,7 @@ $item = $this->getModel()->getItem();
             }
 
             echo '<div id="neukomtemplating-joinedTable-' . $joinedTable->name . '">';
-            echo '<label for="neukomtemplating-joinedTable-' . $joinedTable->name . '">' . $joinedTable->name . ':</label><br>';
+            echo '<label for="neukomtemplating-joinedTable-' . $joinedTable->name . '">' . $joinedTable->name . '</label>';
 
             if ($joinedTable->connectionType == "NToOne") {
                 echo '<select id="neukomtemplating-select-' . $joinedTable->name . '" name="' . $joinedTable->name . '">';
@@ -491,15 +491,15 @@ $item = $this->getModel()->getItem();
         <input type="hidden" id="recordId" name="recordId">
 
         <div id="neukomtemplating-formbuttons">
-            <button type="submit">Submit</button>
-            <button type="button" onClick="openListView()">Back</button>
-            <button type="button" id="deleteRecordButton" onClick="confirmDelete()">Delete</button>
+            <button type="submit">Eintragen</button>
+            <button type="button" onClick="openListView()">Zurück</button>
+            <button type="button" id="deleteRecordButton" onClick="confirmDelete()">Löschen</button>
         </div>
 
         <div id="neukomtemplating-deletebuttons">
-            Confirm <br>
-            <button type="submit">Yes</button>
-            <button type="button" onClick="cancelDelete()">No</button>
+            Bestätigen <br>
+            <button type="submit">Ja</button>
+            <button type="button" onClick="cancelDelete()">Nein</button>
         </div>
     </form>
 </div>
