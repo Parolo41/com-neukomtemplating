@@ -32,12 +32,14 @@ class TemplateModel extends ItemModel {
         $fields = [];
         $fieldNames = [$templateConfig->id_field_name];
 
+        $tableFields = $db->getTableColumns('#__' . $templateConfig->tablename);
+
         foreach (explode(';', str_replace(' ', '', $templateConfig->fields)) as $field) {
             $fieldConfigArray = explode(':', $field);
 
             $fieldName = $fieldConfigArray[0];
 
-            if ($fieldName == $templateConfig->id_field_name) {
+            if ($fieldName == $templateConfig->id_field_name || !array_key_exists($fieldName, $tableFields)) {
                 continue;
             }
 
