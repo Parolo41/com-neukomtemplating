@@ -35,6 +35,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('header'); ?>
     <?php echo $this->getForm()->renderField('template'); ?>
     <?php echo $this->getForm()->renderField('footer'); ?>
+    <?php echo $this->getForm()->renderField('detail_template'); ?>
     <?php echo $this->getForm()->renderField('show_detail_page'); ?>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
@@ -65,6 +66,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('header'); ?>
     <?php echo $this->getForm()->renderField('template'); ?>
     <?php echo $this->getForm()->renderField('footer'); ?>
+    <?php echo $this->getForm()->renderField('detail_template'); ?>
     <?php echo $this->getForm()->renderField('show_detail_page'); ?>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>

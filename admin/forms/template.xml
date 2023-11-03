@@ -77,6 +77,15 @@
 			label="Footer"
 		 />
 		<field
+			name="detail_template"
+			type="textarea"
+			rows="10"
+			cols="5"
+			filter="raw"
+			label="Detail Template"
+			required="true"
+		 />
+		<field
 			name="joined_tables"
 			type="text"
 			label="Joined Tables"

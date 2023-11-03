@@ -22,7 +22,7 @@ class TemplateModel extends ItemModel {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['id', 'header', 'template', 'footer', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'allow_edit', 'allow_create', 'joined_tables'])
+            $db->quoteName(['id', 'header', 'template', 'footer', 'detail_template', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'show_detail_page', 'allow_edit', 'allow_create', 'joined_tables'])
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         $query->where('name = "' . $templateConfigName . '"');
@@ -89,6 +89,8 @@ class TemplateModel extends ItemModel {
         $item->header = $templateConfig->header;
         $item->template = $templateConfig->template;
         $item->footer = $templateConfig->footer;
+        $item->detailTemplate = $templateConfig->detail_template;
+        $item->showDetailPage = ($templateConfig->show_detail_page == "1");
         $item->allowEdit = ($templateConfig->allow_edit == "1");
         $item->allowCreate = ($templateConfig->allow_create == "1");
         $item->data = $data;

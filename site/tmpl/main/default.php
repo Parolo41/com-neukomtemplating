@@ -11,8 +11,11 @@ use Joomla\CMS\Uri\Uri;
 $root = dirname(dirname(dirname(__FILE__)));
 require_once($root . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 
+$item = $this->getModel()->getItem();
+
 $loader = new \Twig\Loader\ArrayLoader([
-    'template' => $this->getModel()->getItem()->template,
+    'template' => $item->template,
+    'detail_template' => $item->detailTemplate,
 ]);
 $twig = new \Twig\Environment($loader);
 
@@ -415,6 +418,15 @@ $item = $this->getModel()->getItem();
     <?php } ?>
 </script>
 
+<?php
+
+$input = Factory::getApplication()->input;
+$recordId = $input->get('recordId', 'none', 'string');
+
+if ($recordId == 'none' || !$item->showDetailPage) {
+
+?>
+
 <div id="neukomtemplating-listview">
     <?php
     echo $item->allowCreate ? '<button onClick="openNewForm()">Neu</button>' : "";
@@ -513,4 +525,12 @@ $item = $this->getModel()->getItem();
     </form>
 </div>
 
-<?php } ?>
+<?php }} else {
+    foreach ($item->data as $data) {
+        if ($data->{$item->idFieldName} == $recordId) {
+            echo $twig->render('detail_template', ['data' => $data]);
+
+            break;
+        }
+    }
+} ?>

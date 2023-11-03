@@ -6,6 +6,7 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `template` TEXT NOT NULL,
     `header` TEXT NOT NULL,
     `footer` TEXT NOT NULL,
+    `detail_template` TEXT NOT NULL,
     `tablename` VARCHAR(40) NOT NULL,
     `fields` VARCHAR(2000) NOT NULL,
     `condition` VARCHAR(500) NOT NULL,
