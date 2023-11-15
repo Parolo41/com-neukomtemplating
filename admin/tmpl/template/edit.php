@@ -103,6 +103,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             <option value="date">Date</option>
             <option value="checkbox">Checkbox</option>
             <option value="select">Select</option>
+            <option value="image">Image</option>
         </select> <br/>
 
         <div name="show-on-typeSelect" hidden>

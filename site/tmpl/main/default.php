@@ -7,6 +7,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Filesystem\File;
 
 $root = dirname(dirname(dirname(__FILE__)));
 require_once($root . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
@@ -27,6 +28,7 @@ function validateInputFormat($value, $type) {
         'number' => "/^[0-9]*$/",
         'checkbox' => "/^(on)?$/",
         'select' => "/.*/",
+        'image' => "/.+\\.(png|jpg|gif|bmp|jpeg|PNG|JPG|GIF|BMP|JPEG)$/",
     );
 
     return preg_match($validationPatterns[$type], $value);
@@ -82,7 +84,12 @@ function dbInsert($input, $db, $self) {
         $fieldName = $field[0];
         $fieldType = $field[1];
         $fieldRequired = $field[2];
-        $fieldValue = $input->get($fieldName, '', 'string');
+
+        if ($fieldType == 'image') {
+            $fieldValue = uploadFile($input, $input->get($fieldName, '', 'string'));
+        } else {
+            $fieldValue = $input->get($fieldName, '', 'string');
+        }
 
         if (!validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
             $validationFailed = true;
@@ -142,7 +149,12 @@ function dbUpdate($input, $db, $self) {
         $fieldName = $field[0];
         $fieldType = $field[1];
         $fieldRequired = $field[2];
-        $fieldValue = $input->get($fieldName, '', 'string');
+
+        if ($fieldType == 'image') {
+            $fieldValue = uploadFile($input, $fieldName);
+        } else {
+            $fieldValue = $input->get($fieldName, '', 'string');
+        }
 
         if (!validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
             $validationFailed = true;
@@ -239,6 +251,28 @@ function addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeig
     $db->execute();
 }
 
+function uploadFile($input, $fieldName) {
+    $file = $input->files->get($fieldName);
+
+    if (is_null($file)) {
+        return "";
+    }
+
+    $pathParts = pathinfo($file['name']);
+
+    $filename = File::makeSafe($pathParts['filename'] . "_" . date('Ymdis') . "." . $pathParts['extention']);
+
+    $source  = $file['tmp_name'];
+    $destination = JPATH_SITE . "/images/neukomtemplating/" . $filename;
+    
+    if (JFile::upload($source, $destination)) {
+        return $filename;
+    } else {
+        error_log("Failed to upload " . $source . " to " . $destination);
+        return "";
+    }
+}
+
 if ($this->getModel()->getItem()->allowEdit && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = Factory::getDbo();
     $input = Factory::getApplication()->input;
@@ -332,8 +366,11 @@ $item = $this->getModel()->getItem();
         document.getElementById("formAction").value = "update";
 
         fields.forEach((field) => {
-            if(field[1] == "checkbox") {
+            if (field[1] == "checkbox") {
                 document.getElementById("neukomtemplating-input-" + field[0]).checked = (data[recordId][field[0]] == "1");
+            } else if (field[1] == "image") {
+                value = (data[recordId][field[0]] != "") ? data[recordId][field[0]] : "Kein Bild";
+                document.getElementById("neukomtemplating-input-" + field[0] + "-current").innerHTML = value;
             } else {
                 document.getElementById("neukomtemplating-input-" + field[0]).value = data[recordId][field[0]];
             }
@@ -369,6 +406,8 @@ $item = $this->getModel()->getItem();
         fields.forEach((field) => {
             if(field[1] == "checkbox") {
                 document.getElementById("neukomtemplating-input-" + field[0]).checked = false;
+            } else if (field[1] == "image") {
+                document.getElementById("neukomtemplating-input-" + field[0] + "-current").innerHTML = "Kein Bild";
             } else {
                 document.getElementById("neukomtemplating-input-" + field[0]).value = "";
             }
@@ -442,12 +481,12 @@ if ($recordId == 'none' || !$item->showDetailPage) {
 <?php if ($item->allowEdit || $item->allowCreate) { ?>
 
 <div id="neukomtemplating-editform" style="display: none">
-    <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-vertical">
+    <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm" class="form-vertical">
         <?php
         foreach ($item->fields as $field) {
             $fieldName = $field[0];
 
-            $permittedTypes = ["text", "textarea", "date", "number", "checkbox", "select"];
+            $permittedTypes = ["text", "textarea", "date", "number", "checkbox", "select", "image"];
             $fieldType = in_array($field[1], $permittedTypes) ? $field[1] : "text";
 
             $fieldDisplayName = $field[4];
@@ -465,6 +504,9 @@ if ($recordId == 'none' || !$item->showDetailPage) {
                 }
 
                 echo '</select>';
+            } else if ($fieldType == "image") {
+                echo '<span id="neukomtemplating-input-' . $fieldName . '-current">Kein Bild</span>';
+                echo '<input type="file" accept="image/png, image/jpeg" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-image" /><br>';
             } else {
                 echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-' . $fieldType . '" /><br>';
             }
