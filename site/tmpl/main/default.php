@@ -152,6 +152,8 @@ function dbUpdate($input, $db, $self) {
 
         if ($fieldType == 'image') {
             $fieldValue = uploadFile($input, $fieldName);
+
+            if ($fieldValue == "") { continue; }
         } else {
             $fieldValue = $input->get($fieldName, '', 'string');
         }
@@ -254,16 +256,16 @@ function addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeig
 function uploadFile($input, $fieldName) {
     $file = $input->files->get($fieldName);
 
-    if (is_null($file)) {
+    if (is_null($file) || $file['tmp_name'] == "") {
         return "";
     }
 
     $pathParts = pathinfo($file['name']);
 
-    $filename = File::makeSafe($pathParts['filename'] . "_" . date('Ymdis') . "." . $pathParts['extention']);
+    $filename = File::makeSafe($pathParts['filename'] . "_" . date('Ymdis') . "." . $pathParts['extension']);
 
     $source  = $file['tmp_name'];
-    $destination = JPATH_SITE . "/images/neukomtemplating/" . $filename;
+    $destination = JPATH_SITE . "/images/imageuploads/" . $filename;
     
     if (JFile::upload($source, $destination)) {
         return $filename;
@@ -460,9 +462,9 @@ $item = $this->getModel()->getItem();
 <?php
 
 $input = Factory::getApplication()->input;
-$recordId = $input->get('recordId', 'none', 'string');
+$itemId = $input->get('itemId', 'none', 'string');
 
-if ($recordId == 'none' || !$item->showDetailPage) {
+if ($itemId == 'none' || !$item->showDetailPage) {
 
 ?>
 
@@ -505,8 +507,8 @@ if ($recordId == 'none' || !$item->showDetailPage) {
 
                 echo '</select>';
             } else if ($fieldType == "image") {
-                echo '<span id="neukomtemplating-input-' . $fieldName . '-current">Kein Bild</span>';
                 echo '<input type="file" accept="image/png, image/jpeg" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-image" /><br>';
+                echo '<span id="neukomtemplating-input-' . $fieldName . '-current">Kein Bild</span><br>';
             } else {
                 echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-' . $fieldType . '" /><br>';
             }
@@ -569,7 +571,7 @@ if ($recordId == 'none' || !$item->showDetailPage) {
 
 <?php }} else {
     foreach ($item->data as $data) {
-        if ($data->{$item->idFieldName} == $recordId) {
+        if ($data->{$item->idFieldName} == $itemId) {
             echo $twig->render('detail_template', ['data' => $data]);
 
             break;
