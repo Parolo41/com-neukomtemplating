@@ -65,9 +65,17 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('sorting'); ?>
     <?php echo $this->getForm()->renderField('header'); ?>
     <?php echo $this->getForm()->renderField('template'); ?>
+    <div class="control-group">
+        <div class="control-label"></div>
+        <div class="controls">Optional: Insert edit button with {{editButton | raw}}</div>
+    </div>
     <?php echo $this->getForm()->renderField('footer'); ?>
     <?php echo $this->getForm()->renderField('detail_template'); ?>
     <?php echo $this->getForm()->renderField('show_detail_page'); ?>
+    <div class="control-group">
+        <div class="control-label"></div>
+        <div class="controls">Navigate to detail page by adding "&itemId={{data.INSERT_ID_FIELD}}" to url</div>
+    </div>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>

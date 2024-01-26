@@ -14,8 +14,14 @@ require_once($root . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'aut
 
 $item = $this->getModel()->getItem();
 
+$itemTemplate = $item->template;
+
+if (strpos($itemTemplate, '{{editButton') == false) {
+    $itemTemplate = $itemTemplate . '{{editButton | raw}}';
+}
+
 $loader = new \Twig\Loader\ArrayLoader([
-    'template' => $item->template,
+    'template' => $itemTemplate,
     'detail_template' => $item->detailTemplate,
 ]);
 $twig = new \Twig\Environment($loader);
@@ -331,13 +337,14 @@ $item = $this->getModel()->getItem();
 
     <?php
         foreach ($item->data as $data) {
-            echo 'data[' . $data->id . '] = [];';
+            $id = $data->{$item->idFieldName};
+            echo 'data[' . $id . '] = [];';
 
             foreach ($item->fields as $field) {
                 $fieldName = $field[0];
                 $fieldType = $field[1];
 
-                echo 'data[' . $data->id . ']["' . $fieldName . '"] = "' . str_replace(["\""], "\\\"", str_replace(["\r\n", "\r", "\n", "\t"], "\\n", $data->{$fieldName})) . '";';
+                echo 'data[' . $id . ']["' . $fieldName . '"] = "' . str_replace(["\""], "\\\"", str_replace(["\r\n", "\r", "\n", "\t"], "\\n", $data->{$fieldName})) . '";';
             }
 
             foreach ($item->joinedTables as $joinedTable) {
@@ -347,12 +354,12 @@ $item = $this->getModel()->getItem();
                 if ($joinedTableConnectionType == "NToOne") {
                     $joinedTableForeignId = (count($data->{$joinedTableName}) > 0 ? $data->{$joinedTableName}[0]->{$joinedTable->connectionInfo[1]} : "0");
 
-                    echo 'data[' . $data->id . ']["' . $joinedTableName . '"] = "' . $joinedTableForeignId . '";';
+                    echo 'data[' . $id . ']["' . $joinedTableName . '"] = "' . $joinedTableForeignId . '";';
                 } else if ($joinedTableConnectionType == "NToN") {
-                    echo 'data[' . $data->id . ']["' . $joinedTableName . '"] = [];';
+                    echo 'data[' . $id . ']["' . $joinedTableName . '"] = [];';
 
                     foreach ($data->{$joinedTableName} as $joinedTableData) {
-                        echo 'data[' . $data->id . ']["' . $joinedTableName . '"].push("' . $joinedTableData->{$joinedTable->connectionInfo[3]} . '");';
+                        echo 'data[' . $id . ']["' . $joinedTableName . '"].push("' . $joinedTableData->{$joinedTable->connectionInfo[3]} . '");';
                     }
                 }
             }
@@ -473,8 +480,11 @@ if ($itemId == 'none' || !$item->showDetailPage) {
     echo $item->allowCreate ? '<button onClick="openNewForm()">Neu</button>' : "";
     echo $item->header;
     foreach ($item->data as $data) {
-        echo $twig->render('template', ['data' => $data]);
-        echo $item->allowEdit ? '<button onClick="openEditForm(' . $data->id . ')">Editieren</button>' : "";
+        $twigParams = [
+            'data' => $data, 
+            'editButton' => $item->allowEdit ? '<button onClick="openEditForm(' . $data->{$item->idFieldName} . ')">Editieren</button>' : "",
+        ];
+        echo $twig->render('template', $twigParams);
     }
     echo $item->footer;
     ?>
