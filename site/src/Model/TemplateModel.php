@@ -22,12 +22,19 @@ class TemplateModel extends ItemModel {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['id', 'header', 'template', 'footer', 'detail_template', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'show_detail_page', 'allow_edit', 'allow_create', 'joined_tables'])
+            $db->quoteName(['id', 'header', 'template', 'footer', 'detail_template', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'show_detail_page', 'allow_edit', 'allow_create', 'access', 'joined_tables'])
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         $query->where('name = "' . $templateConfigName . '"');
         $db->setQuery($query);
         $templateConfig = $db->loadObject();
+
+        $user = Factory::getUser();
+        $levels = $user->getAuthorisedViewLevels();
+
+        if (!in_array((int)$templateConfig->access, $levels)) {
+            throw new \Exception("Missing access levels for this template", 403);
+        }
 
         $fields = [];
         $fieldNames = [$templateConfig->id_field_name];

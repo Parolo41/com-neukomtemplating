@@ -13,6 +13,7 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `show_detail_page` BOOLEAN,
     `allow_create` BOOLEAN,
     `allow_edit` BOOLEAN,
+    `access` INT DEFAULT 1,
     `joined_tables` VARCHAR(500),
     `id_field_name` VARCHAR(40) NOT NULL,
     `sorting` VARCHAR(80) NOT NULL,

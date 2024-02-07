@@ -39,6 +39,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('show_detail_page'); ?>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
+    <?php echo $this->getForm()->renderField('access'); ?>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'joined_tables_tab', 'Joined Tables'); ?>
@@ -78,6 +79,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     </div>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
+    <?php echo $this->getForm()->renderField('access'); ?>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'joined_tables_tab', 'Joined Tables'); ?>

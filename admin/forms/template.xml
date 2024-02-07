@@ -106,5 +106,10 @@
 			type="checkbox"
 			label="Allow edit"
 		 />
+		<field
+			name="access"
+			type="accesslevel"
+			label="Access Permissions"
+		 />
 	</fieldset>
 </form>
