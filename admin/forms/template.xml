@@ -56,7 +56,7 @@
 			type="number"
 			label="Limit"
 			default="0"
-			required="true"
+			required="false"
 		 />
 		<field
 			name="header"
