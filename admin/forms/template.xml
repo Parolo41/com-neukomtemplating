@@ -52,6 +52,13 @@
 			required="false"
 		 />
 		<field
+			name="limit"
+			type="number"
+			label="Limit"
+			default="0"
+			required="true"
+		 />
+		<field
 			name="header"
 			type="textarea"
 			rows="10"

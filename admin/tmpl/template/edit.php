@@ -32,6 +32,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('fields'); ?>
     <?php echo $this->getForm()->renderField('condition'); ?>
     <?php echo $this->getForm()->renderField('sorting'); ?>
+    <?php echo $this->getForm()->renderField('limit'); ?>
     <?php echo $this->getForm()->renderField('header'); ?>
     <?php echo $this->getForm()->renderField('template'); ?>
     <?php echo $this->getForm()->renderField('footer'); ?>
@@ -64,6 +65,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <button type="button" onclick="addField()">Add Field</button>
     <?php echo $this->getForm()->renderField('condition'); ?>
     <?php echo $this->getForm()->renderField('sorting'); ?>
+    <?php echo $this->getForm()->renderField('limit'); ?>
     <?php echo $this->getForm()->renderField('header'); ?>
     <?php echo $this->getForm()->renderField('template'); ?>
     <div class="control-group">

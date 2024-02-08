@@ -22,7 +22,7 @@ class TemplateModel extends ItemModel {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['id', 'header', 'template', 'footer', 'detail_template', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'show_detail_page', 'allow_edit', 'allow_create', 'access', 'joined_tables'])
+            $db->quoteName(['id', 'header', 'template', 'footer', 'detail_template', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'limit', 'show_detail_page', 'allow_edit', 'allow_create', 'access', 'joined_tables'])
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         $query->where('name = "' . $templateConfigName . '"');
@@ -73,6 +73,10 @@ class TemplateModel extends ItemModel {
 
         if (trim($templateConfig->sorting) != "") {
             $dataQuery->order($templateConfig->sorting);
+        }
+
+        if ($templateConfig->limit != "" && (int)$templateConfig->limit > 0) {
+            $dataQuery->setLimit((int)$templateConfig->limit);
         }
 
         $db->setQuery($dataQuery);
