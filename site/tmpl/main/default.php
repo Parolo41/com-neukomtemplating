@@ -146,7 +146,7 @@ if ($itemId == 'none' || !$item->showDetailPage) {
         foreach ($item->fields as $field) {
             $fieldName = $field[0];
 
-            $permittedTypes = ["text", "textarea", "date", "number", "checkbox", "select", "image"];
+            $permittedTypes = ["text", "textarea", "date", "time", "number", "checkbox", "select", "image"];
             $fieldType = in_array($field[1], $permittedTypes) ? $field[1] : "text";
 
             $fieldDisplayName = $field[4];

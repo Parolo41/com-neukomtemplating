@@ -4,6 +4,7 @@ function validateInputFormat($value, $type) {
         'text' => "/.*/",
         'textarea' => "/(?s).*/",
         'date' => "/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/",
+        'time' => "/^[0-2]?[0-9]:[0-5][0-9]$/",
         'number' => "/^[0-9]*$/",
         'checkbox' => "/^(on)?$/",
         'select' => "/.*/",
@@ -36,6 +37,8 @@ function formatInputValue($value, $type, $db) {
         case "number":
             return ($value == "" ? "NULL" : $db->quote($value));
         case "date":
+            return ($value == "" ? "NULL" : $db->quote($value));
+        case "time":
             return ($value == "" ? "NULL" : $db->quote($value));
         case "checkbox":
             return ($value == "on" ? "'1'" : "'0'");

@@ -111,6 +111,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             <option value="textarea">Textarea</option>
             <option value="number">Number</option>
             <option value="date">Date</option>
+            <option value="time">Time</option>
             <option value="checkbox">Checkbox</option>
             <option value="select">Select</option>
             <option value="image">Image</option>
