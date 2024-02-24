@@ -82,7 +82,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('template'); ?>
     <div class="control-group">
         <div class="control-label"></div>
-        <div class="controls">Optional: Insert edit button with {{editButton | raw}}</div>
+        <div class="controls">Available inserts: {{ editButton | raw }} {{ editLink }} {{ detailButton | raw }} {{ detailLink }}</div>
     </div>
     <?php echo $this->getForm()->renderField('footer'); ?>
     <?php echo $this->getForm()->renderField('detail_template'); ?>

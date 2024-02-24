@@ -1,4 +1,8 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <?php
+use Joomla\Filesystem\File;
+
 function validateInputFormat($value, $type) {
     $validationPatterns = array(
         'text' => "/.*/",
@@ -54,7 +58,7 @@ function dbInsert($input, $db, $self) {
     $item = $self->getModel()->getItem();
 
     if (!$item->allowCreate || $item->userIdLinkField != "") {
-        return;
+        return 0;
     }
 
     $insertColumns = array();
@@ -68,7 +72,7 @@ function dbInsert($input, $db, $self) {
         $fieldRequired = $field[2];
 
         if ($fieldType == 'image') {
-            $fieldValue = uploadFile($input, $input->get($fieldName, '', 'string'));
+            $fieldValue = uploadFile($input, $fieldName);
         } elseif (array_key_exists($fieldType, $item->aliases)) {
             $fieldValue = strval($item->aliases[$fieldType]);
         } else {
@@ -115,6 +119,8 @@ function dbInsert($input, $db, $self) {
             }
         }
     }
+
+    return 1;
 }
 
 function dbUpdate($input, $db, $self) {
@@ -122,7 +128,7 @@ function dbUpdate($input, $db, $self) {
     $item = $self->getModel()->getItem();
 
     if (!$item->allowEdit) {
-        return;
+        return 0;
     }
 
     $updateFields = array();
@@ -183,6 +189,8 @@ function dbUpdate($input, $db, $self) {
     $db->setQuery($query);
 
     $result = $db->execute();
+
+    return 1;
 }
 
 function dbDelete($input, $db, $self) {
@@ -190,7 +198,7 @@ function dbDelete($input, $db, $self) {
     $item = $self->getModel()->getItem();
 
     if (!$item->allowEdit || $item->userIdLinkField != "") {
-        return;
+        return 0;
     }
 
     $deleteConditions = array($db->quoteName($item->idFieldName) . " = " . $input->get('recordId', '', 'string'));
@@ -208,6 +216,8 @@ function dbDelete($input, $db, $self) {
             dropIntermediateEntries($db, $joinedTable, $input->get('recordId', '', 'string'));
         }
     }
+
+    return 1;
 }
 
 function dropIntermediateEntries($db, $joinedTable, $localForeignKey) {
@@ -242,7 +252,11 @@ function addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeig
 function uploadFile($input, $fieldName) {
     $file = $input->files->get($fieldName);
 
+
     if (is_null($file) || $file['tmp_name'] == "") {
+        error_log("File not found: " . $fieldName);
+        error_log(var_export($input->files, true));
+        error_log(var_export($file, true));
         return "";
     }
 
@@ -253,7 +267,7 @@ function uploadFile($input, $fieldName) {
     $source  = $file['tmp_name'];
     $destination = JPATH_SITE . "/images/imageuploads/" . $filename;
     
-    if (JFile::upload($source, $destination)) {
+    if (File::upload($source, $destination)) {
         return $filename;
     } else {
         error_log("Failed to upload " . $source . " to " . $destination);
@@ -265,99 +279,40 @@ function uploadFile($input, $fieldName) {
 <script>
     <?php if ($item->allowEdit || $item->allowCreate) { ?>
 
+    function openDetailPage(recordId) {
+        $('#detailNavForm input[name="act"]').val('detail');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
+        $('#detailNavForm').submit();
+    }
+
     function openEditForm(recordId) {
-        document.getElementById("neukomtemplating-listview").style.display = "none";
-
-        document.getElementById("recordId").value = recordId;
-        document.getElementById("formAction").value = "update";
-
-        fields.forEach((field) => {
-            if (field[1] == "checkbox") {
-                document.getElementById("neukomtemplating-input-" + field[0]).checked = (data[recordId][field[0]] == "1");
-            } else if (field[1] == "image") {
-                value = (data[recordId][field[0]] != "") ? data[recordId][field[0]] : "Kein Bild";
-                document.getElementById("neukomtemplating-input-" + field[0] + "-current").innerHTML = value;
-            } else {
-                document.getElementById("neukomtemplating-input-" + field[0]).value = data[recordId][field[0]];
-            }
-        })
-
-        joinedTables.forEach((joinedTable) => {
-            if (Array.isArray(data[recordId][joinedTable[0]])) {
-                multiselectDiv = document.getElementById("neukomtemplating-select-" + joinedTable[0]);
-
-                for (i = 0; i < multiselectDiv.querySelectorAll('input').length; i++) {
-                    multiselectOption = multiselectDiv.querySelectorAll('input')[i];
-                    
-                    multiselectOption.checked = data[recordId][joinedTable[0]].indexOf(multiselectOption.value) != -1;
-                }
-            } else {
-                document.getElementById("neukomtemplating-select-" + joinedTable[0]).value = data[recordId][joinedTable[0]];
-            }
-        })
-
-        document.getElementById("neukomtemplating-editform").style.display = "block";
-
-        document.getElementById("neukomtemplating-formbuttons").style.display = "block";
-        document.getElementById("neukomtemplating-deletebuttons").style.display = "none";
-        document.getElementById("deleteRecordButton").style.display = "block";
+        $('#detailNavForm input[name="act"]').val('edit');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
+        $('#detailNavForm').submit();
     }
 
     function openNewForm() {
-        document.getElementById("neukomtemplating-listview").style.display = "none";
-
-        document.getElementById("recordId").value = "";
-        document.getElementById("formAction").value = "insert";
-
-        fields.forEach((field) => {
-            if(field[1] == "checkbox") {
-                document.getElementById("neukomtemplating-input-" + field[0]).checked = false;
-            } else if (field[1] == "image") {
-                document.getElementById("neukomtemplating-input-" + field[0] + "-current").innerHTML = "Kein Bild";
-            } else {
-                document.getElementById("neukomtemplating-input-" + field[0]).value = "";
-            }
-        })
-
-        joinedTables.forEach((joinedTable) => {
-            if (joinedTable[1] == "NToN") {
-                multiselectDiv = document.getElementById("neukomtemplating-select-" + joinedTable[0]);
-
-                for (i = 0; i < multiselectDiv.querySelectorAll('input').length; i++) {
-                    multiselectOption = multiselectDiv.querySelectorAll('input')[i];
-                    
-                    multiselectOption.checked = false;
-                }
-            } else {
-                document.getElementById("neukomtemplating-select-" + joinedTable[0]).value = '0';
-            }
-        })
-
-        document.getElementById("neukomtemplating-editform").style.display = "block";
-
-        document.getElementById("neukomtemplating-formbuttons").style.display = "block";
-        document.getElementById("neukomtemplating-deletebuttons").style.display = "none";
-        document.getElementById("deleteRecordButton").style.display = "none";
+        $('#detailNavForm input[name="act"]').val('new');
+        $('#detailNavForm').submit();
     }
 
     function openListView() {
-        document.getElementById("neukomtemplating-editform").style.display = "none";
-
-        document.getElementById("neukomtemplating-listview").style.display = "block";
+        $('#detailNavForm input[name="act"]').val('list');
+        $('#detailNavForm').submit();
     }
 
     function confirmDelete() {
-        document.getElementById("formAction").value = "delete";
+        document.getElementById("formAction").value = 'delete';
 
-        document.getElementById("neukomtemplating-formbuttons").style.display = "none";
-        document.getElementById("neukomtemplating-deletebuttons").style.display = "block";
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'none';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'block';
     }
 
     function cancelDelete() {
         document.getElementById("formAction").value = "update";
 
-        document.getElementById("neukomtemplating-formbuttons").style.display = "block";
-        document.getElementById("neukomtemplating-deletebuttons").style.display = "none";
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'block';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'none';
     }
 
     <?php } ?>
