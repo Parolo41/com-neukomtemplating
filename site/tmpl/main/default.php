@@ -28,7 +28,7 @@ $loader = new \Twig\Loader\ArrayLoader([
 ]);
 $twig = new \Twig\Environment($loader);
 
-if ($this->getModel()->getItem()->allowEdit && $_SERVER['REQUEST_METHOD'] === 'POST') {
+if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->allowCreate) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = Factory::getDbo();
     $input = Factory::getApplication()->input;
 
@@ -130,6 +130,16 @@ $itemId = $input->get('itemId', 'none', 'string');
 if ($itemId == 'none' || !$item->showDetailPage) {
 
 ?>
+
+<?php if ($item->enableSearch) { ?>
+    <div id="neukomtemplating-search">
+        <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" method="post" name="searchForm">
+            <label for="searchTerm">Suche</label>
+            <input type="text" name="searchTerm" value="<?php echo $input->get('searchTerm', '', 'string') ?>" />
+            <button type="submit">Suchen</button>
+        </form>
+    </div>
+<?php } ?>
 
 <div id="neukomtemplating-listview">
     <?php

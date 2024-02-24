@@ -111,14 +111,19 @@
 			label="Show detail page"
 		 />
 		<field
-			name="allow_create"
+			name="enable_search"
 			type="checkbox"
-			label="Allow create"
+			label="Enable Search"
 		 />
 		<field
 			name="allow_edit"
 			type="checkbox"
 			label="Allow edit"
+		 />
+		<field
+			name="allow_create"
+			type="checkbox"
+			label="Allow create"
 		 />
 		<field
 			name="access"

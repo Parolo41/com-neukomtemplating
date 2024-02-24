@@ -25,10 +25,31 @@ class TemplateModel extends ItemModel {
             'username' => $user->name,
         ];
 
+        $templateFields = [
+            'id',
+            'header',
+            'template',
+            'footer',
+            'detail_template',
+            'tablename',
+            'id_field_name',
+            'fields',
+            'condition',
+            'sorting',
+            'limit',
+            'user_id_link_field',
+            'show_detail_page',
+            'enable_search',
+            'allow_edit',
+            'allow_create',
+            'access',
+            'joined_tables',
+        ];
+
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['id', 'header', 'template', 'footer', 'detail_template', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'limit', 'user_id_link_field', 'show_detail_page', 'allow_edit', 'allow_create', 'access', 'joined_tables'])
+            $db->quoteName($templateFields)
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         $query->where('name = "' . $templateConfigName . '"');
@@ -95,6 +116,20 @@ class TemplateModel extends ItemModel {
             $dataQuery->where($templateConfig->user_id_link_field . " = " . $user->id);
         }
 
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $searchTerm = $input->get('searchTerm', '', 'string');
+
+            if ($searchTerm != '') {
+                $searchConditions = [];
+    
+                foreach($fieldNames as $fieldName) {
+                    $searchConditions[] = $fieldName . " LIKE '%" . $searchTerm . "%'";
+                }
+
+                $dataQuery->where(implode(' OR ', $searchConditions));
+            }
+        }
+
         $db->setQuery($dataQuery);
         $data = $db->loadObjectList();
 
@@ -119,6 +154,7 @@ class TemplateModel extends ItemModel {
         $item->detailTemplate = $templateConfig->detail_template;
         $item->showDetailPage = ($templateConfig->show_detail_page == "1");
         $item->userIdLinkField = $templateConfig->user_id_link_field;
+        $item->enableSearch = ($templateConfig->enable_search == "1");
         $item->allowEdit = ($templateConfig->allow_edit == "1");
         $item->allowCreate = ($templateConfig->allow_create == "1");
         $item->data = $data;

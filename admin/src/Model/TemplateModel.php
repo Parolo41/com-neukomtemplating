@@ -36,6 +36,7 @@ class TemplateModel extends AdminModel {
         $form = Factory::getApplication()->input->getVar('jform', array(),'post', 'array');
 
         $table->show_detail_page = (isset($form['show_detail_page']) ? 1 : 0);
+        $table->enable_search = (isset($form['enable_search']) ? 1 : 0);
         $table->allow_create = (isset($form['allow_create']) ? 1 : 0);
         $table->allow_edit = (isset($form['allow_edit']) ? 1 : 0);
 
