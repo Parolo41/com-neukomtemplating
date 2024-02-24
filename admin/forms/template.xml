@@ -59,6 +59,13 @@
 			required="false"
 		 />
 		<field
+			name="user_id_link_field"
+			type="text"
+			label="User ID link field"
+			default=""
+			required="false"
+		 />
+		<field
 			name="header"
 			type="textarea"
 			rows="10"

@@ -22,7 +22,7 @@ class TemplateModel extends ItemModel {
         $db = $this->getDbo();
         $query = $db->getQuery(true);
         $query->select(
-            $db->quoteName(['id', 'header', 'template', 'footer', 'detail_template', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'limit', 'show_detail_page', 'allow_edit', 'allow_create', 'access', 'joined_tables'])
+            $db->quoteName(['id', 'header', 'template', 'footer', 'detail_template', 'tablename', 'id_field_name', 'fields', 'condition', 'sorting', 'limit', 'user_id_link_field', 'show_detail_page', 'allow_edit', 'allow_create', 'access', 'joined_tables'])
         );
         $query->from($db->quoteName('#__neukomtemplating_templates'));
         $query->where('name = "' . $templateConfigName . '"');
@@ -79,6 +79,10 @@ class TemplateModel extends ItemModel {
             $dataQuery->setLimit((int)$templateConfig->limit);
         }
 
+        if ($templateConfig->user_id_link_field != "") {
+            $dataQuery->where($templateConfig->user_id_link_field . " = " . $user->id);
+        }
+
         $db->setQuery($dataQuery);
         $data = $db->loadObjectList();
 
@@ -102,6 +106,7 @@ class TemplateModel extends ItemModel {
         $item->footer = $templateConfig->footer;
         $item->detailTemplate = $templateConfig->detail_template;
         $item->showDetailPage = ($templateConfig->show_detail_page == "1");
+        $item->userIdLinkField = $templateConfig->user_id_link_field;
         $item->allowEdit = ($templateConfig->allow_edit == "1");
         $item->allowCreate = ($templateConfig->allow_create == "1");
         $item->data = $data;

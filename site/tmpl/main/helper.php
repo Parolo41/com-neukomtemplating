@@ -53,7 +53,7 @@ function dbInsert($input, $db, $self) {
     $query = $db->getQuery(true);
     $item = $self->getModel()->getItem();
 
-    if (!$item->allowCreate) {
+    if (!$item->allowCreate || $item->userIdLinkField != "") {
         return;
     }
 
@@ -185,7 +185,7 @@ function dbDelete($input, $db, $self) {
     $query = $db->getQuery(true);
     $item = $self->getModel()->getItem();
 
-    if (!$item->allowEdit) {
+    if (!$item->allowEdit || $item->userIdLinkField != "") {
         return;
     }
 

@@ -20,6 +20,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 <style>
     .field-info-label {display: inline-block;width: 120px;}
     .joined-table-info-label {display: inline-block;width: 200px;}
+    .joined-table-foreign-fields-input {width: 500px;}
 </style>
 
 <form action="<?php echo Route::_('index.php?option=com_neukomtemplating&layout=' . $layout . $tmpl . '&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="template-form" class="form-validate" hidden>
@@ -33,6 +34,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('condition'); ?>
     <?php echo $this->getForm()->renderField('sorting'); ?>
     <?php echo $this->getForm()->renderField('limit'); ?>
+    <?php echo $this->getForm()->renderField('user_id_link_field'); ?>
     <?php echo $this->getForm()->renderField('header'); ?>
     <?php echo $this->getForm()->renderField('template'); ?>
     <?php echo $this->getForm()->renderField('footer'); ?>
@@ -66,6 +68,11 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('condition'); ?>
     <?php echo $this->getForm()->renderField('sorting'); ?>
     <?php echo $this->getForm()->renderField('limit'); ?>
+    <?php echo $this->getForm()->renderField('user_id_link_field'); ?>
+    <div class="control-group">
+        <div class="control-label"></div>
+        <div class="controls">Makes the form edit-only. Enter db field containing the authorized user's ID. Leave empty otherwise.</div>
+    </div>
     <?php echo $this->getForm()->renderField('header'); ?>
     <?php echo $this->getForm()->renderField('template'); ?>
     <div class="control-group">
@@ -178,7 +185,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     </div>
     
     <span class="joined-table-info-label" name="foreignFields-label" title="Fields to load from joined table">Fields (comma separated): </span>
-    <input type="text" name="foreignFields" /> <br/>
+    <input class="joined-table-foreign-fields-input" type="text" name="foreignFields" /> <br/>
 
     <span class="joined-table-info-label" name="showInForm-label" title="Display joined table options in edit form">Show in form: </span>
     <input type="checkbox" name="showInForm" /> <br/>

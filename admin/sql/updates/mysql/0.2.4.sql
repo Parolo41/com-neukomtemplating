@@ -1,0 +1,1 @@
+ALTER TABLE `#__neukomtemplating_templates` ADD `user_id_link_field` VARCHAR(40) NOT NULL;

@@ -18,5 +18,6 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `id_field_name` VARCHAR(40) NOT NULL,
     `sorting` VARCHAR(80) NOT NULL,
     `limit` INT,
+    `user_id_link_field` VARCHAR(40) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB; 

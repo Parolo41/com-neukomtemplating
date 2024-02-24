@@ -215,7 +215,7 @@ if ($itemId == 'none' || !$item->showDetailPage) {
 
         <div id="neukomtemplating-formbuttons">
             <button type="submit">Eintragen</button>
-            <button type="button" onClick="openListView()">Zurück</button>
+            <button type="button" id="backToListButton" onClick="openListView()">Zurück</button>
             <button type="button" id="deleteRecordButton" onClick="confirmDelete()">Löschen</button>
         </div>
 
@@ -227,7 +227,19 @@ if ($itemId == 'none' || !$item->showDetailPage) {
     </form>
 </div>
 
-<?php }} else {
+<?php
+    if ($item->userIdLinkField != "" && $item->allowEdit) { 
+        if (sizeof($item->data) == 0) {
+            echo "<h2>No record found</h2>";
+        } else {?>
+            <script>
+                openEditForm(<?php echo $item->data[0]->{$item->idFieldName}; ?>);
+                document.getElementById("backToListButton").style.display = "none";
+                document.getElementById("deleteRecordButton").style.display = "none";
+            </script>
+        <?php }
+    }
+}} else {
     foreach ($item->data as $data) {
         if ($data->{$item->idFieldName} == $itemId) {
             echo $twig->render('detail_template', ['data' => $data]);
