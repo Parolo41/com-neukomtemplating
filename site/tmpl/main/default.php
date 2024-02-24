@@ -57,6 +57,10 @@ $item = $this->getModel()->getItem();
             $fieldName = $field[0];
             $fieldType = $field[1];
 
+            if (array_key_exists($fieldType, $item->aliases)) {
+                continue;
+            }
+
             echo 'fields.push(["' . $fieldName . '", "' . $fieldType . '"]);';
         }
     ?>
@@ -90,6 +94,10 @@ $item = $this->getModel()->getItem();
             foreach ($item->fields as $field) {
                 $fieldName = $field[0];
                 $fieldType = $field[1];
+
+                if (array_key_exists($fieldType, $item->aliases)) {
+                    continue;
+                }
 
                 echo 'data[' . $id . ']["' . $fieldName . '"] = "' . str_replace(["\""], "\\\"", str_replace(["\r\n", "\r", "\n", "\t"], "\\n", $data->{$fieldName})) . '";';
             }
@@ -132,7 +140,7 @@ if ($itemId == 'none' || !$item->showDetailPage) {
             'data' => $data, 
             'editButton' => $item->allowEdit ? '<button onClick="openEditForm(' . $data->{$item->idFieldName} . ')">Editieren</button>' : "",
         ];
-        echo $twig->render('template', $twigParams);
+        echo $twig->render('template', array_merge($twigParams, $item->aliases));
     }
     echo $item->footer;
     ?>
@@ -143,10 +151,14 @@ if ($itemId == 'none' || !$item->showDetailPage) {
 <div id="neukomtemplating-editform" style="display: none">
     <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm" class="form-vertical">
         <?php
-        foreach ($item->fields as $field) {
-            $fieldName = $field[0];
+        $permittedTypes = ["text", "textarea", "date", "time", "number", "checkbox", "select", "image"];
 
-            $permittedTypes = ["text", "textarea", "date", "time", "number", "checkbox", "select", "image"];
+        foreach ($item->fields as $field) {
+            if (array_key_exists($field[1], $item->aliases)) {
+                continue;
+            }
+
+            $fieldName = $field[0];
             $fieldType = in_array($field[1], $permittedTypes) ? $field[1] : "text";
 
             $fieldDisplayName = $field[4];

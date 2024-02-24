@@ -66,6 +66,10 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <div id="template-fields-area"></div>
     <button type="button" onclick="addField()">Add Field</button>
     <?php echo $this->getForm()->renderField('condition'); ?>
+    <div class="control-group">
+        <div class="control-label"></div>
+        <div class="controls">Available aliases (insert like {{ alias }}, also usable in template): userid, username</div>
+    </div>
     <?php echo $this->getForm()->renderField('sorting'); ?>
     <?php echo $this->getForm()->renderField('limit'); ?>
     <?php echo $this->getForm()->renderField('user_id_link_field'); ?>
@@ -124,6 +128,8 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             <option value="checkbox">Checkbox</option>
             <option value="select">Select</option>
             <option value="image">Image</option>
+            <option value="userid">User ID</option>
+            <option value="username">User Name</option>
         </select> <br/>
 
         <div name="show-on-typeSelect" hidden>

@@ -69,11 +69,13 @@ function dbInsert($input, $db, $self) {
 
         if ($fieldType == 'image') {
             $fieldValue = uploadFile($input, $input->get($fieldName, '', 'string'));
+        } elseif (array_key_exists($fieldType, $item->aliases)) {
+            $fieldValue = strval($item->aliases[$fieldType]);
         } else {
             $fieldValue = $input->get($fieldName, '', 'string');
         }
 
-        if (!validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
+        if (!array_key_exists($fieldType, $item->aliases) && !validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
             $validationFailed = true;
         }
 
@@ -136,11 +138,13 @@ function dbUpdate($input, $db, $self) {
             $fieldValue = uploadFile($input, $fieldName);
 
             if ($fieldValue == "") { continue; }
+        } elseif (array_key_exists($fieldType, $item->aliases)) {
+            $fieldValue = strval($item->aliases[$fieldType]);
         } else {
             $fieldValue = $input->get($fieldName, '', 'string');
         }
 
-        if (!validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
+        if (!array_key_exists($fieldType, $item->aliases) && !validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
             $validationFailed = true;
         }
 

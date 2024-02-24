@@ -17,7 +17,13 @@ class TemplateModel extends ItemModel {
      */
     public function getItem($pk = null): object {
         $input = Factory::getApplication()->getInput();
+        $user = Factory::getUser();
         $templateConfigName = $input->getString('templateConfigName');
+
+        $aliases = [
+            'userid' => $user->id,
+            'username' => $user->name,
+        ];
 
         $db = $this->getDbo();
         $query = $db->getQuery(true);
@@ -29,7 +35,11 @@ class TemplateModel extends ItemModel {
         $db->setQuery($query);
         $templateConfig = $db->loadObject();
 
-        $user = Factory::getUser();
+        $loader = new \Twig\Loader\ArrayLoader([
+            'condition' => $templateConfig->condition,
+        ]);
+        $twig = new \Twig\Environment($loader);
+
         $levels = $user->getAuthorisedViewLevels();
 
         if (!in_array((int)$templateConfig->access, $levels)) {
@@ -56,11 +66,13 @@ class TemplateModel extends ItemModel {
             $displayName = isset($fieldConfigArray[4]) ? $fieldConfigArray[4] : $fieldName;
             $additionalInfo = isset($fieldConfigArray[5]) ? $fieldConfigArray[5] : "";
 
-            if ($showFieldInForm) {
+            if ($showFieldInForm || array_key_exists($fieldType, $aliases)) {
                 $fields[] = [$fieldName, $fieldType, $fieldRequired, $showFieldInForm, $displayName, $additionalInfo];
             }
             
-            $fieldNames[] = $fieldName;
+            if (!array_key_exists($fieldType, $aliases)) {
+                $fieldNames[] = $fieldName;
+            }
         }
 
         $dataQuery = $db->getQuery(true);
@@ -68,7 +80,7 @@ class TemplateModel extends ItemModel {
         $dataQuery->from($db->quoteName('#__' . $templateConfig->tablename));
 
         if (trim($templateConfig->condition) != "") {
-            $dataQuery->where($templateConfig->condition);
+            $dataQuery->where($twig->render('condition', $aliases));
         }
 
         if (trim($templateConfig->sorting) != "") {
@@ -110,6 +122,7 @@ class TemplateModel extends ItemModel {
         $item->allowEdit = ($templateConfig->allow_edit == "1");
         $item->allowCreate = ($templateConfig->allow_create == "1");
         $item->data = $data;
+        $item->aliases = $aliases;
         
         $item->fields = $fields;
         $item->joinedTables = $joinedTables;
