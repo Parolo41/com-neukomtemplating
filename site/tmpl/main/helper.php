@@ -282,27 +282,49 @@ function uploadFile($input, $fieldName) {
     function openDetailPage(recordId) {
         $('#detailNavForm input[name="act"]').val('detail');
         $('#detailNavForm input[name="recordId"]').val(recordId);
-        $('#detailNavForm').submit();
+        submitNavForm();
     }
 
     function openEditForm(recordId) {
         $('#detailNavForm input[name="act"]').val('edit');
         $('#detailNavForm input[name="recordId"]').val(recordId);
-        $('#detailNavForm').submit();
+        submitNavForm();
     }
 
     function openNewForm() {
         $('#detailNavForm input[name="act"]').val('new');
-        $('#detailNavForm').submit();
+        submitNavForm();
     }
 
     function openListView() {
         $('#detailNavForm input[name="act"]').val('list');
-        $('#detailNavForm').submit();
+        submitNavForm();
     }
 
     function goToPage(pageNumber) {
         $('#detailNavForm input[name="pageNumber"]').val(pageNumber);
+        submitNavForm();
+    }
+
+    function doSearch() {
+        $('#detailNavForm input[name="pageNumber"]').val(1);
+        $('#detailNavForm input[name="searchTerm"]').val($('#searchForm input[name="searchTerm"]').val());
+        submitNavForm();
+    }
+
+    function submitNavForm() {
+        if ($('#detailNavForm input[name="act"]').val() == '') {
+            $('#detailNavForm input[name="act"]').remove()
+        }
+
+        if ($('#detailNavForm input[name="recordId"]').val() == '') {
+            $('#detailNavForm input[name="recordId"]').remove()
+        }
+
+        if ($('#detailNavForm input[name="searchTerm"]').val() == '') {
+            $('#detailNavForm input[name="searchTerm"]').remove()
+        }
+
         $('#detailNavForm').submit();
     }
 

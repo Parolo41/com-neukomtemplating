@@ -118,18 +118,16 @@ class TemplateModel extends ItemModel {
             $dataQuery->where($templateConfig->user_id_link_field . " = " . $user->id);
         }
 
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $searchTerm = $input->get('searchTerm', '', 'string');
+        $searchTerm = $input->get('searchTerm', '', 'string');
 
-            if ($searchTerm != '') {
-                $searchConditions = [];
-    
-                foreach($fieldNames as $fieldName) {
-                    $searchConditions[] = $fieldName . " LIKE '%" . $searchTerm . "%'";
-                }
+        if ($searchTerm != '') {
+            $searchConditions = [];
 
-                $dataQuery->where(implode(' OR ', $searchConditions));
+            foreach($fieldNames as $fieldName) {
+                $searchConditions[] = $fieldName . " LIKE '%" . $searchTerm . "%'";
             }
+
+            $dataQuery->where(implode(' OR ', $searchConditions));
         }
 
         $db->setQuery($dataQuery);

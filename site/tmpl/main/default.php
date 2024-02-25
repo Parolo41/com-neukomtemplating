@@ -38,6 +38,8 @@ $input = Factory::getApplication()->input;
 $act = $input->get('act', '', 'string');
 $recordId = $input->get('recordId', '', 'string');
 
+$searchTerm = $input->get('searchTerm', '', 'string');
+
 $pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
 $pageSize = ($item->enablePagination && $item->pageSize > 0) ? $item->pageSize : sizeof($item->data);
 $lastPageNumber = ceil(sizeof($item->data) / $pageSize);
@@ -100,11 +102,12 @@ $item = $this->getModel()->getItem();
     } else {
         if ($item->enableSearch) { ?>
             <div id="neukomtemplating-search">
-                <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" method="post" name="searchForm">
+                <form name="searchForm" id="searchForm">
                     <label for="searchTerm">Suche</label>
                     <input type="text" name="searchTerm" value="<?php echo $input->get('searchTerm', '', 'string') ?>" />
                     <button type="submit">Suchen</button>
                 </form>
+                <script>$('#searchForm').submit(function(e) {doSearch(); return false;});</script>
             </div>
         <?php }
         require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'listview.php');
@@ -114,6 +117,7 @@ $item = $this->getModel()->getItem();
 <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" method="get" name="detailNavForm" id="detailNavForm">
     <input type="hidden" name="act" />
     <input type="hidden" name="recordId" />
+    <?php if ($item->enableSearch) { echo '<input type="hidden" name="searchTerm" value="' . $searchTerm . '" />'; } ?>
     <?php if ($item->enablePagination) { echo '<input type="hidden" name="pageNumber" value="' . $pageNumber . '" />'; } ?>
 
     <input type="hidden" name="view" value="main" />
