@@ -27,6 +27,12 @@ $loader = new \Twig\Loader\ArrayLoader([
 ]);
 $twig = new \Twig\Environment($loader);
 
+$emailCloakFilter = new \Twig\TwigFilter('email_cloak', function ($string) {
+    return JHtml::_('email.cloak', $string);
+});
+
+$twig->addFilter($emailCloakFilter);
+
 $input = Factory::getApplication()->input;
 
 $act = $input->get('act', '', 'string');
