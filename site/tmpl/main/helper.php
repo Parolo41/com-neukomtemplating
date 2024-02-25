@@ -159,14 +159,14 @@ function dbUpdate($input, $db, $self) {
 
     foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable->connectionType == "NToOne") {
-            $foreignId = $input->get($joinedTable->name, '', 'string');
+            $foreignId = $input->get($joinedTable->alias, '', 'string');
 
             $updateFields[] = $db->quoteName($joinedTable->connectionInfo[0]) . " = " . formatInputValue($foreignId, "foreignId", $db);
         } else if ($joinedTable->connectionType == "NToN") {
             dropIntermediateEntries($db, $joinedTable, $input->get('recordId', '', 'string'));
 
             foreach ($joinedTable->options as $option) {
-                $remoteForeignKey = $input->get($joinedTable->name . '-' . $option->{$joinedTable->connectionInfo[3]}, '', 'string');
+                $remoteForeignKey = $input->get($joinedTable->alias . '-' . $option->{$joinedTable->connectionInfo[3]}, '', 'string');
 
                 if ($remoteForeignKey != '') {
                     addIntermediateEntry($db, $joinedTable, $input->get('recordId', '', 'string'), $remoteForeignKey);

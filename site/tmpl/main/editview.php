@@ -56,30 +56,30 @@ use Joomla\CMS\Uri\Uri;
                 continue;
             }
 
-            echo '<div id="neukomtemplating-joinedTable-' . $joinedTable->name . '">';
-            echo '<label for="neukomtemplating-joinedTable-' . $joinedTable->name . '">' . $joinedTable->name . '</label>';
+            echo '<div id="neukomtemplating-joinedTable-' . $joinedTable->alias . '">';
+            echo '<label for="neukomtemplating-joinedTable-' . $joinedTable->alias . '">' . $joinedTable->formName . '</label>';
 
             if ($joinedTable->connectionType == "NToOne") {
-                echo '<select id="neukomtemplating-select-' . $joinedTable->name . '" name="' . $joinedTable->name . '">';
+                echo '<select id="neukomtemplating-select-' . $joinedTable->alias . '" name="' . $joinedTable->alias . '">';
                 echo '<option value="0">Null</option>';
 
                 foreach ($joinedTable->options as $option) {
-                    $selected = (sizeof($data->{$joinedTable->name}) > 0 && $option->{$joinedTable->connectionInfo[1]} == $data->{$joinedTable->name}[0]->{$joinedTable->connectionInfo[1]}) ? ' selected ' : '';
+                    $selected = ($data->{$joinedTable->alias} != null && $option->{$joinedTable->connectionInfo[1]} == $data->{$joinedTable->alias}[0]->{$joinedTable->connectionInfo[1]}) ? ' selected ' : '';
                     echo '<option value="' . $option->{$joinedTable->connectionInfo[1]} . '"' . $selected . '>' . $option->{$joinedTable->displayField} . '</option>';
                 }
                 
                 echo '</select><br>';
             } else if ($joinedTable->connectionType == "NToN") {
-                echo '<div id="neukomtemplating-select-' . $joinedTable->name . '">';
+                echo '<div id="neukomtemplating-select-' . $joinedTable->alias . '">';
 
                 $selectedIds = [];
-                foreach ($data->{$joinedTable->name} as $selectedOption) {
+                foreach ($data->{$joinedTable->alias} as $selectedOption) {
                     $selectedIds[] = $selectedOption->{$joinedTable->connectionInfo[3]};
                 }
 
                 foreach ($joinedTable->options as $option) {
                     $checked = in_array($option->{$joinedTable->connectionInfo[3]}, $selectedIds) ? ' checked ' : '';
-                    echo '<input type="checkbox" name="' . $joinedTable->name . '-' . $option->{$joinedTable->connectionInfo[3]} . '" value="' . $option->{$joinedTable->connectionInfo[3]} . '"' . $checked . '></input>';
+                    echo '<input type="checkbox" name="' . $joinedTable->alias . '-' . $option->{$joinedTable->connectionInfo[3]} . '" value="' . $option->{$joinedTable->connectionInfo[3]} . '"' . $checked . '></input>';
                     echo '<label>' . $option->{$joinedTable->displayField} . '</label><br>';
                 }
                 

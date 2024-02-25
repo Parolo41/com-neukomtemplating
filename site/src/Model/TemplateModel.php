@@ -180,6 +180,8 @@ class TemplateModel extends ItemModel {
             $joinedTableObject->connectionInfo = explode(',', $joinedTableConfigArray[3]);
             $joinedTableObject->fields = explode(',', $joinedTableConfigArray[4]);
             $joinedTableObject->showInForm = $joinedTableConfigArray[5] == "1";
+            $joinedTableObject->alias = (array_key_exists(6, $joinedTableConfigArray) && trim($joinedTableConfigArray[6]) != '') ? $joinedTableConfigArray[6] : $joinedTableConfigArray[0];
+            $joinedTableObject->formName = (array_key_exists(7, $joinedTableConfigArray) && trim($joinedTableConfigArray[7]) != '') ? $joinedTableConfigArray[7] : $joinedTableConfigArray[0];
             $joinedTableObject->options = $this->queryJoinedTableOptions($joinedTableObject);
 
             $joinedTables[] = $joinedTableObject;
@@ -216,7 +218,7 @@ class TemplateModel extends ItemModel {
                 $db->setQuery($joinedTableQuery);
                 $data = $db->loadObjectList();
     
-                $record->{$joinedTable->name} = $data;
+                $record->{$joinedTable->alias} = $data;
             } else if ($joinedTable->connectionType == "OneToN") {
                 $joinedTableQuery = $db->getQuery(true);
 
@@ -231,7 +233,7 @@ class TemplateModel extends ItemModel {
                 $db->setQuery($joinedTableQuery);
                 $data = $db->loadObjectList();
     
-                $record->{$joinedTable->name} = $data;
+                $record->{$joinedTable->alias} = $data;
             } else if ($joinedTable->connectionType == "NToN") {
                 $joinedTableQuery = $db->getQuery(true);
 
@@ -258,7 +260,7 @@ class TemplateModel extends ItemModel {
                 $db->setQuery($joinedTableQuery);
                 $data = $db->loadObjectList();
                 
-                $record->{$joinedTable->name} = $data;
+                $record->{$joinedTable->alias} = $data;
             }
         }
     }

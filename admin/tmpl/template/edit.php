@@ -194,9 +194,15 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     
     <span class="joined-table-info-label" name="foreignFields-label" title="Fields to load from joined table">Fields (comma separated): </span>
     <input class="joined-table-foreign-fields-input" type="text" name="foreignFields" /> <br/>
+    
+    <span class="joined-table-info-label" name="alias-label" title="What the joined table is called in the template">Alias: </span>
+    <input class="joined-table-alias-input" type="text" name="alias" /> <br/>
 
     <span class="joined-table-info-label" name="showInForm-label" title="Display joined table options in edit form">Show in form: </span>
     <input type="checkbox" name="showInForm" /> <br/>
+    
+    <span class="joined-table-info-label" name="formName-label" title="What the joined table is called in the form">Form name: </span>
+    <input class="joined-table-forn-name-input" type="text" name="formName" /> <br/>
 </div>
 
 <script>
@@ -386,6 +392,14 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             } else {
                 joinedTablesString = joinedTablesString.concat("0");
             }
+
+            joinedTablesString = joinedTablesString.concat(":");
+
+            joinedTablesString = joinedTablesString.concat(joinedTable.querySelector('input[name="alias"]').value);
+
+            joinedTablesString = joinedTablesString.concat(":");
+
+            joinedTablesString = joinedTablesString.concat(joinedTable.querySelector('input[name="formName"]').value);
         }
 
         return joinedTablesString;
@@ -460,7 +474,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     for (let i = 0; i < loadedJoinedTables.length; i++) {
         joinedTableValues = loadedJoinedTables[i].split(":");
 
-        if (joinedTableValues.length != 6) {
+        if (joinedTableValues.length < 6) {
             continue;
         }
 
@@ -472,6 +486,12 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         newJoinedTable.querySelector('select[name="type"]').value = joinedTableValues[2];
         newJoinedTable.querySelector('input[name="foreignFields"]').value = joinedTableValues[4];
         newJoinedTable.querySelector('input[name="showInForm"]').checked = (joinedTableValues[5] == "1");
+        if (joinedTableValues[6] != undefined) {
+            newJoinedTable.querySelector('input[name="alias"]').value = joinedTableValues[6];
+        }
+        if (joinedTableValues[7] != undefined) {
+            newJoinedTable.querySelector('input[name="formName"]').value = joinedTableValues[7];
+        }
 
         connectionInfo = newJoinedTable.querySelector('div[name="show-on-' + joinedTableValues[2] + '"]');
         connectionInfoValues = joinedTableValues[3].split(",");
