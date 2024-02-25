@@ -2,7 +2,8 @@
     <?php
         echo $item->allowCreate ? '<button onClick="openNewForm()">Neu</button>' : "";
         echo $item->header;
-        foreach ($item->data as $data) {
+        for ($i = $pageSize * ($pageNumber - 1); $i < min($pageSize * $pageNumber, sizeof($item->data)); $i++) {
+            $data = $item->data[$i];
             $twigParams = [
                 'data' => $data, 
                 'detailButton' => $item->showDetailPage ? '<button onClick="openDetailPage(' . $data->{$item->idFieldName} . ')">Detail</button>' : "",
@@ -15,3 +16,19 @@
         echo $item->footer;
     ?>
 </div>
+
+<?php if ($item->enablePagination) { ?>
+    <div id="neukomtemplating-page-control">
+        <button onClick="goToPage(<?php echo $pageNumber - 1; ?>)" <?php echo $pageNumber <= 1 ? 'disabled' : '' ?>>&#8678;</button>
+
+        <?php for ($p = 1; $p <= $lastPageNumber; $p++) {
+            if ($p == $pageNumber) {
+                echo $p;
+            } else {
+                echo '<a href="javascript:goToPage(' . $p . ')">' . $p . '</a>';
+            }
+        } ?>
+
+        <button onClick="goToPage(<?php echo $pageNumber + 1; ?>)" <?php echo $pageNumber >= $lastPageNumber ? 'disabled' : '' ?>>&#8680;</button>
+    </div>
+<?php } ?>

@@ -9,6 +9,8 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `detail_template` TEXT NOT NULL,
     `tablename` VARCHAR(40) NOT NULL,
     `enable_search` BOOLEAN NOT NULL,
+    `enable_pagination` BOOLEAN NOT NULL DEFAULT 0,
+    `page_size` INT DEFAULT 0,
     `fields` VARCHAR(2000) NOT NULL,
     `condition` VARCHAR(500) NOT NULL,
     `show_detail_page` BOOLEAN,

@@ -301,6 +301,11 @@ function uploadFile($input, $fieldName) {
         $('#detailNavForm').submit();
     }
 
+    function goToPage(pageNumber) {
+        $('#detailNavForm input[name="pageNumber"]').val(pageNumber);
+        $('#detailNavForm').submit();
+    }
+
     function confirmDelete() {
         document.getElementById("formAction").value = 'delete';
 

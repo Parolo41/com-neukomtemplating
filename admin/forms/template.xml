@@ -116,6 +116,18 @@
 			label="Enable Search"
 		 />
 		<field
+			name="enable_pagination"
+			type="checkbox"
+			label="Enable Pagination"
+		 />
+		<field
+			name="page_size"
+			type="number"
+			label="Page Size"
+			default="0"
+			required="false"
+		 />
+		<field
 			name="allow_edit"
 			type="checkbox"
 			label="Allow edit"

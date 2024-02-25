@@ -40,6 +40,8 @@ class TemplateModel extends ItemModel {
             'user_id_link_field',
             'show_detail_page',
             'enable_search',
+            'enable_pagination',
+            'page_size',
             'allow_edit',
             'allow_create',
             'access',
@@ -155,6 +157,8 @@ class TemplateModel extends ItemModel {
         $item->showDetailPage = ($templateConfig->show_detail_page == "1");
         $item->userIdLinkField = $templateConfig->user_id_link_field;
         $item->enableSearch = ($templateConfig->enable_search == "1");
+        $item->enablePagination = ($templateConfig->enable_pagination == "1");
+        $item->pageSize = intval($templateConfig->page_size);
         $item->allowEdit = ($templateConfig->allow_edit == "1");
         $item->allowCreate = ($templateConfig->allow_create == "1");
         $item->data = $data;

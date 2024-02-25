@@ -17,7 +17,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helper.php');
 
 $itemTemplate = $item->template;
 
-if (strpos($itemTemplate, '{{editButton') == false) {
+if (strpos($itemTemplate, 'editButton') == false) {
     $itemTemplate = $itemTemplate . '{{editButton | raw}}';
 }
 
@@ -28,8 +28,13 @@ $loader = new \Twig\Loader\ArrayLoader([
 $twig = new \Twig\Environment($loader);
 
 $input = Factory::getApplication()->input;
+
 $act = $input->get('act', '', 'string');
 $recordId = $input->get('recordId', '', 'string');
+
+$pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
+$pageSize = ($item->enablePagination && $item->pageSize > 0) ? $item->pageSize : sizeof($item->data);
+$lastPageNumber = ceil(sizeof($item->data) / $pageSize);
 
 if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->allowCreate) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = Factory::getDbo();
@@ -103,6 +108,7 @@ $item = $this->getModel()->getItem();
 <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" method="get" name="detailNavForm" id="detailNavForm">
     <input type="hidden" name="act" />
     <input type="hidden" name="recordId" />
+    <?php if ($item->enablePagination) { echo '<input type="hidden" name="pageNumber" value="' . $pageNumber . '" />'; } ?>
 
     <input type="hidden" name="view" value="main" />
     <input type="hidden" name="templateConfigName" value="<?php echo $item->templateName; ?>" />
