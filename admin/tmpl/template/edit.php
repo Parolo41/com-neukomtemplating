@@ -455,56 +455,69 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     loadedJoinedTables = (document.adminForm.jform_joined_tables.value != "" ? document.adminForm.jform_joined_tables.value.split(";") : []);
 
     for (let i = 0; i < loadedFields.length; i++) {
-        fieldValues = loadedFields[i].split(":");
+        try {
+            fieldValues = loadedFields[i].split(":");
 
-        if (fieldValues.length < 4) {
-            continue;
-        }
+            addField();
+            newField = document.getElementById("template-fields-area").lastChild;
 
-        addField();
-        newField = document.getElementById("template-fields-area").lastChild;
-
-        newField.querySelector('input[name="name"]').value = fieldValues[0];
-        newField.querySelector('select[name="type"]').value = fieldValues[1];
-        newField.querySelector('input[name="required"]').checked = (fieldValues[2] == "1");
-        newField.querySelector('input[name="showInForm"]').checked = (fieldValues[3] == "1");
-
-        if (typeof fieldValues[4] != 'undefined') {newField.querySelector('input[name="displayName"]').value = fieldValues[4];}
-        if (typeof fieldValues[5] != 'undefined' && fieldValues[1] == 'select') {
-            newField.querySelector('input[name="selectOptions"]').value = fieldValues[5];
+            if (fieldValues[0] != undefined) {newField.querySelector('input[name="name"]').value = fieldValues[0];}
+            if (fieldValues[1] != undefined) {newField.querySelector('select[name="type"]').value = fieldValues[1];}
+            if (fieldValues[2] != undefined) {newField.querySelector('input[name="required"]').checked = (fieldValues[2] == "1");}
+            if (fieldValues[3] != undefined) {newField.querySelector('input[name="showInForm"]').checked = (fieldValues[3] == "1");}
+            if (fieldValues[4] != undefined) {newField.querySelector('input[name="displayName"]').value = fieldValues[4];}
+            if (fieldValues[5] != undefined && fieldValues[1] == 'select') {
+                newField.querySelector('input[name="selectOptions"]').value = fieldValues[5];
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 
     for (let i = 0; i < loadedJoinedTables.length; i++) {
-        joinedTableValues = loadedJoinedTables[i].split(":");
+        try {
+            joinedTableValues = loadedJoinedTables[i].split(":");
 
-        if (joinedTableValues.length < 6) {
-            continue;
+            addJoinedTable();
+            newJoinedTable = document.getElementById("joined-tables-area").lastChild;
+
+            if (joinedTableValues[0] != undefined) {
+                newJoinedTable.querySelector('input[name="name"]').value = joinedTableValues[0];
+            }
+            if (joinedTableValues[1] != undefined) {
+                newJoinedTable.querySelector('input[name="displayField"]').value = joinedTableValues[1];
+            }
+            if (joinedTableValues[2] != undefined) {
+                newJoinedTable.querySelector('select[name="type"]').value = joinedTableValues[2];
+            }
+            if (joinedTableValues[4] != undefined) {
+                newJoinedTable.querySelector('input[name="foreignFields"]').value = joinedTableValues[4];
+            }
+            if (joinedTableValues[5] != undefined) {
+                newJoinedTable.querySelector('input[name="showInForm"]').checked = (joinedTableValues[5] == "1");
+            }
+            if (joinedTableValues[6] != undefined) {
+                newJoinedTable.querySelector('input[name="alias"]').value = joinedTableValues[6];
+            }
+            if (joinedTableValues[7] != undefined) {
+                newJoinedTable.querySelector('input[name="formName"]').value = joinedTableValues[7];
+            }
+            
+            if (joinedTableValues[3] != undefined) {
+                connectionInfo = newJoinedTable.querySelector('div[name="show-on-' + joinedTableValues[2] + '"]');
+                connectionInfoValues = joinedTableValues[3].split(",");
+
+                connectionInfo.querySelectorAll('input').forEach((connectionInfoInput, index) => {
+                    connectionInfoInput.value = connectionInfoValues[index];
+                });
+            }
+        } catch (error) {
+            console.error(error);
         }
-
-        addJoinedTable();
-        newJoinedTable = document.getElementById("joined-tables-area").lastChild;
-
-        newJoinedTable.querySelector('input[name="name"]').value = joinedTableValues[0];
-        newJoinedTable.querySelector('input[name="displayField"]').value = joinedTableValues[1];
-        newJoinedTable.querySelector('select[name="type"]').value = joinedTableValues[2];
-        newJoinedTable.querySelector('input[name="foreignFields"]').value = joinedTableValues[4];
-        newJoinedTable.querySelector('input[name="showInForm"]').checked = (joinedTableValues[5] == "1");
-        if (joinedTableValues[6] != undefined) {
-            newJoinedTable.querySelector('input[name="alias"]').value = joinedTableValues[6];
-        }
-        if (joinedTableValues[7] != undefined) {
-            newJoinedTable.querySelector('input[name="formName"]').value = joinedTableValues[7];
-        }
-
-        connectionInfo = newJoinedTable.querySelector('div[name="show-on-' + joinedTableValues[2] + '"]');
-        connectionInfoValues = joinedTableValues[3].split(",");
-
-        connectionInfo.querySelectorAll('input').forEach((connectionInfoInput, index) => {
-            connectionInfoInput.value = connectionInfoValues[index];
-        });
     }
 
     updateFieldInputVisibility();
     updateJoinedTableInputVisibility();
+
+    updateValues();
 </script>
