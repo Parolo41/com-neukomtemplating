@@ -47,7 +47,7 @@ function formatInputValue($value, $type, $db) {
         case "checkbox":
             return ($value == "on" ? "'1'" : "'0'");
         case "foreignId":
-            return ($value == "0" ? "NULL" : $db->quote($value));
+            return ($value == "NULL" ? "NULL" : $db->quote($value));
         default:
             return $db->quote($value);
     }

@@ -74,7 +74,7 @@ class TemplateModel extends ItemModel {
 
         $tableFields = $db->getTableColumns('#__' . $templateConfig->tablename);
 
-        foreach (explode(';', str_replace(' ', '', $templateConfig->fields)) as $field) {
+        foreach (explode(';', $templateConfig->fields) as $field) {
             $fieldConfigArray = explode(':', $field);
 
             $fieldName = $fieldConfigArray[0];
@@ -83,11 +83,11 @@ class TemplateModel extends ItemModel {
                 continue;
             }
 
-            $fieldType = isset($fieldConfigArray[1]) ? $fieldConfigArray[1] : "text";
-            $fieldRequired = isset($fieldConfigArray[2]) ? $fieldConfigArray[2] == "1" : false;
-            $showFieldInForm = isset($fieldConfigArray[3]) ? $fieldConfigArray[3] == "1" : true;
-            $displayName = isset($fieldConfigArray[4]) ? $fieldConfigArray[4] : $fieldName;
-            $additionalInfo = isset($fieldConfigArray[5]) ? $fieldConfigArray[5] : "";
+            $fieldType = isset($fieldConfigArray[1]) ? trim($fieldConfigArray[1]) : "text";
+            $fieldRequired = isset($fieldConfigArray[2]) ? trim($fieldConfigArray[2]) == "1" : false;
+            $showFieldInForm = isset($fieldConfigArray[3]) ? trim($fieldConfigArray[3]) == "1" : true;
+            $displayName = isset($fieldConfigArray[4]) ? trim($fieldConfigArray[4]) : $fieldName;
+            $additionalInfo = isset($fieldConfigArray[5]) ? trim($fieldConfigArray[5]) : "";
 
             if ($showFieldInForm || array_key_exists($fieldType, $aliases)) {
                 $fields[] = [$fieldName, $fieldType, $fieldRequired, $showFieldInForm, $displayName, $additionalInfo];
@@ -102,8 +102,10 @@ class TemplateModel extends ItemModel {
         $dataQuery->select($db->quoteName($fieldNames));
         $dataQuery->from($db->quoteName('#__' . $templateConfig->tablename));
 
+        $conditionList = [];
+
         if (trim($templateConfig->condition) != "") {
-            $dataQuery->where($twig->render('condition', $aliases));
+            $conditionList[] = '(' . $twig->render('condition', $aliases) . ')';
         }
 
         if (trim($templateConfig->sorting) != "") {
@@ -115,7 +117,7 @@ class TemplateModel extends ItemModel {
         }
 
         if ($templateConfig->user_id_link_field != "") {
-            $dataQuery->where($templateConfig->user_id_link_field . " = " . $user->id);
+            $conditionList[] = '(' . $templateConfig->user_id_link_field . " = " . $user->id . ')';
         }
 
         $searchTerm = $input->get('searchTerm', '', 'string');
@@ -127,7 +129,11 @@ class TemplateModel extends ItemModel {
                 $searchConditions[] = $fieldName . " LIKE '%" . $searchTerm . "%'";
             }
 
-            $dataQuery->where(implode(' OR ', $searchConditions));
+            $conditionList[] = '(' . implode(' OR ', $searchConditions) . ')';
+        }
+
+        if (sizeof($conditionList) > 0) {
+            $dataQuery->where(implode(' AND ', $conditionList));
         }
 
         $db->setQuery($dataQuery);
@@ -171,19 +177,19 @@ class TemplateModel extends ItemModel {
     private function parseJoinedTables($joinedTablesString) {
         $joinedTables = [];
 
-        foreach (explode(';', str_replace(' ', '', $joinedTablesString)) as $joinedTable) {
+        foreach (explode(';', $joinedTablesString) as $joinedTable) {
             $joinedTableConfigArray = explode(':', $joinedTable);
 
             $joinedTableObject = new \stdClass();
 
-            $joinedTableObject->name = $joinedTableConfigArray[0];
-            $joinedTableObject->displayField = $joinedTableConfigArray[1];
-            $joinedTableObject->connectionType = $joinedTableConfigArray[2];
-            $joinedTableObject->connectionInfo = explode(',', $joinedTableConfigArray[3]);
-            $joinedTableObject->fields = explode(',', $joinedTableConfigArray[4]);
+            $joinedTableObject->name = trim($joinedTableConfigArray[0]);
+            $joinedTableObject->displayField = trim($joinedTableConfigArray[1]);
+            $joinedTableObject->connectionType = trim($joinedTableConfigArray[2]);
+            $joinedTableObject->connectionInfo = explode(',', str_replace(' ', '', $joinedTableConfigArray[3]));
+            $joinedTableObject->fields = explode(',', str_replace(' ', '', $joinedTableConfigArray[4]));
             $joinedTableObject->showInForm = $joinedTableConfigArray[5] == "1";
-            $joinedTableObject->alias = (array_key_exists(6, $joinedTableConfigArray) && trim($joinedTableConfigArray[6]) != '') ? $joinedTableConfigArray[6] : $joinedTableConfigArray[0];
-            $joinedTableObject->formName = (array_key_exists(7, $joinedTableConfigArray) && trim($joinedTableConfigArray[7]) != '') ? $joinedTableConfigArray[7] : $joinedTableConfigArray[0];
+            $joinedTableObject->alias = trim((array_key_exists(6, $joinedTableConfigArray) && trim($joinedTableConfigArray[6]) != '') ? $joinedTableConfigArray[6] : $joinedTableConfigArray[0]);
+            $joinedTableObject->formName = trim((array_key_exists(7, $joinedTableConfigArray) && trim($joinedTableConfigArray[7]) != '') ? $joinedTableConfigArray[7] : $joinedTableConfigArray[0]);
             $joinedTableObject->options = $this->queryJoinedTableOptions($joinedTableObject);
 
             $joinedTables[] = $joinedTableObject;

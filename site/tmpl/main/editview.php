@@ -61,7 +61,7 @@ use Joomla\CMS\Uri\Uri;
 
             if ($joinedTable->connectionType == "NToOne") {
                 echo '<select id="neukomtemplating-select-' . $joinedTable->alias . '" name="' . $joinedTable->alias . '">';
-                echo '<option value="0">Null</option>';
+                echo '<option value="NULL">Null</option>';
 
                 foreach ($joinedTable->options as $option) {
                     $selected = ($data->{$joinedTable->alias} != null && $option->{$joinedTable->connectionInfo[1]} == $data->{$joinedTable->alias}[0]->{$joinedTable->connectionInfo[1]}) ? ' selected ' : '';

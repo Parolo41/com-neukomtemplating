@@ -55,7 +55,7 @@ use Joomla\CMS\Uri\Uri;
 
             if ($joinedTable->connectionType == "NToOne") {
                 echo '<select id="neukomtemplating-select-' . $joinedTable->name . '" name="' . $joinedTable->name . '">';
-                echo '<option value="0">Null</option>';
+                echo '<option value="NULL">Null</option>';
 
                 foreach ($joinedTable->options as $option) {
                     echo '<option value="' . $option->{$joinedTable->connectionInfo[1]} . '">' . $option->{$joinedTable->displayField} . '</option>';
