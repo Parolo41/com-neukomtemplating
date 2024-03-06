@@ -41,7 +41,7 @@ $recordId = $input->get('recordId', '', 'string');
 $searchTerm = $input->get('searchTerm', '', 'string');
 
 $pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
-$pageSize = ($item->enablePagination && $item->pageSize > 0) ? $item->pageSize : sizeof($item->data);
+$pageSize = ($item->enablePagination && $item->pageSize > 0) ? $item->pageSize : max(sizeof($item->data), 1);
 $lastPageNumber = ceil(sizeof($item->data) / $pageSize);
 
 if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->allowCreate) && $_SERVER['REQUEST_METHOD'] === 'POST') {
