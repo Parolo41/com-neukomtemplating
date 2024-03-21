@@ -139,6 +139,14 @@ class TemplateModel extends ItemModel {
         $db->setQuery($dataQuery);
         $data = $db->loadObjectList();
 
+        $pageSize = ($templateConfig->enable_pagination != "1" || intval($templateConfig->page_size) == 0) ? sizeof($data) : intval($templateConfig->page_size);
+        $lastPageNumber = ceil(sizeof($data) / $pageSize);
+        $pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
+
+        if ($templateConfig->enable_pagination == "1" && $pageSize < sizeof($data)) {
+            $data = array_slice($data, $pageSize * ($pageNumber - 1), $pageSize);
+        }
+
         $joinedTables = [];
 
         if ($templateConfig->joined_tables != "") {
@@ -162,7 +170,8 @@ class TemplateModel extends ItemModel {
         $item->userIdLinkField = $templateConfig->user_id_link_field;
         $item->enableSearch = ($templateConfig->enable_search == "1");
         $item->enablePagination = ($templateConfig->enable_pagination == "1");
-        $item->pageSize = intval($templateConfig->page_size);
+        $item->pageSize = $pageSize;
+        $item->lastPageNumber = $lastPageNumber;
         $item->allowEdit = ($templateConfig->allow_edit == "1");
         $item->allowCreate = ($templateConfig->allow_create == "1");
         $item->data = $data;
