@@ -112,7 +112,11 @@ class TemplateModel extends ItemModel {
             $dataQuery->order($templateConfig->sorting);
         }
 
-        if ($templateConfig->limit != "" && (int)$templateConfig->limit > 0) {
+        if ($templateConfig->enable_pagination == "1" && intval($templateConfig->page_size) > 0) {
+            $pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
+
+            $dataQuery->setLimit(intval($templateConfig->page_size), intval($templateConfig->page_size) * ($pageNumber - 1));
+        }elseif ($templateConfig->limit != "" && (int)$templateConfig->limit > 0) {
             $dataQuery->setLimit((int)$templateConfig->limit);
         }
 
@@ -141,11 +145,6 @@ class TemplateModel extends ItemModel {
 
         $pageSize = ($templateConfig->enable_pagination != "1" || intval($templateConfig->page_size) == 0) ? sizeof($data) : intval($templateConfig->page_size);
         $lastPageNumber = ceil(sizeof($data) / $pageSize);
-        $pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
-
-        if ($templateConfig->enable_pagination == "1" && $pageSize < sizeof($data)) {
-            $data = array_slice($data, $pageSize * ($pageNumber - 1), $pageSize);
-        }
 
         $joinedTables = [];
 

@@ -50,11 +50,11 @@ use Joomla\CMS\Uri\Uri;
                 continue;
             }
 
-            echo '<div id="neukomtemplating-joinedTable-' . $joinedTable->name . '">';
-            echo '<label for="neukomtemplating-joinedTable-' . $joinedTable->name . '">' . $joinedTable->name . '</label>';
+            echo '<div id="neukomtemplating-joinedTable-' . $joinedTable->alias . '">';
+            echo '<label for="neukomtemplating-joinedTable-' . $joinedTable->alias . '">' . $joinedTable->formName . '</label>';
 
             if ($joinedTable->connectionType == "NToOne") {
-                echo '<select id="neukomtemplating-select-' . $joinedTable->name . '" name="' . $joinedTable->name . '">';
+                echo '<select id="neukomtemplating-select-' . $joinedTable->alias . '" name="' . $joinedTable->alias . '">';
                 echo '<option value="NULL">Null</option>';
 
                 foreach ($joinedTable->options as $option) {
@@ -63,10 +63,10 @@ use Joomla\CMS\Uri\Uri;
                 
                 echo '</select><br>';
             } else if ($joinedTable->connectionType == "NToN") {
-                echo '<div id="neukomtemplating-select-' . $joinedTable->name . '">';
+                echo '<div id="neukomtemplating-select-' . $joinedTable->alias . '">';
 
                 foreach ($joinedTable->options as $option) {
-                    echo '<input type="checkbox" name="' . $joinedTable->name . '-' . $option->{$joinedTable->connectionInfo[3]} . '" value="' . $option->{$joinedTable->connectionInfo[3]} . '"></input>';
+                    echo '<input type="checkbox" name="' . $joinedTable->alias . '-' . $option->{$joinedTable->connectionInfo[3]} . '" value="' . $option->{$joinedTable->connectionInfo[3]} . '"></input>';
                     echo '<label>' . $option->{$joinedTable->displayField} . '</label><br>';
                 }
                 

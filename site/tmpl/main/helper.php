@@ -89,7 +89,7 @@ function dbInsert($input, $db, $self) {
 
     foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable->connectionType == "NToOne") {
-            $foreignId = $input->get($joinedTable->name, '', 'string');
+            $foreignId = $input->get($joinedTable->alias, '', 'string');
 
             $insertColumns[] = $joinedTable->connectionInfo[0];
             $insertValues[] = formatInputValue($foreignId, "foreignId", $db);
