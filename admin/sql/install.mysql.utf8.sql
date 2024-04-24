@@ -12,6 +12,7 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `enable_pagination` BOOLEAN NOT NULL DEFAULT 0,
     `page_size` INT DEFAULT 0,
     `fields` VARCHAR(2000) NOT NULL,
+    `url_parameters` VARCHAR(500) NOT NULL,
     `condition` VARCHAR(500) NOT NULL,
     `show_detail_page` BOOLEAN,
     `allow_edit` BOOLEAN,

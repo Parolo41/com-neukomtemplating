@@ -4,7 +4,8 @@
         echo $item->header;
         foreach ($item->data as $data) {
             $twigParams = [
-                'data' => $data, 
+                'data' => $data,
+                'urlParameters' => $item->urlParameters,
                 'detailButton' => $item->showDetailPage ? '<button onClick="openDetailPage(' . $data->{$item->idFieldName} . ')">Detail</button>' : "",
                 'editButton' => $item->allowEdit ? '<button onClick="openEditForm(' . $data->{$item->idFieldName} . ')">Editieren</button>' : "",
                 'detailLink' => 'javascript:openDetailPage(' . $data->{$item->idFieldName} . ')',

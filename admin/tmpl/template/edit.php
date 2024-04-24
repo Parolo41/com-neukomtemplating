@@ -31,6 +31,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('tablename'); ?>
     <?php echo $this->getForm()->renderField('id_field_name'); ?>
     <?php echo $this->getForm()->renderField('fields'); ?>
+    <?php echo $this->getForm()->renderField('url_parameters'); ?>
     <?php echo $this->getForm()->renderField('condition'); ?>
     <?php echo $this->getForm()->renderField('sorting'); ?>
     <?php echo $this->getForm()->renderField('limit'); ?>
@@ -67,11 +68,14 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('id_field_name'); ?>
     <label>Fields</label>
     <div id="template-fields-area"></div>
-    <button type="button" onclick="addField()">Add Field</button>
+    <button type="button" onclick="addField()">Add Field</button> <br/>
+    <label>URL Parameters</label>
+    <div id="url-parameters-area"></div>
+    <button type="button" onclick="addUrlParameter()">Add Parameter</button> <br/>
     <?php echo $this->getForm()->renderField('condition'); ?>
     <div class="control-group">
         <div class="control-label"></div>
-        <div class="controls">Available aliases (insert like {{ alias }}, also usable in template): userid, username</div>
+        <div class="controls">Available aliases (insert like {{ alias }}, also usable in template): userid, username, all URL parameters (like {{ urlParameter.PARAM_NAME }})</div>
     </div>
     <?php echo $this->getForm()->renderField('sorting'); ?>
     <?php echo $this->getForm()->renderField('limit'); ?>
@@ -148,6 +152,17 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     </div>
 </div>
 
+<div id="url-parameter-blueprint" style="margin-bottom: 16px" hidden>
+    <span class="field-info-label" name="name-label">Name: </span>
+    <input type="text" name="name" /> <br/>
+    
+    <span class="field-info-label" name="default-label">Default: </span>
+    <input type="text" name="default" /> <br/>
+
+    <span class="field-info-label" name="insertIntoDb-label">Insert into DB: </span>
+    <input type="checkbox" name="insertIntoDb" /> <br/>
+</div>
+
 <div id="joined-table-blueprint" style="margin-bottom: 16px" hidden>
     <span class="joined-table-info-label" name="name-label" title="DB name of the joined table">Table name: </span>
     <input type="text" name="name" /> <br/>
@@ -211,6 +226,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 
 <script>
     fieldNumber = 0;
+    parameterNumber = 0;
     joinedTableNumber = 0;
 
     dummyForm = document.getElementById("dummyForm");
@@ -242,6 +258,30 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     function removeField(fieldId) {
         if (confirm('Are you sure you want to remove this field?')) {
             document.getElementById("template-field-" + fieldId).remove();
+            updateValues();
+        }
+
+    }
+
+    function addUrlParameter() {
+        const clone = document.getElementById("url-parameter-blueprint").cloneNode(true);
+        clone.id = "url-parameter-" + parameterNumber;
+        clone.hidden = false;
+
+        remDiv = document.createElement('DIV');
+        remDiv.innerHTML = '<button type="button" onclick="removeUrlParameter(' + parameterNumber + ')">Remove Parameter</button>'
+        clone.appendChild(remDiv.firstChild);
+
+        document.getElementById("url-parameters-area").appendChild(clone);
+        
+        parameterNumber += 1;
+
+        updateValues();
+    }
+
+    function removeUrlParameter(parameterId) {
+        if (confirm('Are you sure you want to remove this URL parameter?')) {
+            document.getElementById("url-parameter-" + parameterId).remove();
             updateValues();
         }
 
@@ -291,6 +331,8 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     function retrieveFormValue(valueId) {
         if (document.adminForm[valueId].id == "jform_fields") {
             return retrieveFieldsValue();
+        } else if (document.adminForm[valueId].id == "jform_url_parameters") {
+            return retrieveUrlParametersValue();
         } else if (document.adminForm[valueId].id == "jform_joined_tables") {
             return retrieveJoinedTablesValue();
         } else {
@@ -350,6 +392,35 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         }
 
         return fieldString;
+    }
+
+    function retrieveUrlParametersValue() {
+        parameterString = "";
+        urlParametersArea = document.getElementById("url-parameters-area");
+
+        for (let i = 0; i < urlParametersArea.childNodes.length; i++) {
+            parameter = urlParametersArea.childNodes[i];
+
+            if (i > 0) {
+                parameterString = parameterString.concat(";");
+            }
+
+            parameterString = parameterString.concat(parameter.querySelector('input[name="name"]').value);
+            
+            parameterString = parameterString.concat(":");
+
+            parameterString = parameterString.concat(parameter.querySelector('input[name="default"]').value);
+            
+            parameterString = parameterString.concat(":");
+
+            if (parameter.querySelector('input[name="insertIntoDb"]').checked) {
+                parameterString = parameterString.concat("1");
+            } else {
+                parameterString = parameterString.concat("0");
+            }
+        }
+
+        return parameterString;
     }
 
     function retrieveJoinedTablesValue() {
@@ -452,6 +523,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     }
 
     loadedFields = (document.adminForm.jform_fields.value != "" ? document.adminForm.jform_fields.value.split(";") : []);
+    loadedParameters = (document.adminForm.jform_url_parameters.value != "" ? document.adminForm.jform_url_parameters.value.split(";") : []);
     loadedJoinedTables = (document.adminForm.jform_joined_tables.value != "" ? document.adminForm.jform_joined_tables.value.split(";") : []);
 
     for (let i = 0; i < loadedFields.length; i++) {
@@ -469,6 +541,21 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             if (fieldValues[5] != undefined && fieldValues[1] == 'select') {
                 newField.querySelector('input[name="selectOptions"]').value = fieldValues[5];
             }
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    for (let i = 0; i < loadedParameters.length; i++) {
+        try {
+            parameterValues = loadedParameters[i].split(":");
+
+            addUrlParameter();
+            newParameter = document.getElementById("url-parameters-area").lastChild;
+
+            if (parameterValues[0] != undefined) {newParameter.querySelector('input[name="name"]').value = parameterValues[0];}
+            if (parameterValues[1] != undefined) {newParameter.querySelector('input[name="default"]').value = parameterValues[1];}
+            if (parameterValues[2] != undefined) {newParameter.querySelector('input[name="insertIntoDb"]').checked = (parameterValues[2] == "1");}
         } catch (error) {
             console.error(error);
         }

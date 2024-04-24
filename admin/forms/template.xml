@@ -38,6 +38,13 @@
 			required="true"
 		 />
 		<field
+			name="url_parameters"
+			type="text"
+			label="URL Parameters"
+			size="200"
+			required="false"
+		 />
+		<field
 			name="condition"
 			type="text"
 			label="SQL Condition"
@@ -97,7 +104,7 @@
 			cols="5"
 			filter="raw"
 			label="Detail Template"
-			required="true"
+			required="false"
 		 />
 		<field
 			name="joined_tables"

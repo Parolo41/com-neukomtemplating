@@ -34,6 +34,7 @@ class TemplateModel extends ItemModel {
             'tablename',
             'id_field_name',
             'fields',
+            'url_parameters',
             'condition',
             'sorting',
             'limit',
@@ -98,6 +99,23 @@ class TemplateModel extends ItemModel {
             }
         }
 
+        $urlParameters = [];
+        $urlDbInserts = [];
+
+        foreach(explode(';', $templateConfig->url_parameters) as $urlParameter) {
+            $urlParameterConfigArray = explode(':', $urlParameter);
+
+            if ($urlParameterConfigArray[0] == '') {
+                continue;
+            }
+
+            $urlParameters[$urlParameterConfigArray[0]] = $input->get($urlParameterConfigArray[0], $urlParameterConfigArray[1], 'string');
+
+            if ($urlParameterConfigArray[2]) {
+                $urlDbInserts[] = $urlParameterConfigArray[0];
+            }
+        }
+
         $dataQuery = $db->getQuery(true);
         $dataQuery->select($db->quoteName($fieldNames));
         $dataQuery->from($db->quoteName('#__' . $templateConfig->tablename));
@@ -105,7 +123,7 @@ class TemplateModel extends ItemModel {
         $conditionList = [];
 
         if (trim($templateConfig->condition) != "") {
-            $conditionList[] = '(' . $twig->render('condition', $aliases) . ')';
+            $conditionList[] = '(' . $twig->render('condition', array_merge($aliases, [ 'urlParameters' => $urlParameters ])) . ')';
         }
 
         if (trim($templateConfig->sorting) != "") {
@@ -143,7 +161,7 @@ class TemplateModel extends ItemModel {
         $db->setQuery($dataQuery);
         $data = $db->loadObjectList();
 
-        $pageSize = ($templateConfig->enable_pagination != "1" || intval($templateConfig->page_size) == 0) ? sizeof($data) : intval($templateConfig->page_size);
+        $pageSize = max(1, ($templateConfig->enable_pagination != "1" || intval($templateConfig->page_size) == 0) ? sizeof($data) : intval($templateConfig->page_size));
         $lastPageNumber = ceil(sizeof($data) / $pageSize);
 
         $joinedTables = [];
@@ -177,6 +195,8 @@ class TemplateModel extends ItemModel {
         $item->aliases = $aliases;
         
         $item->fields = $fields;
+        $item->urlParameters = $urlParameters;
+        $item->urlDbInserts = $urlDbInserts;
         $item->joinedTables = $joinedTables;
 
         return $item;

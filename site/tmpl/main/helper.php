@@ -87,6 +87,11 @@ function dbInsert($input, $db, $self) {
         $insertValues[] = formatInputValue($fieldValue, $fieldType, $db);
     }
 
+    foreach ($item->urlDbInserts as $urlDbInsert) {
+        $insertColumns[] = $urlDbInsert;
+        $insertValues[] = $db->quote($item->urlParameters[$urlDbInsert]);
+    }
+
     foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable->connectionType == "NToOne") {
             $foreignId = $input->get($joinedTable->alias, '', 'string');
@@ -155,6 +160,10 @@ function dbUpdate($input, $db, $self) {
         }
 
         $updateFields[] = $db->quoteName($fieldName) . " = " . formatInputValue($fieldValue, $fieldType, $db);
+    }
+
+    foreach ($item->urlDbInserts as $urlDbInsert) {
+        $updateFields[] = $db->quoteName($urlDbInsert) . " = " . $db->quote($item->urlParameters[$urlDbInsert]);
     }
 
     foreach ($item->joinedTables as $joinedTable) {

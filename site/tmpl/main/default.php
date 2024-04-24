@@ -120,6 +120,16 @@ $item = $this->getModel()->getItem();
     <?php if ($item->enableSearch) { echo '<input type="hidden" name="searchTerm" value="' . $searchTerm . '" />'; } ?>
     <?php if ($item->enablePagination) { echo '<input type="hidden" name="pageNumber" value="' . $pageNumber . '" />'; } ?>
 
+    <?php
+        foreach ($item->urlParameters as $parameterName => $urlParameter) {
+            $parameterValue = $input->get($parameterName, false, 'string');
+
+            if ($parameterValue != false) {
+                echo '<input type="hidden" name="' . $parameterName . '" value="' . $parameterValue . '" />';
+            }
+        }
+    ?>
+
     <input type="hidden" name="view" value="main" />
     <input type="hidden" name="templateConfigName" value="<?php echo $item->templateName; ?>" />
 </form>
