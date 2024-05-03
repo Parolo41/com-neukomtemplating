@@ -145,6 +145,17 @@
 			label="Allow create"
 		 />
 		<field
+			name="form_send_behaviour"
+			type="list"
+			default="list_both"
+			label="Form Send Behaviour"
+		>
+			<option value="list_on_both">Always return to list</option>
+			<option value="edit_on_update">List on insert, edit on update</option>
+			<option value="edit_on_insert">Edit on insert, list on update</option>
+			<option value="edit_on_both">Always go to Edit</option>
+		</field>
+		<field
 			name="access"
 			type="accesslevel"
 			label="Access Permissions"

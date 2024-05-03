@@ -46,6 +46,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('page_size'); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
+    <?php echo $this->getForm()->renderField('form_send_behaviour'); ?>
     <?php echo $this->getForm()->renderField('access'); ?>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
@@ -102,6 +103,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('page_size'); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
+    <?php echo $this->getForm()->renderField('form_send_behaviour'); ?>
     <?php echo $this->getForm()->renderField('access'); ?>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 

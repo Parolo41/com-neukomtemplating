@@ -49,13 +49,24 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     $input = Factory::getApplication()->input;
 
     if ($input->get('formAction', '', 'string') == "insert") {
-        if (dbInsert($input, $db, $this)) {
-            $act = 'list';
+        if ($lastRowId = dbInsert($input, $db, $this)) {
+            if ($item->formSendBehaviour == 'edit_on_insert' || $item->formSendBehaviour == 'edit_on_both') {
+                $act = 'edit';
+                $recordId = strval($lastRowId);
+            } else {
+                $act = 'list';
+            }
         }
     }
 
     if ($input->get('formAction', '', 'string') == "update") {
-        dbUpdate($input, $db, $this);
+        if (dbUpdate($input, $db, $this)) {
+            if ($item->formSendBehaviour == 'edit_on_update' || $item->formSendBehaviour == 'edit_on_both') {
+                $act = 'edit';
+            } else {
+                $act = 'list';
+            }
+        }
     }
 
     if ($input->get('formAction', '', 'string') == "delete") {

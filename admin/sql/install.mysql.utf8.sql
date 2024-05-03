@@ -17,6 +17,7 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `show_detail_page` BOOLEAN,
     `allow_edit` BOOLEAN,
     `allow_create` BOOLEAN,
+    `form_send_behaviour` VARCHAR(25) NOT NULL DEFAULT 'list_on_both',
     `access` INT NOT NULL DEFAULT 1,
     `joined_tables` VARCHAR(500),
     `id_field_name` VARCHAR(40) NOT NULL,

@@ -1,0 +1,1 @@
+ALTER TABLE `#__neukomtemplating_templates` ADD `form_send_behaviour` VARCHAR(25) NOT NULL DEFAULT 'list_on_both';

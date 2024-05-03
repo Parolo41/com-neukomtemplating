@@ -111,6 +111,8 @@ function dbInsert($input, $db, $self) {
     $db->setQuery($query);
     $db->execute();
 
+    $lastRowId = $db->insertId();
+
     foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable->connectionType == "NToN") {
             $localForeignKey = $db->insertid();
@@ -125,7 +127,7 @@ function dbInsert($input, $db, $self) {
         }
     }
 
-    return 1;
+    return $lastRowId;
 }
 
 function dbUpdate($input, $db, $self) {

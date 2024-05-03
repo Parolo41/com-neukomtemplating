@@ -45,6 +45,7 @@ class TemplateModel extends ItemModel {
             'page_size',
             'allow_edit',
             'allow_create',
+            'form_send_behaviour',
             'access',
             'joined_tables',
         ];
@@ -191,6 +192,7 @@ class TemplateModel extends ItemModel {
         $item->lastPageNumber = $lastPageNumber;
         $item->allowEdit = ($templateConfig->allow_edit == "1");
         $item->allowCreate = ($templateConfig->allow_create == "1");
+        $item->formSendBehaviour = $templateConfig->form_send_behaviour;
         $item->data = $data;
         $item->aliases = $aliases;
         
