@@ -290,9 +290,8 @@ function uploadFile($input, $fieldName) {
 <script>
     <?php if ($item->allowEdit || $item->allowCreate) { ?>
 
-    function openDetailPage(recordId) {
-        $('#detailNavForm input[name="act"]').val('detail');
-        $('#detailNavForm input[name="recordId"]').val(recordId);
+    function openNewForm() {
+        $('#detailNavForm input[name="act"]').val('new');
         submitNavForm();
     }
 
@@ -302,8 +301,25 @@ function uploadFile($input, $fieldName) {
         submitNavForm();
     }
 
-    function openNewForm() {
-        $('#detailNavForm input[name="act"]').val('new');
+    function confirmDelete() {
+        document.getElementById("formAction").value = 'delete';
+
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'none';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'block';
+    }
+
+    function cancelDelete() {
+        document.getElementById("formAction").value = "update";
+
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'block';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'none';
+    }
+
+    <?php } ?>
+
+    function openDetailPage(recordId) {
+        $('#detailNavForm input[name="act"]').val('detail');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
         submitNavForm();
     }
 
@@ -338,20 +354,4 @@ function uploadFile($input, $fieldName) {
 
         $('#detailNavForm').submit();
     }
-
-    function confirmDelete() {
-        document.getElementById("formAction").value = 'delete';
-
-        document.getElementById("neukomtemplating-formbuttons").style.display = 'none';
-        document.getElementById("neukomtemplating-deletebuttons").style.display = 'block';
-    }
-
-    function cancelDelete() {
-        document.getElementById("formAction").value = "update";
-
-        document.getElementById("neukomtemplating-formbuttons").style.display = 'block';
-        document.getElementById("neukomtemplating-deletebuttons").style.display = 'none';
-    }
-
-    <?php } ?>
 </script>
