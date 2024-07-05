@@ -82,6 +82,11 @@ $item = $this->getModel()->getItem();
 ?>
 
 <?php
+    $active = Factory::getApplication()->getMenu()->getActive();
+    $pageHeading = $active->getParams()->get('page_heading');
+
+    echo $pageHeading != '' ? '<h1 class="title">' . $pageHeading . '</h1>' : '';
+
     if ($act == 'detail' && $item->showDetailPage && $recordId != '') {
         foreach ($item->data as $data) {
             if ($data->{$item->idFieldName} == $recordId) {
