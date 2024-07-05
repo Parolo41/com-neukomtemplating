@@ -17,7 +17,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helper.php');
 
 $itemTemplate = $item->template;
 
-if (strpos($itemTemplate, 'editButton') == false) {
+if (strpos($itemTemplate, 'editButton') == false && strpos($itemTemplate, 'editLink') == false) {
     $itemTemplate = $itemTemplate . '{{editButton | raw}}';
 }
 
@@ -26,6 +26,7 @@ $loader = new \Twig\Loader\ArrayLoader([
     'detail_template' => $item->detailTemplate,
 ]);
 $twig = new \Twig\Environment($loader);
+$twig->addExtension(new Twig\Extra\Intl\IntlExtension());
 
 $emailCloakFilter = new \Twig\TwigFilter('email_cloak', function ($string, $displayText = '') {
     return JHtml::_('email.cloak', $string, 1, ($displayText == '' ? $string : $displayText));
