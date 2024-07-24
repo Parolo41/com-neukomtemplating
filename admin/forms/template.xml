@@ -24,6 +24,13 @@
 			required="true"
 		 />
 		<field
+			name="id_field_name"
+			type="text"
+			label="ID field name"
+			size="40"
+			required="true"
+		 />
+		<field
 			name="fields"
 			type="text"
 			label="Fields"
@@ -31,11 +38,39 @@
 			required="true"
 		 />
 		<field
+			name="url_parameters"
+			type="text"
+			label="URL Parameters"
+			size="200"
+			required="false"
+		 />
+		<field
 			name="condition"
 			type="text"
 			label="SQL Condition"
 			size="500"
-			required="true"
+			required="false"
+		 />
+		<field
+			name="sorting"
+			type="text"
+			label="Sorting"
+			size="80"
+			required="false"
+		 />
+		<field
+			name="limit"
+			type="number"
+			label="Limit"
+			default="0"
+			required="false"
+		 />
+		<field
+			name="user_id_link_field"
+			type="text"
+			label="User ID link field"
+			default=""
+			required="false"
 		 />
 		<field
 			name="header"
@@ -63,9 +98,46 @@
 			label="Footer"
 		 />
 		<field
+			name="detail_template"
+			type="textarea"
+			rows="10"
+			cols="5"
+			filter="raw"
+			label="Detail Template"
+			required="false"
+		 />
+		<field
+			name="joined_tables"
+			type="text"
+			label="Joined Tables"
+			size="500"
+		/>
+		<field
 			name="show_detail_page"
 			type="checkbox"
 			label="Show detail page"
+		 />
+		<field
+			name="enable_search"
+			type="checkbox"
+			label="Enable Search"
+		 />
+		<field
+			name="enable_pagination"
+			type="checkbox"
+			label="Enable Pagination"
+		 />
+		<field
+			name="page_size"
+			type="number"
+			label="Page Size"
+			default="0"
+			required="false"
+		 />
+		<field
+			name="allow_edit"
+			type="checkbox"
+			label="Allow edit"
 		 />
 		<field
 			name="allow_create"
@@ -73,9 +145,20 @@
 			label="Allow create"
 		 />
 		<field
-			name="allow_edit"
-			type="checkbox"
-			label="Allow edit"
+			name="form_send_behaviour"
+			type="list"
+			default="list_both"
+			label="Form Send Behaviour"
+		>
+			<option value="list_on_both">Always return to list</option>
+			<option value="edit_on_update">List on insert, edit on update</option>
+			<option value="edit_on_insert">Edit on insert, list on update</option>
+			<option value="edit_on_both">Always go to Edit</option>
+		</field>
+		<field
+			name="access"
+			type="accesslevel"
+			label="Access Permissions"
 		 />
 	</fieldset>
 </form>

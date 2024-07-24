@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="Neukom Templating">
+        <message><![CDATA[New Neukom Templating entry]]></message>
+    </layout>
+    <fields name="request">
+        <fieldset name="request">
+            <field  name="templateConfigName"
+                    type="string"
+                    label="Template Config Name"
+                    description="Name of the config to load"/>
+        </fieldset>
+    </fields>
+</metadata>

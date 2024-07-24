@@ -1,6 +1,4 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.snow.css" rel="stylesheet" />
-<script src="https://cdn.jsdelivr.net/npm/quill@2.0.0-rc.2/dist/quill.js"></script>
 
 <?php
 use Joomla\Filesystem\File;
@@ -49,7 +47,7 @@ function formatInputValue($value, $type, $db) {
         case "checkbox":
             return ($value == "on" ? "'1'" : "'0'");
         case "foreignId":
-            return ($value == "0" ? "NULL" : $db->quote($value));
+            return ($value == "NULL" ? "NULL" : $db->quote($value));
         default:
             return $db->quote($value);
     }
@@ -89,9 +87,14 @@ function dbInsert($input, $db, $self) {
         $insertValues[] = formatInputValue($fieldValue, $fieldType, $db);
     }
 
+    foreach ($item->urlDbInserts as $urlDbInsert) {
+        $insertColumns[] = $urlDbInsert;
+        $insertValues[] = $db->quote($item->urlParameters[$urlDbInsert]);
+    }
+
     foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable->connectionType == "NToOne") {
-            $foreignId = $input->get($joinedTable->name, '', 'string');
+            $foreignId = $input->get($joinedTable->alias, '', 'string');
 
             $insertColumns[] = $joinedTable->connectionInfo[0];
             $insertValues[] = formatInputValue($foreignId, "foreignId", $db);
@@ -108,6 +111,8 @@ function dbInsert($input, $db, $self) {
     $db->setQuery($query);
     $db->execute();
 
+    $lastRowId = $db->insertId();
+
     foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable->connectionType == "NToN") {
             $localForeignKey = $db->insertid();
@@ -122,7 +127,7 @@ function dbInsert($input, $db, $self) {
         }
     }
 
-    return 1;
+    return $lastRowId;
 }
 
 function dbUpdate($input, $db, $self) {
@@ -157,6 +162,10 @@ function dbUpdate($input, $db, $self) {
         }
 
         $updateFields[] = $db->quoteName($fieldName) . " = " . formatInputValue($fieldValue, $fieldType, $db);
+    }
+
+    foreach ($item->urlDbInserts as $urlDbInsert) {
+        $updateFields[] = $db->quoteName($urlDbInsert) . " = " . $db->quote($item->urlParameters[$urlDbInsert]);
     }
 
     foreach ($item->joinedTables as $joinedTable) {
@@ -281,9 +290,8 @@ function uploadFile($input, $fieldName) {
 <script>
     <?php if ($item->allowEdit || $item->allowCreate) { ?>
 
-    function openDetailPage(recordId) {
-        $('#detailNavForm input[name="act"]').val('detail');
-        $('#detailNavForm input[name="recordId"]').val(recordId);
+    function openNewForm() {
+        $('#detailNavForm input[name="act"]').val('new');
         submitNavForm();
     }
 
@@ -293,8 +301,25 @@ function uploadFile($input, $fieldName) {
         submitNavForm();
     }
 
-    function openNewForm() {
-        $('#detailNavForm input[name="act"]').val('new');
+    function confirmDelete() {
+        document.getElementById("formAction").value = 'delete';
+
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'none';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'block';
+    }
+
+    function cancelDelete() {
+        document.getElementById("formAction").value = "update";
+
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'block';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'none';
+    }
+
+    <?php } ?>
+
+    function openDetailPage(recordId) {
+        $('#detailNavForm input[name="act"]').val('detail');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
         submitNavForm();
     }
 
@@ -329,20 +354,4 @@ function uploadFile($input, $fieldName) {
 
         $('#detailNavForm').submit();
     }
-
-    function confirmDelete() {
-        document.getElementById("formAction").value = 'delete';
-
-        document.getElementById("neukomtemplating-formbuttons").style.display = 'none';
-        document.getElementById("neukomtemplating-deletebuttons").style.display = 'block';
-    }
-
-    function cancelDelete() {
-        document.getElementById("formAction").value = "update";
-
-        document.getElementById("neukomtemplating-formbuttons").style.display = 'block';
-        document.getElementById("neukomtemplating-deletebuttons").style.display = 'none';
-    }
-
-    <?php } ?>
 </script>

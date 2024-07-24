@@ -1,0 +1,1 @@
+ALTER TABLE `#__neukomtemplating_templates` ADD `detail_template` TEXT NOT NULL;

@@ -1,0 +1,1 @@
+ALTER TABLE `#__neukomtemplating_templates` ADD `url_parameters` VARCHAR(500) NOT NULL;

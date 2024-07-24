@@ -1,0 +1,1 @@
+ALTER TABLE `#__neukomtemplating_templates` ADD `sorting` VARCHAR(80) NOT NULL;

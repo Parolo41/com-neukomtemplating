@@ -1,0 +1,1 @@
+ALTER TABLE `#__neukomtemplating_templates` MODIFY `fields` VARCHAR(500) NOT NULL;
