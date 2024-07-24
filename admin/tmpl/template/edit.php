@@ -134,6 +134,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         <select name="type" onchange="updateFieldInputVisibility()">
             <option value="text">Text</option>
             <option value="textarea">Textarea</option>
+            <option value="texteditor">Text Editor</option>
             <option value="number">Number</option>
             <option value="date">Date</option>
             <option value="time">Time</option>

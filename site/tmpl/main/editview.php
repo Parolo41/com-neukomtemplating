@@ -3,10 +3,13 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 ?>
 
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
 <div id="neukomtemplating-editform">
     <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm" class="form-vertical">
         <?php
-        $permittedTypes = ["text", "textarea", "date", "time", "number", "checkbox", "select", "image"];
+        $permittedTypes = ["text", "textarea", "texteditor", "date", "time", "number", "checkbox", "select", "image"];
 
         foreach ($item->fields as $field) {
             if (array_key_exists($field[1], $item->aliases)) {
@@ -24,7 +27,7 @@ use Joomla\CMS\Uri\Uri;
             echo '<label for="neukomtemplating-input-' . $fieldName . '">' . $fieldDisplayName . '</label>';
 
             if ($fieldType == "texteditor") {
-                echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-textarea" rows="4" cols="50">' . $fieldValue . '</textarea><br>';
+                echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-textarea" rows="4" cols="50" hidden>' . $fieldValue . '</textarea><br>';
                 
                 ?>
                 <div id="neukomtemplating-texteditor-<?php echo $fieldName; ?>">
@@ -46,7 +49,7 @@ use Joomla\CMS\Uri\Uri;
                         document.getElementById('neukomtemplating-input-<?php echo $fieldName; ?>').style.display = 'none;'
                     } catch(e) {
                         document.getElementById('neukomtemplating-input-<?php echo $fieldName; ?>').style.display = 'block;'
-                        documnet.getElementById('neukomtemplating-texteditor-<?php echo $fieldName; ?>').style.display = 'none;'
+                        document.getElementById('neukomtemplating-texteditor-<?php echo $fieldName; ?>').style.display = 'none;'
                     }
                 </script>
                 <?php
