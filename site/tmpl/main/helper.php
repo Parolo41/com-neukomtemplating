@@ -7,6 +7,7 @@ function validateInputFormat($value, $type) {
     $validationPatterns = array(
         'text' => "/.*/",
         'textarea' => "/(?s).*/",
+        'texteditor' => "/(?s).*/",
         'date' => "/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/",
         'time' => "/^[0-2]?[0-9]:[0-5][0-9]$/",
         'number' => "/^[0-9]*$/",
@@ -73,6 +74,8 @@ function dbInsert($input, $db, $self) {
 
         if ($fieldType == 'image') {
             $fieldValue = uploadFile($input, $fieldName);
+        } elseif ($fieldType == 'texteditor') {
+            $fieldValue = $input->get($fieldName, '', 'raw');
         } elseif (array_key_exists($fieldType, $item->aliases)) {
             $fieldValue = strval($item->aliases[$fieldType]);
         } else {
@@ -151,6 +154,8 @@ function dbUpdate($input, $db, $self) {
             $fieldValue = uploadFile($input, $fieldName);
 
             if ($fieldValue == "") { continue; }
+        } elseif ($fieldType == 'texteditor') {
+            $fieldValue = $input->get($fieldName, '', 'raw');
         } elseif (array_key_exists($fieldType, $item->aliases)) {
             $fieldValue = strval($item->aliases[$fieldType]);
         } else {

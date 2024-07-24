@@ -3,10 +3,13 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 ?>
 
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.js"></script>
+
 <div id="neukomtemplating-editform">
     <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm" class="form-vertical">
         <?php
-        $permittedTypes = ["text", "textarea", "date", "time", "number", "checkbox", "select", "image"];
+        $permittedTypes = ["text", "textarea", "texteditor", "date", "time", "number", "checkbox", "select", "image"];
 
         foreach ($item->fields as $field) {
             if (array_key_exists($field[1], $item->aliases)) {
@@ -21,7 +24,32 @@ use Joomla\CMS\Uri\Uri;
             echo '<div id="neukomtemplating-field-' . $fieldName . '">';
             echo '<label for="neukomtemplating-input-' . $fieldName . '">' . $fieldDisplayName . '</label>';
 
-            if ($fieldType == "textarea") {
+            if ($fieldType == "texteditor") {
+                echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-textarea" rows="4" cols="50" hidden></textarea><br>';
+                
+                ?>
+                <div id="neukomtemplating-texteditor-<?php echo $fieldName; ?>"></div>
+
+                <script>
+                    try {
+                        quills = ( typeof quills != 'undefined' && quills instanceof Array ) ? quills : []
+
+                        quills['<?php echo $fieldName; ?>'] = new Quill('#neukomtemplating-texteditor-<?php echo $fieldName; ?>', {
+                            theme: 'snow',
+                        });
+
+                        quills['<?php echo $fieldName; ?>'].on('text-change', (delta, oldDelta, source) => {
+                            document.getElementById('neukomtemplating-input-<?php echo $fieldName; ?>').value = quills['<?php echo $fieldName; ?>'].getSemanticHTML();
+                        });
+
+                        document.getElementById('neukomtemplating-input-<?php echo $fieldName; ?>').style.display = 'none;'
+                    } catch(e) {
+                        document.getElementById('neukomtemplating-input-<?php echo $fieldName; ?>').style.display = 'block;'
+                        document.getElementById('neukomtemplating-texteditor-<?php echo $fieldName; ?>').style.display = 'none;'
+                    }
+                </script>
+                <?php
+            } else if ($fieldType == "textarea") {
                 echo '<textarea id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-textarea" rows="4" cols="50"></textarea><br>';
             } else if ($fieldType == "select") {
                 echo '<select id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-select">';
