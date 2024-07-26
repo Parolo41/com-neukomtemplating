@@ -9,7 +9,7 @@ use Joomla\CMS\Uri\Uri;
 <div id="neukomtemplating-editform">
     <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm" class="form-vertical">
         <?php
-        $permittedTypes = ["text", "textarea", "texteditor", "date", "time", "number", "checkbox", "select", "image"];
+        $permittedTypes = ["text", "textarea", "texteditor", "date", "time", "number", "checkbox", "select", "image", "pdf"];
 
         foreach ($item->fields as $field) {
             if (array_key_exists($field[1], $item->aliases)) {
@@ -67,6 +67,9 @@ use Joomla\CMS\Uri\Uri;
             } else if ($fieldType == "image") {
                 echo '<input type="file" accept="image/png, image/jpeg" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-image" /><br>';
                 echo '<span id="neukomtemplating-input-' . $fieldName . '-current">' . $fieldValue . '</span><br>';
+            } else if ($fieldType == "pdf") {
+                echo '<input type="file" accept="application/pdf" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-image" /><br>';
+                echo '<span id="neukomtemplating-input-' . $fieldName . '-current">' . $fieldValue . '</span><br>';
             } else if ($fieldType == "checkbox") {
                 $checked = $fieldValue == '1' ? ' checked ' : '';
                 echo '<input type="checkbox" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '"' . $checked . 'class="neukomtemplating-' . $fieldType . '" /><br>';
@@ -91,7 +94,7 @@ use Joomla\CMS\Uri\Uri;
 
             if ($joinedTable->connectionType == "NToOne") {
                 echo '<select id="neukomtemplating-select-' . $joinedTable->alias . '" name="' . $joinedTable->alias . '">';
-                echo '<option value="0">Null</option>';
+                echo '<option value="NULL">Null</option>';
 
                 foreach ($joinedTable->options as $option) {
                     $selected = ($data->{$joinedTable->alias} != null && $option->{$joinedTable->connectionInfo[1]} == $data->{$joinedTable->alias}[0]->{$joinedTable->connectionInfo[1]}) ? ' selected ' : '';

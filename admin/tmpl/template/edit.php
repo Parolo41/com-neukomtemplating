@@ -141,6 +141,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             <option value="checkbox">Checkbox</option>
             <option value="select">Select</option>
             <option value="image">Image</option>
+            <option value="pdf">PDF</option>
             <option value="userid">User ID</option>
             <option value="username">User Name</option>
         </select> <br/>

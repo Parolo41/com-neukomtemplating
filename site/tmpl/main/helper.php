@@ -14,6 +14,7 @@ function validateInputFormat($value, $type) {
         'checkbox' => "/^(on)?$/",
         'select' => "/.*/",
         'image' => "/.+\\.(png|jpg|gif|bmp|jpeg|PNG|JPG|GIF|BMP|JPEG)$/",
+        'pdf' => "/.+\\.(pdf|PDF)$/",
     );
 
     return preg_match($validationPatterns[$type], $value);
@@ -73,7 +74,9 @@ function dbInsert($input, $db, $self) {
         $fieldRequired = $field[2];
 
         if ($fieldType == 'image') {
-            $fieldValue = uploadFile($input, $fieldName);
+            $fieldValue = uploadFile($input, $fieldName, "/images/imageuploads/");
+        } elseif ($fieldType == 'pdf') {
+            $fieldValue = uploadFile($input, $fieldName, "/images/documentuploads/");
         } elseif ($fieldType == 'texteditor') {
             $fieldValue = $input->get($fieldName, '', 'raw');
         } elseif (array_key_exists($fieldType, $item->aliases)) {
@@ -151,7 +154,11 @@ function dbUpdate($input, $db, $self) {
         $fieldRequired = $field[2];
 
         if ($fieldType == 'image') {
-            $fieldValue = uploadFile($input, $fieldName);
+            $fieldValue = uploadFile($input, $fieldName, "/images/imageuploads/");
+
+            if ($fieldValue == "") { continue; }
+        } elseif ($fieldType == 'pdf') {
+            $fieldValue = uploadFile($input, $fieldName, "/documents/documentuploads/");
 
             if ($fieldValue == "") { continue; }
         } elseif ($fieldType == 'texteditor') {
@@ -265,7 +272,7 @@ function addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeig
     $db->execute();
 }
 
-function uploadFile($input, $fieldName) {
+function uploadFile($input, $fieldName, $subFolder) {
     $file = $input->files->get($fieldName);
 
 
@@ -281,7 +288,7 @@ function uploadFile($input, $fieldName) {
     $filename = File::makeSafe($pathParts['filename'] . "_" . date('Ymdis') . "." . $pathParts['extension']);
 
     $source  = $file['tmp_name'];
-    $destination = JPATH_SITE . "/images/imageuploads/" . $filename;
+    $destination = JPATH_SITE . $subFolder . $filename;
     
     if (File::upload($source, $destination)) {
         return $filename;
