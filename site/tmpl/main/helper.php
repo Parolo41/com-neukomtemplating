@@ -9,7 +9,7 @@ function validateInputFormat($value, $type) {
         'textarea' => "/(?s).*/",
         'texteditor' => "/(?s).*/",
         'date' => "/^\d{4}\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01])$/",
-        'time' => "/^[0-2]?[0-9]:[0-5][0-9]$/",
+        'time' => "/^[0-2]?[0-9]:[0-5][0-9](:[0-5][0-9])?$/",
         'number' => "/^[0-9]*$/",
         'checkbox' => "/^(on)?$/",
         'select' => "/.*/",
@@ -158,7 +158,7 @@ function dbUpdate($input, $db, $self) {
 
             if ($fieldValue == "") { continue; }
         } elseif ($fieldType == 'pdf') {
-            $fieldValue = uploadFile($input, $fieldName, "/documents/documentuploads/");
+            $fieldValue = uploadFile($input, $fieldName, "/images/documentuploads/");
 
             if ($fieldValue == "") { continue; }
         } elseif ($fieldType == 'texteditor') {
