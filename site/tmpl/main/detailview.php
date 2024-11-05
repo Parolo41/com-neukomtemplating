@@ -12,6 +12,6 @@
     ?>
 
     <div id="neukomtemplating-formbuttons">
-        <button type="button" id="backToListButton" onClick="openListView()">Zurück</button>
+        <button type="button" id="backToListButton" onClick="openListView()"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></button>
     </div>
 </div>

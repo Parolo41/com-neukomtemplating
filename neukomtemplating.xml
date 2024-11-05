@@ -4,15 +4,19 @@
     <creationDate>2022</creationDate>
     <author>Neukom</author>
     <version>0.5.3</version>
-    <description>
-    </description>
+    <description>COM_NEUKOMTEMPLATING_DESCRIPTION</description>
     <namespace path="src/">Neukom\Component\NeukomTemplating</namespace>
 
     <files folder="site/">
         <folder>src</folder>
         <folder>tmpl</folder>
         <folder>vendor</folder>
+        <folder>language</folder>
     </files>
+
+    <languages folder="site/">
+        <language tag="en-GB">language/en-GB/com_neukomtemplating.ini</language>
+    </languages>
             
     <administration>
         <menu view="templates">Neukom Templating</menu>
@@ -22,7 +26,13 @@
             <folder>src</folder>
             <folder>sql</folder>
             <folder>tmpl</folder>
+            <folder>language</folder>
         </files>
+        
+        <languages folder="admin/">
+            <language tag="en-GB">language/en-GB/com_neukomtemplating.ini</language>
+            <language tag="en-GB">language/en-GB/com_neukomtemplating.sys.ini</language>
+        </languages>
     </administration>
     
     <install>

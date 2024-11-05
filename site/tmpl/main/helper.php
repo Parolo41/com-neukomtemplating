@@ -22,7 +22,7 @@ function validateInputFormat($value, $type) {
 
 function validateInput($value, $name, $type, $required) {
     if ($required && $value == '') {
-        JFactory::getApplication()->enqueueMessage("Validierungsfehler: $name kann nicht leer sein", 'error');
+        JFactory::getApplication()->enqueueMessage(sprintf(Text::_('COM_NEUKOMTEMPLATING_ERROR_EMPTY'), $name), 'error');
         return false;
     } 
     
@@ -31,7 +31,7 @@ function validateInput($value, $name, $type, $required) {
     }
 
     if (!validateInputFormat($value, $type)) {
-        JFactory::getApplication()->enqueueMessage("Validierungsfehler: $value passt nicht zum Format $type", 'error');
+        JFactory::getApplication()->enqueueMessage(sprintf(Text::_('COM_NEUKOMTEMPLATING_ERROR_FORMAT'), $name, $type), 'error');
         return false;
     }
 

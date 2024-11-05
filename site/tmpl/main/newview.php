@@ -111,8 +111,8 @@ use Joomla\CMS\Uri\Uri;
         <input type="hidden" id="formAction" name="formAction" value="insert">
 
         <div id="neukomtemplating-formbuttons">
-            <button type="submit">Eintragen</button>
-            <button type="button" id="backToListButton" onClick="openListView()">Zurück</button>
+            <button type="submit"><?php echo Text::_('COM_NEUKOMTEMPLATING_SUBMIT'); ?></button>
+            <button type="button" id="backToListButton" onClick="openListView()"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></button>
         </div>
     </form>
 </div>

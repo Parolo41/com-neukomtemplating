@@ -94,7 +94,7 @@ use Joomla\CMS\Uri\Uri;
 
             if ($joinedTable->connectionType == "NToOne") {
                 echo '<select id="neukomtemplating-select-' . $joinedTable->alias . '" name="' . $joinedTable->alias . '">';
-                echo '<option value="NULL">Null</option>';
+                echo '<option value="NULL">' . Text::_('COM_NEUKOMTEMPLATING_NONE') . '</option>';
 
                 foreach ($joinedTable->options as $option) {
                     $selected = ($data->{$joinedTable->alias} != null && $option->{$joinedTable->connectionInfo[1]} == $data->{$joinedTable->alias}[0]->{$joinedTable->connectionInfo[1]}) ? ' selected ' : '';
@@ -127,15 +127,15 @@ use Joomla\CMS\Uri\Uri;
         <input type="hidden" id="recordId" name="recordId" value="<?php echo $data->{$item->idFieldName} ?>">
 
         <div id="neukomtemplating-formbuttons">
-            <button type="submit">Eintragen</button>
-            <button type="button" id="backToListButton" onClick="openListView()">Zurück</button>
-            <button type="button" id="deleteRecordButton" onClick="confirmDelete()">Löschen</button>
+            <button type="submit"><?php Text::_('COM_NEUKOMTEMPLATING_SUBMIT') ?></button>
+            <button type="button" id="backToListButton" onClick="openListView()"><?php Text::_('COM_NEUKOMTEMPLATING_BACK') ?></button>
+            <button type="button" id="deleteRecordButton" onClick="confirmDelete()"><?php Text::_('COM_NEUKOMTEMPLATING_DELETE') ?></button>
         </div>
 
         <div id="neukomtemplating-deletebuttons" style="display: none">
-            Bestätigen <br>
-            <button type="submit">Ja</button>
-            <button type="button" onClick="cancelDelete()">Nein</button>
+            <?php echo Text::_('COM_NEUKOMTEMPLATING_CONFIRM'); ?> <br>
+            <button type="submit"><?php echo Text::_('COM_NEUKOMTEMPLATING_YES'); ?></button>
+            <button type="button" onClick="cancelDelete()"><?php echo Text::_('COM_NEUKOMTEMPLATING_NO'); ?></button>
         </div>
     </form>
 </div>

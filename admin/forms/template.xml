@@ -4,7 +4,7 @@
 		<field
 			name="id"
 			type="number"
-			label="ID"
+			label="COM_NEUKOMTEMPLATING_FORM_ID"
 			default="0"
 			class="readonly"
 			readonly="true"
@@ -12,63 +12,63 @@
 		<field
 			name="name"
 			type="text"
-			label="Name"
+			label="COM_NEUKOMTEMPLATING_FORM_NAME"
 			size="40"
 			required="true"
 		 />
 		<field
 			name="tablename"
 			type="text"
-			label="Tablename"
+			label="COM_NEUKOMTEMPLATING_FORM_TABLENAME"
 			size="40"
 			required="true"
 		 />
 		<field
 			name="id_field_name"
 			type="text"
-			label="ID field name"
+			label="COM_NEUKOMTEMPLATING_FORM_ID_FIELD_NAME"
 			size="40"
 			required="true"
 		 />
 		<field
 			name="fields"
 			type="text"
-			label="Fields"
+			label="COM_NEUKOMTEMPLATING_FORM_FIELDS"
 			size="200"
 			required="true"
 		 />
 		<field
 			name="url_parameters"
 			type="text"
-			label="URL Parameters"
+			label="COM_NEUKOMTEMPLATING_FORM_URL_PARAMETERS"
 			size="200"
 			required="false"
 		 />
 		<field
 			name="condition"
 			type="text"
-			label="SQL Condition"
+			label="COM_NEUKOMTEMPLATING_FORM_CONDITION"
 			size="500"
 			required="false"
 		 />
 		<field
 			name="sorting"
 			type="text"
-			label="Sorting"
+			label="COM_NEUKOMTEMPLATING_FORM_SORTING"
 			size="80"
 			required="false"
 		 />
 		<field
 			name="limit"
 			type="number"
-			label="Limit"
+			label="COM_NEUKOMTEMPLATING_FORM_LIMIT"
 			default="0"
 			required="false"
 		 />
 		<field
 			name="user_id_link_field"
 			type="text"
-			label="User ID link field"
+			label="COM_NEUKOMTEMPLATING_FORM_USER_ID_LINK_FIELD"
 			default=""
 			required="false"
 		 />
@@ -78,7 +78,7 @@
 			rows="10"
 			cols="5"
 			filter="raw"
-			label="Header"
+			label="COM_NEUKOMTEMPLATING_FORM_HEADER"
 		 />
 		<field
 			name="template"
@@ -86,7 +86,7 @@
 			rows="10"
 			cols="5"
 			filter="raw"
-			label="Template"
+			label="COM_NEUKOMTEMPLATING_FORM_TEMPLATE"
 			required="true"
 		 />
 		<field
@@ -95,7 +95,7 @@
 			rows="10"
 			cols="5"
 			filter="raw"
-			label="Footer"
+			label="COM_NEUKOMTEMPLATING_FORM_FOOTER"
 		 />
 		<field
 			name="detail_template"
@@ -103,62 +103,62 @@
 			rows="10"
 			cols="5"
 			filter="raw"
-			label="Detail Template"
+			label="COM_NEUKOMTEMPLATING_FORM_DETAIL_TEMPLATE"
 			required="false"
 		 />
 		<field
 			name="joined_tables"
 			type="text"
-			label="Joined Tables"
+			label="COM_NEUKOMTEMPLATING_FORM_JOINED_TABLES"
 			size="500"
 		/>
 		<field
 			name="show_detail_page"
 			type="checkbox"
-			label="Show detail page"
+			label="COM_NEUKOMTEMPLATING_FORM_SHOW_DETAIL_PAGE"
 		 />
 		<field
 			name="enable_search"
 			type="checkbox"
-			label="Enable Search"
+			label="COM_NEUKOMTEMPLATING_FORM_ENABLE_SEARCH"
 		 />
 		<field
 			name="enable_pagination"
 			type="checkbox"
-			label="Enable Pagination"
+			label="COM_NEUKOMTEMPLATING_FORM_ENABLE_PAGINATION"
 		 />
 		<field
 			name="page_size"
 			type="number"
-			label="Page Size"
+			label="COM_NEUKOMTEMPLATING_FORM_PAGE_SIZE"
 			default="0"
 			required="false"
 		 />
 		<field
 			name="allow_edit"
 			type="checkbox"
-			label="Allow edit"
+			label="COM_NEUKOMTEMPLATING_FORM_ALLOW_EDIT"
 		 />
 		<field
 			name="allow_create"
 			type="checkbox"
-			label="Allow create"
+			label="COM_NEUKOMTEMPLATING_FORM_ALLOW_CREATE"
 		 />
 		<field
 			name="form_send_behaviour"
 			type="list"
 			default="list_both"
-			label="Form Send Behaviour"
+			label="COM_NEUKOMTEMPLATING_FORM_FORM_SEND_BEHAVIOUR"
 		>
-			<option value="list_on_both">Always return to list</option>
-			<option value="edit_on_update">List on insert, edit on update</option>
-			<option value="edit_on_insert">Edit on insert, list on update</option>
-			<option value="edit_on_both">Always go to Edit</option>
+			<option value="list_on_both">COM_NEUKOMTEMPLATING_FORM_LIST_ON_BOTH</option>
+			<option value="edit_on_update">COM_NEUKOMTEMPLATING_FORM_EDIT_ON_UPDATE</option>
+			<option value="edit_on_insert">COM_NEUKOMTEMPLATING_FORM_EDIT_ON_INSERT</option>
+			<option value="edit_on_both">COM_NEUKOMTEMPLATING_FORM_EDIT_ON_BOTH</option>
 		</field>
 		<field
 			name="access"
 			type="accesslevel"
-			label="Access Permissions"
+			label="COM_NEUKOMTEMPLATING_FORM_ACCESS"
 		 />
 	</fieldset>
 </form>

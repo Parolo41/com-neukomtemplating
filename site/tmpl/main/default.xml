@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
     <layout title="Neukom Templating">
-        <message><![CDATA[A Neukom Templating page]]></message>
+        <message>COM_NEUKOMTEMPLATING_MAIN_MESSAGE</message>
     </layout>
     <fields name="request">
         <fieldset name="request">
