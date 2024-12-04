@@ -1,3 +1,7 @@
+<?php
+use Joomla\CMS\Language\Text;
+?>
+
 <div id="neukomtemplating-detailview">
     <?php
         $twigParams = [

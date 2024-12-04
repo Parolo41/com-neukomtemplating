@@ -3,6 +3,7 @@
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
 $app = Factory::getApplication();
@@ -251,15 +252,15 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         clone.hidden = false;
 
         remDiv = document.createElement('DIV');
-        remDiv.innerHTML = '<button type="button" onclick="removeField(' + fieldNumber + ')">Remove Field</button>'
+        remDiv.innerHTML = '<button type="button" onclick="removeField(' + fieldNumber + ')"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_REMOVE_FIELD'); ?></button>'
         clone.appendChild(remDiv.firstChild);
 
         moveUpDiv = document.createElement('DIV');
-        moveUpDiv.innerHTML = '<button type="button" onclick="moveUp(' + fieldNumber + ')">Up</button>'
+        moveUpDiv.innerHTML = '<button type="button" onclick="moveUp(' + fieldNumber + ')"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_UP'); ?></button>'
         clone.appendChild(moveUpDiv.firstChild);
 
         moveDownDiv = document.createElement('DIV');
-        moveDownDiv.innerHTML = '<button type="button" onclick="moveDown(' + fieldNumber + ')">Down</button>'
+        moveDownDiv.innerHTML = '<button type="button" onclick="moveDown(' + fieldNumber + ')"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_DOWN'); ?></button>'
         clone.appendChild(moveDownDiv.firstChild);
 
         document.getElementById("template-fields-area").appendChild(clone);
@@ -270,7 +271,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     }
 
     function removeField(fieldId) {
-        if (confirm('Are you sure you want to remove this field?')) {
+        if (confirm('<?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_REMOVE_FIELD_CONFIRM'); ?>')) {
             document.getElementById("template-field-" + fieldId).remove();
             updateValues();
         }
@@ -283,7 +284,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         clone.hidden = false;
 
         remDiv = document.createElement('DIV');
-        remDiv.innerHTML = '<button type="button" onclick="removeUrlParameter(' + parameterNumber + ')">Remove Parameter</button>'
+        remDiv.innerHTML = '<button type="button" onclick="removeUrlParameter(' + parameterNumber + ')"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_REMOVE_PARAMETER'); ?></button>'
         clone.appendChild(remDiv.firstChild);
 
         document.getElementById("url-parameters-area").appendChild(clone);
@@ -294,7 +295,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     }
 
     function removeUrlParameter(parameterId) {
-        if (confirm('Are you sure you want to remove this URL parameter?')) {
+        if (confirm('<?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_REMOVE_PARAMETER_CONFIRM'); ?>')) {
             document.getElementById("url-parameter-" + parameterId).remove();
             updateValues();
         }
@@ -325,7 +326,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         clone.hidden = false;
 
         div = document.createElement('DIV');
-        div.innerHTML = '<button type="button" onclick="removeJoinedTable(' + joinedTableNumber + ')">Remove Joined Table</button>'
+        div.innerHTML = '<button type="button" onclick="removeJoinedTable(' + joinedTableNumber + ')"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_REMOVE_JOINED_TABLE'); ?></button>'
         clone.appendChild(div.firstChild);
 
         document.getElementById("joined-tables-area").appendChild(clone);
@@ -336,7 +337,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     }
 
     function removeJoinedTable(joinedTableId) {
-        if (confirm('Are you sure you want to remove this joined table?')) {
+        if (confirm('<?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_REMOVE_JOINED_FIELD_CONFIRM'); ?>')) {
             document.getElementById("joined-table-" + joinedTableId).remove();
             updateValues();
         }

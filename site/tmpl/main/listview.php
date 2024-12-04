@@ -1,6 +1,10 @@
+<?php
+use Joomla\CMS\Language\Text;
+?>
+
 <div id="neukomtemplating-listview">
     <?php
-        echo $item->allowCreate ? '<button onClick="openNewForm()">Neu</button>' : "";
+        echo $item->allowCreate ? '<button onClick="openNewForm()">' . Text::_('COM_NEUKOMTEMPLATING_NEW') . '</button>' : "";
         echo $item->header;
         foreach ($item->data as $data) {
             $twigParams = [

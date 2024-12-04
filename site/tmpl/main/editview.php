@@ -1,6 +1,7 @@
 <?php
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Language\Text;
 ?>
 
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.2/dist/quill.snow.css" rel="stylesheet" />
@@ -70,7 +71,7 @@ use Joomla\CMS\Uri\Uri;
 
                 if (!$field[2]) {
                     echo '<input type="checkbox" id="neukomtemplating-input-' . $fieldName . '-delete" name="' . $fieldName . '-delete" />';
-                    echo '<label for="neukomtemplating-input-' . $fieldName . '-delete">Löschen</label>';
+                    echo '<label for="neukomtemplating-input-' . $fieldName . '-delete">' . Text::_('COM_NEUKOMTEMPLATING_DELETE') . '</label>';
                 }
             } else if ($fieldType == "pdf") {
                 echo '<input type="file" accept="application/pdf" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-image" /><br>';
@@ -78,7 +79,7 @@ use Joomla\CMS\Uri\Uri;
                 
                 if (!$field[2]) {
                     echo '<input type="checkbox" id="neukomtemplating-input-' . $fieldName . '-delete" name="' . $fieldName . '-delete" />';
-                    echo '<label for="neukomtemplating-input-' . $fieldName . '-delete">Löschen</label>';
+                    echo '<label for="neukomtemplating-input-' . $fieldName . '-delete">' . Text::_('COM_NEUKOMTEMPLATING_DELETE') . '</label>';
                 }
             } else if ($fieldType == "checkbox") {
                 $checked = $fieldValue == '1' ? ' checked ' : '';
@@ -137,9 +138,9 @@ use Joomla\CMS\Uri\Uri;
         <input type="hidden" id="recordId" name="recordId" value="<?php echo $data->{$item->idFieldName} ?>">
 
         <div id="neukomtemplating-formbuttons">
-            <button type="submit"><?php Text::_('COM_NEUKOMTEMPLATING_SUBMIT') ?></button>
-            <button type="button" id="backToListButton" onClick="openListView()"><?php Text::_('COM_NEUKOMTEMPLATING_BACK') ?></button>
-            <button type="button" id="deleteRecordButton" onClick="confirmDelete()"><?php Text::_('COM_NEUKOMTEMPLATING_DELETE') ?></button>
+            <button type="submit"><?php echo Text::_('COM_NEUKOMTEMPLATING_SUBMIT') ?></button>
+            <button type="button" id="backToListButton" onClick="openListView()"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK') ?></button>
+            <button type="button" id="deleteRecordButton" onClick="confirmDelete()"><?php echo Text::_('COM_NEUKOMTEMPLATING_DELETE') ?></button>
         </div>
 
         <div id="neukomtemplating-deletebuttons" style="display: none">
