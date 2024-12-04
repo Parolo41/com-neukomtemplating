@@ -67,9 +67,19 @@ use Joomla\CMS\Uri\Uri;
             } else if ($fieldType == "image") {
                 echo '<input type="file" accept="image/png, image/jpeg" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-image" /><br>';
                 echo '<span id="neukomtemplating-input-' . $fieldName . '-current">' . $fieldValue . '</span><br>';
+
+                if (!$field[2]) {
+                    echo '<input type="checkbox" id="neukomtemplating-input-' . $fieldName . '-delete" name="' . $fieldName . '-delete" />';
+                    echo '<label for="neukomtemplating-input-' . $fieldName . '-delete">Löschen</label>';
+                }
             } else if ($fieldType == "pdf") {
                 echo '<input type="file" accept="application/pdf" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '" class="neukomtemplating-image" /><br>';
                 echo '<span id="neukomtemplating-input-' . $fieldName . '-current">' . $fieldValue . '</span><br>';
+                
+                if (!$field[2]) {
+                    echo '<input type="checkbox" id="neukomtemplating-input-' . $fieldName . '-delete" name="' . $fieldName . '-delete" />';
+                    echo '<label for="neukomtemplating-input-' . $fieldName . '-delete">Löschen</label>';
+                }
             } else if ($fieldType == "checkbox") {
                 $checked = $fieldValue == '1' ? ' checked ' : '';
                 echo '<input type="checkbox" id="neukomtemplating-input-' . $fieldName . '" name="' . $fieldName . '"' . $checked . 'class="neukomtemplating-' . $fieldType . '" /><br>';
