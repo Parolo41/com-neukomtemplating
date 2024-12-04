@@ -154,13 +154,21 @@ function dbUpdate($input, $db, $self) {
         $fieldRequired = $field[2];
 
         if ($fieldType == 'image') {
-            $fieldValue = uploadFile($input, $fieldName, "/images/imageuploads/");
+            if ($input->get($fieldName . '-delete', '', 'string') == 'on') {
+                $fieldValue = '';
+            } else {
+                $fieldValue = uploadFile($input, $fieldName, "/images/imageuploads/");
 
-            if ($fieldValue == "") { continue; }
+                if ($fieldValue == "") { continue; }
+            }
         } elseif ($fieldType == 'pdf') {
-            $fieldValue = uploadFile($input, $fieldName, "/images/documentuploads/");
+            if ($input->get($fieldName . '-delete', '', 'string') == '1') {
+                $fieldValue = '';
+            } else {
+                $fieldValue = uploadFile($input, $fieldName, "/images/documentuploads/");
 
-            if ($fieldValue == "") { continue; }
+                if ($fieldValue == "") { continue; }
+            }
         } elseif ($fieldType == 'texteditor') {
             $fieldValue = $input->get($fieldName, '', 'raw');
         } elseif (array_key_exists($fieldType, $item->aliases)) {
@@ -278,8 +286,6 @@ function uploadFile($input, $fieldName, $subFolder) {
 
     if (is_null($file) || $file['tmp_name'] == "") {
         error_log("File not found: " . $fieldName);
-        error_log(var_export($input->files, true));
-        error_log(var_export($file, true));
         return "";
     }
 
