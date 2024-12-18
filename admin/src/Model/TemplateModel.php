@@ -33,7 +33,73 @@ class TemplateModel extends AdminModel {
     }
 
     protected function prepareTable($table) {
-        $form = Factory::getApplication()->input->getVar('jform', array(),'post', 'array');
+        $form = Factory::getApplication()->input->getVar('jform', array(), 'post', 'array');
+
+        $fieldInputs = [
+            'field_name',
+            'field_showInForm',
+            'field_label',
+            'field_type',
+            'field_selectOptions',
+            'field_required',
+        ];
+
+        $fields = array();
+
+        foreach ($fieldInputs as $input) {
+            $values = Factory::getApplication()->input->getVar($input, array(), 'post', 'array');
+
+            for ($i = 0; $i < count($values); $i++) {
+                $fields[$i][$input] = $values[$i];
+            }
+        }
+
+        $parameterInputs = [
+            'parameter_name',
+            'parameter_default',
+            'parameter_insertIntoDb',
+        ];
+
+        $urlParameters = array();
+
+        foreach ($parameterInputs as $input) {
+            $values = Factory::getApplication()->input->getVar($input, array(), 'post', 'array');
+
+            for ($i = 0; $i < count($values); $i++) {
+                $urlParameters[$i][$input] = $values[$i];
+            }
+        }
+
+        $joinedInputs = [
+            'joined_name',
+            'joined_displayField',
+            'joined_connectionType',
+            'joined_NToOne-foreignKey',
+            'joined_NToOne-remoteId',
+            'joined_OneToN-foreignKey',
+            'joined_NToN-intermediateTable',
+            'joined_NToN-intermediateLocalKey',
+            'joined_NToN-intermediateRemoteKey',
+            'joined_NToN-remoteId',
+            'joined_foreignFields',
+            'joined_alias',
+            'joined_showInForm',
+            'joined_formName',
+        ];
+
+        $joinedTables = array();
+
+        foreach ($joinedInputs as $input) {
+            $values = Factory::getApplication()->input->getVar($input, array(), 'post', 'array');
+
+            for ($i = 0; $i < count($values); $i++) {
+                $joinedTables[$i][$input] = $values[$i];
+            }
+        }
+
+        $table->fields = json_encode($fields);
+        $table->url_parameters = json_encode($urlParameters);
+        $table->joined_tables = json_encode($joinedTables);
 
         $table->show_detail_page = (isset($form['show_detail_page']) ? 1 : 0);
         $table->enable_search = (isset($form['enable_search']) ? 1 : 0);
