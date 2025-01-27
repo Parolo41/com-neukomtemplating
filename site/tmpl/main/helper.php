@@ -69,28 +69,24 @@ function dbInsert($input, $db, $self) {
     $validationFailed = false;
 
     foreach ($item->fields as $field) {
-        $fieldName = $field[0];
-        $fieldType = $field[1];
-        $fieldRequired = $field[2];
-
-        if ($fieldType == 'image') {
-            $fieldValue = uploadFile($input, $fieldName, "/images/imageuploads/");
-        } elseif ($fieldType == 'pdf') {
-            $fieldValue = uploadFile($input, $fieldName, "/images/documentuploads/");
-        } elseif ($fieldType == 'texteditor') {
-            $fieldValue = $input->get($fieldName, '', 'raw');
-        } elseif (array_key_exists($fieldType, $item->aliases)) {
-            $fieldValue = strval($item->aliases[$fieldType]);
+        if ($field['type'] == 'image') {
+            $fieldValue = uploadFile($input, $field['name'], "/images/imageuploads/");
+        } elseif ($field['type'] == 'pdf') {
+            $fieldValue = uploadFile($input, $field['name'], "/images/documentuploads/");
+        } elseif ($field['type'] == 'texteditor') {
+            $fieldValue = $input->get($field['name'], '', 'raw');
+        } elseif (array_key_exists($field['type'], $item->aliases)) {
+            $fieldValue = strval($item->aliases[$field['type']]);
         } else {
-            $fieldValue = $input->get($fieldName, '', 'string');
+            $fieldValue = $input->get($field['name'], '', 'string');
         }
 
-        if (!array_key_exists($fieldType, $item->aliases) && !validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
+        if (!array_key_exists($field['type'], $item->aliases) && !validateInput($fieldValue, $field['name'], $field['type'], $field['required'])) {
             $validationFailed = true;
         }
 
-        $insertColumns[] = $fieldName;
-        $insertValues[] = formatInputValue($fieldValue, $fieldType, $db);
+        $insertColumns[] = $field['name'];
+        $insertValues[] = formatInputValue($fieldValue, $field['type'], $db);
     }
 
     foreach ($item->urlDbInserts as $urlDbInsert) {
@@ -99,10 +95,10 @@ function dbInsert($input, $db, $self) {
     }
 
     foreach ($item->joinedTables as $joinedTable) {
-        if ($joinedTable->connectionType == "NToOne") {
-            $foreignId = $input->get($joinedTable->alias, '', 'string');
+        if ($joinedTable['connectionType'] == "NToOne") {
+            $foreignId = $input->get($joinedTable['alias'], '', 'string');
 
-            $insertColumns[] = $joinedTable->connectionInfo[0];
+            $insertColumns[] = $joinedTable['NToOne-foreignKey'];
             $insertValues[] = formatInputValue($foreignId, "foreignId", $db);
         }
     }
@@ -120,11 +116,11 @@ function dbInsert($input, $db, $self) {
     $lastRowId = $db->insertId();
 
     foreach ($item->joinedTables as $joinedTable) {
-        if ($joinedTable->connectionType == "NToN") {
+        if ($joinedTable['connectionType'] == "NToN") {
             $localForeignKey = $db->insertid();
 
-            foreach ($joinedTable->options as $option) {
-                $remoteForeignKey = $input->get($joinedTable->name . '-' . $option->{$joinedTable->connectionInfo[3]}, '', 'string');
+            foreach ($joinedTable['options'] as $option) {
+                $remoteForeignKey = $input->get($joinedTable['name'] . '-' . $option->{$joinedTable['NToN-remoteId']}, '', 'string');
 
                 if ($remoteForeignKey != '') {
                     addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeignKey);
@@ -149,39 +145,35 @@ function dbUpdate($input, $db, $self) {
     $validationFailed = false;
 
     foreach ($item->fields as $field) {
-        $fieldName = $field[0];
-        $fieldType = $field[1];
-        $fieldRequired = $field[2];
-
-        if ($fieldType == 'image') {
-            if ($input->get($fieldName . '-delete', '', 'string') == 'on') {
+        if ($field['type'] == 'image') {
+            if ($input->get($field['name'] . '-delete', '', 'string') == 'on') {
                 $fieldValue = '';
             } else {
-                $fieldValue = uploadFile($input, $fieldName, "/images/imageuploads/");
+                $fieldValue = uploadFile($input, $field['name'], "/images/imageuploads/");
 
                 if ($fieldValue == "") { continue; }
             }
-        } elseif ($fieldType == 'pdf') {
-            if ($input->get($fieldName . '-delete', '', 'string') == '1') {
+        } elseif ($field['type'] == 'pdf') {
+            if ($input->get($field['name'] . '-delete', '', 'string') == '1') {
                 $fieldValue = '';
             } else {
-                $fieldValue = uploadFile($input, $fieldName, "/images/documentuploads/");
+                $fieldValue = uploadFile($input, $field['name'], "/images/documentuploads/");
 
                 if ($fieldValue == "") { continue; }
             }
-        } elseif ($fieldType == 'texteditor') {
-            $fieldValue = $input->get($fieldName, '', 'raw');
-        } elseif (array_key_exists($fieldType, $item->aliases)) {
-            $fieldValue = strval($item->aliases[$fieldType]);
+        } elseif ($field['type'] == 'texteditor') {
+            $fieldValue = $input->get($field['name'], '', 'raw');
+        } elseif (array_key_exists($field['type'], $item->aliases)) {
+            $fieldValue = strval($item->aliases[$field['type']]);
         } else {
-            $fieldValue = $input->get($fieldName, '', 'string');
+            $fieldValue = $input->get($field['name'], '', 'string');
         }
 
-        if (!array_key_exists($fieldType, $item->aliases) && !validateInput($fieldValue, $fieldName, $fieldType, $fieldRequired)) {
+        if (!array_key_exists($field['type'], $item->aliases) && !validateInput($fieldValue, $field['name'], $field['type'], $field['required'])) {
             $validationFailed = true;
         }
 
-        $updateFields[] = $db->quoteName($fieldName) . " = " . formatInputValue($fieldValue, $fieldType, $db);
+        $updateFields[] = $db->quoteName($field['name']) . " = " . formatInputValue($fieldValue, $field['type'], $db);
     }
 
     foreach ($item->urlDbInserts as $urlDbInsert) {
@@ -189,15 +181,15 @@ function dbUpdate($input, $db, $self) {
     }
 
     foreach ($item->joinedTables as $joinedTable) {
-        if ($joinedTable->connectionType == "NToOne") {
-            $foreignId = $input->get($joinedTable->alias, '', 'string');
+        if ($joinedTable['connectionType'] == "NToOne") {
+            $foreignId = $input->get($joinedTable['alias'], '', 'string');
 
-            $updateFields[] = $db->quoteName($joinedTable->connectionInfo[0]) . " = " . formatInputValue($foreignId, "foreignId", $db);
-        } else if ($joinedTable->connectionType == "NToN") {
+            $updateFields[] = $db->quoteName($joinedTable['NToOne-foreignKey']) . " = " . formatInputValue($foreignId, "foreignId", $db);
+        } else if ($joinedTable['connectionType'] == "NToN") {
             dropIntermediateEntries($db, $joinedTable, $input->get('recordId', '', 'string'));
 
-            foreach ($joinedTable->options as $option) {
-                $remoteForeignKey = $input->get($joinedTable->alias . '-' . $option->{$joinedTable->connectionInfo[3]}, '', 'string');
+            foreach ($joinedTable['options'] as $option) {
+                $remoteForeignKey = $input->get($joinedTable['alias'] . '-' . $option->{$joinedTable['NToN-remoteId']}, '', 'string');
 
                 if ($remoteForeignKey != '') {
                     addIntermediateEntry($db, $joinedTable, $input->get('recordId', '', 'string'), $remoteForeignKey);
@@ -243,7 +235,7 @@ function dbDelete($input, $db, $self) {
     $result = $db->execute();
 
     foreach ($item->joinedTables as $joinedTable) {
-        if ($joinedTable->connectionType == "NToN") {
+        if ($joinedTable['connectionType'] == "NToN") {
             dropIntermediateEntries($db, $joinedTable, $input->get('recordId', '', 'string'));
         }
     }
@@ -254,10 +246,10 @@ function dbDelete($input, $db, $self) {
 function dropIntermediateEntries($db, $joinedTable, $localForeignKey) {
     $query = $db->getQuery(true);
 
-    $deleteConditions = array($db->quoteName($joinedTable->connectionInfo[1]) . " = " . $localForeignKey);
+    $deleteConditions = array($db->quoteName($joinedTable['NToN-intermediateLocalKey']) . " = " . $localForeignKey);
 
     $query
-        ->delete('#__' . $joinedTable->connectionInfo[0])
+        ->delete('#__' . $joinedTable['NToN-intermediateTable'])
         ->where($deleteConditions);
 
     $db->setQuery($query);
@@ -268,11 +260,11 @@ function dropIntermediateEntries($db, $joinedTable, $localForeignKey) {
 function addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeignKey) {
     $query = $db->getQuery(true);
 
-    $insertColumns = [$joinedTable->connectionInfo[1], $joinedTable->connectionInfo[2]];
+    $insertColumns = [$joinedTable['NToN-intermediateLocalKey'], $joinedTable['NToN-intermediateRemoteKey']];
     $insertValues = [$localForeignKey, $remoteForeignKey];
 
     $query
-        ->insert('#__' . $joinedTable->connectionInfo[0])
+        ->insert('#__' . $joinedTable['NToN-intermediateTable'])
         ->columns($db->quoteName($insertColumns))
         ->values(implode(',', $insertValues));
 

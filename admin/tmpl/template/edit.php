@@ -357,7 +357,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             newField = document.getElementById("template-fields-area").lastChild;
 
             for (const [key, value] of Object.entries(fieldValues)) {
-                fieldInput = newField.querySelector('.' + key);
+                fieldInput = newField.querySelector('.field_' + key);
 
                 if (fieldInput != null) {
                     fieldInput.value = value;
@@ -376,7 +376,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             newParameter = document.getElementById("url-parameters-area").lastChild;
 
             for (const [key, value] of Object.entries(parameterValues)) {
-                parameterInput = newParameter.querySelector('.' + key);
+                parameterInput = newParameter.querySelector('.parameter_' + key);
 
                 if (parameterInput != null) {
                     parameterInput.value = value;
@@ -395,7 +395,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             newJoinedTable = document.getElementById("joined-tables-area").lastChild;
 
             for (const [key, value] of Object.entries(joinedTableValues)) {
-                joinedInput = newJoinedTable.querySelector('.' + key);
+                joinedInput = newJoinedTable.querySelector('.joined_' + key);
 
                 if (joinedInput != null) {
                     joinedInput.value = value;

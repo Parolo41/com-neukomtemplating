@@ -36,18 +36,18 @@ class TemplateModel extends AdminModel {
         $form = Factory::getApplication()->input->getVar('jform', array(), 'post', 'array');
 
         $fieldInputs = [
-            'field_name',
-            'field_showInForm',
-            'field_label',
-            'field_type',
-            'field_selectOptions',
-            'field_required',
+            'name',
+            'showInForm',
+            'label',
+            'type',
+            'selectOptions',
+            'required',
         ];
 
         $fields = array();
 
         foreach ($fieldInputs as $input) {
-            $values = Factory::getApplication()->input->getVar($input, array(), 'post', 'array');
+            $values = Factory::getApplication()->input->getVar('field_' . $input, array(), 'post', 'array');
 
             for ($i = 0; $i < count($values); $i++) {
                 $fields[$i][$input] = $values[$i];
@@ -55,15 +55,15 @@ class TemplateModel extends AdminModel {
         }
 
         $parameterInputs = [
-            'parameter_name',
-            'parameter_default',
-            'parameter_insertIntoDb',
+            'name',
+            'default',
+            'insertIntoDb',
         ];
 
         $urlParameters = array();
 
         foreach ($parameterInputs as $input) {
-            $values = Factory::getApplication()->input->getVar($input, array(), 'post', 'array');
+            $values = Factory::getApplication()->input->getVar('parameter_' . $input, array(), 'post', 'array');
 
             for ($i = 0; $i < count($values); $i++) {
                 $urlParameters[$i][$input] = $values[$i];
@@ -71,26 +71,26 @@ class TemplateModel extends AdminModel {
         }
 
         $joinedInputs = [
-            'joined_name',
-            'joined_displayField',
-            'joined_connectionType',
-            'joined_NToOne-foreignKey',
-            'joined_NToOne-remoteId',
-            'joined_OneToN-foreignKey',
-            'joined_NToN-intermediateTable',
-            'joined_NToN-intermediateLocalKey',
-            'joined_NToN-intermediateRemoteKey',
-            'joined_NToN-remoteId',
-            'joined_foreignFields',
-            'joined_alias',
-            'joined_showInForm',
-            'joined_formName',
+            'name',
+            'displayField',
+            'connectionType',
+            'NToOne-foreignKey',
+            'NToOne-remoteId',
+            'OneToN-foreignKey',
+            'NToN-intermediateTable',
+            'NToN-intermediateLocalKey',
+            'NToN-intermediateRemoteKey',
+            'NToN-remoteId',
+            'foreignFields',
+            'alias',
+            'showInForm',
+            'formName',
         ];
 
         $joinedTables = array();
 
         foreach ($joinedInputs as $input) {
-            $values = Factory::getApplication()->input->getVar($input, array(), 'post', 'array');
+            $values = Factory::getApplication()->input->getVar('joined_' . $input, array(), 'post', 'array');
 
             for ($i = 0; $i < count($values); $i++) {
                 $joinedTables[$i][$input] = $values[$i];
