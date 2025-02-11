@@ -87,7 +87,24 @@ $item = $this->getModel()->getItem();
 
     echo $pageHeading != '' ? '<h1 class="title">' . $pageHeading . '</h1>' : '';
 
-    if ($act == 'detail' && $item->showDetailPage && $recordId != '') {
+    if ($item->userIdLinkField != "") {
+        if (!$item->allowEdit) {
+            echo "<p>Warning: Editing is not enabled. Changes can't be saved.</p>";
+        }
+
+        if (sizeof($item->data) > 0) {
+            $data = $item->data[0];
+            require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editview.php');
+            ?>
+            <script>
+                document.getElementById("backToListButton").style.display = "none";
+                document.getElementById("deleteRecordButton").style.display = "none";
+            </script>
+            <?php
+        } else {
+            echo "<h2>No record found</h2>";
+        }
+    } elseif ($act == 'detail' && $item->showDetailPage && $recordId != '') {
         foreach ($item->data as $data) {
             if ($data->{$item->idFieldName} == $recordId) {
                 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'detailview.php');
@@ -100,19 +117,6 @@ $item = $this->getModel()->getItem();
                 require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editview.php');
                 break;
             }
-        }
-    } elseif ($item->userIdLinkField != "" && $item->allowEdit) {
-        if (sizeof($item->data) > 0) {
-            $data = $item->data[0];
-            require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editview.php');
-            ?>
-            <script>
-                document.getElementById("backToListButton").style.display = "none";
-                document.getElementById("deleteRecordButton").style.display = "none";
-            </script>
-            <?php
-        } else {
-            echo "<h2>No record found</h2>";
         }
     } elseif ($act == 'new' && $item->allowCreate) {
         require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'newview.php');

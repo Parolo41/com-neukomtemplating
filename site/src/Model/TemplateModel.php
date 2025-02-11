@@ -133,7 +133,7 @@ class TemplateModel extends ItemModel {
 
         $searchTerm = $input->get('searchTerm', '', 'string');
 
-        if ($searchTerm != '') {
+        if ($searchTerm != '' && $templateConfig->enable_search == "1") {
             $searchConditions = [];
 
             foreach($fieldNames as $fieldName) {
