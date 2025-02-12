@@ -51,4 +51,5 @@
         </schemas>
     </update>
 
+    <scriptfile>install.php</scriptfile>
 </extension>
