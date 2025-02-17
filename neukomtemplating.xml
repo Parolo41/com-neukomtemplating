@@ -3,7 +3,7 @@
     <name>Neukom Templating</name>
     <creationDate>2022</creationDate>
     <author>Neukom</author>
-    <version>0.6.2</version>
+    <version>0.6.4</version>
     <description>COM_NEUKOMTEMPLATING_DESCRIPTION</description>
     <namespace path="src/">Neukom\Component\NeukomTemplating</namespace>
 

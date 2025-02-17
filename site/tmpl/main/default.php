@@ -7,6 +7,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Application\SiteApplication;
 
 $root = dirname(dirname(dirname(__FILE__)));
 require_once($root . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
@@ -48,6 +49,7 @@ $lastPageNumber = $item->lastPageNumber;
 if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->allowCreate) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = Factory::getDbo();
     $input = Factory::getApplication()->input;
+    $app = Factory::getApplication();
 
     if ($input->get('formAction', '', 'string') == "insert") {
         if ($lastRowId = dbInsert($input, $db, $this)) {
@@ -57,6 +59,8 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
             } else {
                 $act = 'list';
             }
+        } else {
+            $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_INSERT'), 'error');
         }
     }
 
@@ -67,12 +71,16 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
             } else {
                 $act = 'list';
             }
+        } else {
+            $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_UPDATE'), 'error');
         }
     }
 
     if ($input->get('formAction', '', 'string') == "delete") {
         if (dbDelete($input, $db, $this)) {
             $act = 'list';
+        } else {
+            $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_DELETE'), 'error');
         }
     }
 }
