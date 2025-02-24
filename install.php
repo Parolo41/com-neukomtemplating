@@ -35,21 +35,21 @@ return new class () implements ServiceProviderInterface {
 
                 public function install(InstallerAdapter $parent): bool
                 {
-                    $this->app->enqueueMessage('Successful installed.');
+                    $this->app->enqueueMessage('Successfully installed.');
         
                     return true;
                 }
         
                 public function update(InstallerAdapter $parent): bool
                 {
-                    $this->app->enqueueMessage('Successful updated.');
+                    $this->app->enqueueMessage('Successfully updated.');
         
                     return true;
                 }
         
                 public function uninstall(InstallerAdapter $parent): bool
                 {
-                    $this->app->enqueueMessage('Successful uninstalled.');
+                    $this->app->enqueueMessage('Successfully uninstalled.');
         
                     return true;
                 }
