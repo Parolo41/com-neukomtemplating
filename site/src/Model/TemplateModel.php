@@ -148,7 +148,7 @@ class TemplateModel extends ItemModel {
         }
 
         $db->setQuery($dataQuery);
-        $data = $db->loadObjectList();
+        $data = $db->loadObjectList($templateConfig->id_field_name);
 
         $pageSize = max(1, ($templateConfig->enable_pagination != "1" || intval($templateConfig->page_size) == 0) ? sizeof($data) : intval($templateConfig->page_size));
         $lastPageNumber = ceil(sizeof($data) / $pageSize);

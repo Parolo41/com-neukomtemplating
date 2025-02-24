@@ -71,32 +71,32 @@ use Joomla\CMS\Language\Text;
         }
 
         foreach ($item->joinedTables as $joinedTable) {
-            if ($joinedTable->showInForm == false) {
+            if ($joinedTable['showInForm'] == false) {
                 continue;
             }
 
-            if ($joinedTable->connectionType == "OneToN") {
+            if ($joinedTable['connectionType'] == "OneToN") {
                 continue;
             }
 
-            echo '<div id="neukomtemplating-joinedTable-' . $joinedTable->alias . '">';
-            echo '<label for="neukomtemplating-joinedTable-' . $joinedTable->alias . '">' . $joinedTable->formName . '</label>';
+            echo '<div id="neukomtemplating-joinedTable-' . $joinedTable['alias'] . '">';
+            echo '<label for="neukomtemplating-joinedTable-' . $joinedTable['alias'] . '">' . $joinedTable['formName'] . '</label>';
 
-            if ($joinedTable->connectionType == "NToOne") {
-                echo '<select id="neukomtemplating-select-' . $joinedTable->alias . '" name="' . $joinedTable->alias . '">';
+            if ($joinedTable['connectionType'] == "NToOne") {
+                echo '<select id="neukomtemplating-select-' . $joinedTable['alias'] . '" name="' . $joinedTable['alias'] . '">';
                 echo '<option value="NULL">Null</option>';
 
-                foreach ($joinedTable->options as $option) {
-                    echo '<option value="' . $option->{$joinedTable->connectionInfo[1]} . '">' . $option->{$joinedTable->displayField} . '</option>';
+                foreach ($joinedTable['options'] as $option) {
+                    echo '<option value="' . $option->{$joinedTable['NToN-intermediateLocalKey']} . '">' . $option->{$joinedTable['displayField']} . '</option>';
                 }
                 
                 echo '</select><br>';
-            } else if ($joinedTable->connectionType == "NToN") {
-                echo '<div id="neukomtemplating-select-' . $joinedTable->alias . '">';
+            } else if ($joinedTable['connectionType'] == "NToN") {
+                echo '<div id="neukomtemplating-select-' . $joinedTable['alias'] . '">';
 
-                foreach ($joinedTable->options as $option) {
-                    echo '<input type="checkbox" name="' . $joinedTable->alias . '-' . $option->{$joinedTable->connectionInfo[3]} . '" value="' . $option->{$joinedTable->connectionInfo[3]} . '"></input>';
-                    echo '<label>' . $option->{$joinedTable->displayField} . '</label><br>';
+                foreach ($joinedTable['options'] as $option) {
+                    echo '<input type="checkbox" name="' . $joinedTable['alias'] . '-' . $option->{$joinedTable['NToN-remoteId']} . '" value="' . $option->{$joinedTable['NToN-remoteId']} . '"></input>';
+                    echo '<label>' . $option->{$joinedTable['displayField']} . '</label><br>';
                 }
                 
                 echo '</div><br>';

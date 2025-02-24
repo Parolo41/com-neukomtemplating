@@ -22,6 +22,8 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     .field-info-label {display: inline-block;width: 120px;}
     .joined-table-info-label {display: inline-block;width: 200px;}
     .joined-table-foreign-fields-input {width: 500px;}
+    .joined-table-info-label.bold {font-weight: bold;}
+    hr.solid {border-top: 3px solid #bbb;}
 </style>
 
 <form action="<?php echo Route::_('index.php?option=com_neukomtemplating&layout=' . $layout . $tmpl . '&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="template-form" class="form-validate">
@@ -166,9 +168,28 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_NAME'); ?></span>
     <input type="text" name="joined_name[__ID__]" class="joined_input joined_name" /> <br/>
     
+    <span class="joined-table-info-label" name="alias-label" title="What the joined table is called in the template">
+        <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_ALIAS'); ?></span>
+    <input class="joined-table-alias-input joined_input joined_alias" type="text" name="joined_alias[__ID__]" /> <br/>
+
+    <span class="joined-table-info-label" name="formName-label" title="What the joined table is called in the form">
+        <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_FORM_NAME'); ?></span>
+    <input class="joined-table-form-name-input joined_input joined_formName" type="text" name="joined_formName[__ID__]" /> <br/>
+
     <span class="joined-table-info-label" name="displayField-label" title="DB name of the field containing the display name of joined table records">
         <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_LABEL'); ?></span>
     <input type="text" name="joined_displayField[__ID__]" class="joined_input joined_displayField" /> <br/>
+    
+    <span class="joined-table-info-label" name="foreignFields-label" title="Fields to load from joined table">
+        <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_FIELDS'); ?></span>
+    <input class="joined-table-foreign-fields-input joined_input joined_foreignFields" type="text" name="joined_foreignFields[__ID__]" /> <br/>
+    
+    <span class="joined-table-info-label" name="showInForm-label" title="Display joined table options in edit form">
+        <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_SHOW_IN_FORM'); ?></span>
+    <select name="joined_showInForm[__ID__]" class="joined_input joined_showInForm">
+        <option value="0"><?php echo Text::_('COM_NEUKOMTEMPLATING_NO'); ?></option>
+        <option value="1"><?php echo Text::_('COM_NEUKOMTEMPLATING_YES'); ?></option>
+    </select><br/>
 
     <span class="joined-table-info-label" name="type-label" title="Connection type between local and joined table">
         <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_CONNECTION_TYPE'); ?></span>
@@ -177,24 +198,45 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         <option value="OneToN">1:n</option>
         <option value="NToN">n:n</option>
     </select> <br/>
+
+    <span class="joined-table-info-label bold" title="DB name of the foreign key field at the local table, connecting to the joined table">
+            <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_CONNECTION_INFO'); ?></span> <br/>
     
     <div name="show-on-NToOne">
+        <hr class="solid">
+        <span class="joined-table-info-label bold" title="DB name of the foreign key field at the local table, connecting to the joined table">
+            <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_MAIN_TABLE'); ?></span> <br/>
+
         <span class="joined-table-info-label" name="NToOne-foreignKey-label" title="DB name of the foreign key field at the local table, connecting to the joined table">
             <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_LOCAL_FOREIGN_KEY'); ?></span>
         <input type="text" name="joined_NToOne-foreignKey[__ID__]" class="joined_input joined_NToOne-foreignKey" /> <br/>
 
+        <hr class="solid">
+        <span class="joined-table-info-label bold" title="DB name of the foreign key field at the local table, connecting to the joined table">
+            <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_JOINED_TABLE'); ?></span> <br/>
+
         <span class="joined-table-info-label" name="NToOne-remoteId-label" title="DB name of the ID field at the joined table">
             <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_REMOTE_ID'); ?></span>
         <input type="text" name="joined_NToOne-remoteId[__ID__]" class="joined_input joined_NToOne-remoteId" /> <br/>
+        <hr class="solid">
     </div>
 
-    <div name="show-on-OneToN" hidden>
+    <div name="show-on-OneToN" hidden hidden>
+        <hr class="solid">
+        <span class="joined-table-info-label bold" title="DB name of the foreign key field at the local table, connecting to the joined table">
+            <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_JOINED_TABLE'); ?></span> <br/>
+
         <span class="joined-table-info-label" name="OneToN-foreignKey-label" title="DB name of the foreign key field at the joined table, connecting to the main table">
             <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_REMOTE_FOREIGN_KEY'); ?></span>
         <input type="text" name="joined_OneToN-foreignKey[__ID__]" class="joined_input joined_OneToN-foreignKey" /> <br/>
+        <hr class="solid">
     </div>
     
     <div name="show-on-NToN" hidden>
+        <hr class="solid">
+        <span class="joined-table-info-label bold" title="DB name of the foreign key field at the local table, connecting to the joined table">
+            <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_INTERMEDIATE_TABLE'); ?></span> <br/>
+
         <span class="joined-table-info-label" name="NToN-intermediateTable-label" title="DB name of the connecting table between the local and joined table">
             <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_INTERMEDIATE_NAME'); ?></span>
         <input type="text" name="joined_NToN-intermediateTable[__ID__]" class="joined_input joined_NToN-intermediateTable" /> <br/>
@@ -207,30 +249,17 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_INTERMEDIATE_REMOTE_KEY'); ?></span>
         <input type="text" name="joined_NToN-intermediateRemoteKey[__ID__]" class="joined_input joined_NToN-intermediateRemoteKey" /> <br/>
 
+    
+        <hr class="solid">
+        <span class="joined-table-info-label bold" title="DB name of the foreign key field at the local table, connecting to the joined table">
+            <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_JOINED_TABLE'); ?></span> <br/>
+    
         <span class="joined-table-info-label" name="NToN-remoteId-label" title="DB name of the ID field at the joined table">
             <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_REMOTE_ID'); ?></span>
         <input type="text" name="joined_NToN-remoteId[__ID__]" class="joined_input joined_NToN-remoteId" /> <br/>
+        <hr class="solid">
     </div>
     
-    <span class="joined-table-info-label" name="foreignFields-label" title="Fields to load from joined table">
-        <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_FIELDS'); ?></span>
-    <input class="joined-table-foreign-fields-input joined_input joined_foreignFields" type="text" name="joined_foreignFields[__ID__]" /> <br/>
-    
-    <span class="joined-table-info-label" name="alias-label" title="What the joined table is called in the template">
-        <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_ALIAS'); ?></span>
-    <input class="joined-table-alias-input joined_input joined_alias" type="text" name="joined_alias[__ID__]" /> <br/>
-
-    <span class="joined-table-info-label" name="showInForm-label" title="Display joined table options in edit form">
-        <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_SHOW_IN_FORM'); ?></span>
-    <select name="joined_showInForm[__ID__]" class="joined_input joined_showInForm">
-        <option value="0"><?php echo Text::_('COM_NEUKOMTEMPLATING_NO'); ?></option>
-        <option value="1"><?php echo Text::_('COM_NEUKOMTEMPLATING_YES'); ?></option>
-    </select><br/>
-    
-    <span class="joined-table-info-label" name="formName-label" title="What the joined table is called in the form">
-        <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_FORM_NAME'); ?></span>
-    <input class="joined-table-form-name-input joined_input joined_formName" type="text" name="joined_formName[__ID__]" /> <br/>
-
     <button type="button" onclick="removeJoinedTable(this)"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_REMOVE_JOINED_TABLE'); ?></button>
 </div>
 

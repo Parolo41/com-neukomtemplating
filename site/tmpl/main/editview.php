@@ -81,6 +81,9 @@ use Joomla\CMS\Language\Text;
             } else if ($fieldType == "checkbox") {
                 $checked = $fieldValue == '1' ? ' checked ' : '';
                 echo '<input type="checkbox" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '"' . $checked . 'class="neukomtemplating-' . $fieldType . '" /><br>';
+            } else if ($fieldType == "date") {
+                $fieldValue = $fieldValue != '' ? date('Y-m-d', strtotime($fieldValue)) : '';
+                echo '<input type="date" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" value="' . $fieldValue . '" class="neukomtemplating-' . $fieldType . '" /><br>';
             } else {
                 echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" value="' . $fieldValue . '" class="neukomtemplating-' . $fieldType . '" /><br>';
             }

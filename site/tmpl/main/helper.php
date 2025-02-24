@@ -2,6 +2,7 @@
 
 <?php
 use Joomla\Filesystem\File;
+use Joomla\CMS\Factory;
 
 function validateInputFormat($value, $type) {
     $validationPatterns = array(
@@ -22,7 +23,7 @@ function validateInputFormat($value, $type) {
 
 function validateInput($value, $name, $type, $required) {
     if ($required && $value == '') {
-        JFactory::getApplication()->enqueueMessage(sprintf(Text::_('COM_NEUKOMTEMPLATING_ERROR_EMPTY'), $name), 'error');
+        Factory::getApplication()->enqueueMessage(sprintf(Text::_('COM_NEUKOMTEMPLATING_ERROR_EMPTY'), $name), 'error');
         return false;
     } 
     
@@ -31,7 +32,7 @@ function validateInput($value, $name, $type, $required) {
     }
 
     if (!validateInputFormat($value, $type)) {
-        JFactory::getApplication()->enqueueMessage(sprintf(Text::_('COM_NEUKOMTEMPLATING_ERROR_FORMAT'), $name, $type), 'error');
+        Factory::getApplication()->enqueueMessage(sprintf(Text::_('COM_NEUKOMTEMPLATING_ERROR_FORMAT'), $name, $type), 'error');
         return false;
     }
 
@@ -117,10 +118,10 @@ function dbInsert($input, $db, $self) {
 
     foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable['connectionType'] == "NToN") {
-            $localForeignKey = $db->insertid();
+            $localForeignKey = $lastRowId;
 
             foreach ($joinedTable['options'] as $option) {
-                $remoteForeignKey = $input->get($joinedTable['name'] . '-' . $option->{$joinedTable['NToN-remoteId']}, '', 'string');
+                $remoteForeignKey = $input->get($joinedTable['alias'] . '-' . $option->{$joinedTable['NToN-remoteId']}, '', 'string');
 
                 if ($remoteForeignKey != '') {
                     addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeignKey);
@@ -135,6 +136,7 @@ function dbInsert($input, $db, $self) {
 function dbUpdate($input, $db, $self) {
     $query = $db->getQuery(true);
     $item = $self->getModel()->getItem();
+    $recordId = $input->get('recordId', '', 'string');
 
     if (!$item->allowEdit) {
         return 0;
@@ -180,28 +182,31 @@ function dbUpdate($input, $db, $self) {
         $updateFields[] = $db->quoteName($urlDbInsert) . " = " . $db->quote($item->urlParameters[$urlDbInsert]);
     }
 
+    if ($validationFailed) {return 0;}
+
     foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable['connectionType'] == "NToOne") {
             $foreignId = $input->get($joinedTable['alias'], '', 'string');
 
             $updateFields[] = $db->quoteName($joinedTable['NToOne-foreignKey']) . " = " . formatInputValue($foreignId, "foreignId", $db);
         } else if ($joinedTable['connectionType'] == "NToN") {
-            dropIntermediateEntries($db, $joinedTable, $input->get('recordId', '', 'string'));
+            $currentIds = array_column($item->data[$recordId]->{$joinedTable['alias']}, $joinedTable['NToN-remoteId']);
 
             foreach ($joinedTable['options'] as $option) {
-                $remoteForeignKey = $input->get($joinedTable['alias'] . '-' . $option->{$joinedTable['NToN-remoteId']}, '', 'string');
+                $optionId = $option->{$joinedTable['NToN-remoteId']};
+                $remoteForeignKey = $input->get($joinedTable['alias'] . '-' . $optionId, '', 'string');
 
-                if ($remoteForeignKey != '') {
-                    addIntermediateEntry($db, $joinedTable, $input->get('recordId', '', 'string'), $remoteForeignKey);
+                if ($remoteForeignKey != '' && !in_array($optionId, $currentIds)) {
+                    addIntermediateEntry($db, $joinedTable, $recordId, $remoteForeignKey);
+                } else if ($remoteForeignKey == '' && in_array($optionId, $currentIds)) {
+                    dropIntermediateEntry($db, $joinedTable, $recordId, $optionId);
                 }
             }
         }
     }
 
-    if ($validationFailed) {return 0;}
-
     $updateConditions = array(
-        $db->quoteName($item->idFieldName) . ' = ' . $input->get('recordId', '', 'string')
+        $db->quoteName($item->idFieldName) . ' = ' . $recordId
     );
 
     $query
@@ -243,6 +248,21 @@ function dbDelete($input, $db, $self) {
     return 1;
 }
 
+function addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeignKey) {
+    $query = $db->getQuery(true);
+
+    $insertColumns = [$joinedTable['NToN-intermediateLocalKey'], $joinedTable['NToN-intermediateRemoteKey']];
+    $insertValues = [$localForeignKey, $remoteForeignKey];
+
+    $query
+        ->insert('#__' . $joinedTable['NToN-intermediateTable'])
+        ->columns($db->quoteName($insertColumns))
+        ->values(implode(',', $insertValues));
+
+    $db->setQuery($query);
+    $db->execute();
+}
+
 function dropIntermediateEntries($db, $joinedTable, $localForeignKey) {
     $query = $db->getQuery(true);
 
@@ -257,19 +277,21 @@ function dropIntermediateEntries($db, $joinedTable, $localForeignKey) {
     $result = $db->execute();
 }
 
-function addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeignKey) {
+function dropIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeignKey) {
     $query = $db->getQuery(true);
 
-    $insertColumns = [$joinedTable['NToN-intermediateLocalKey'], $joinedTable['NToN-intermediateRemoteKey']];
-    $insertValues = [$localForeignKey, $remoteForeignKey];
+    $deleteConditions = array(
+        $db->quoteName($joinedTable['NToN-intermediateLocalKey']) . " = " . $localForeignKey,
+        $db->quoteName($joinedTable['NToN-intermediateRemoteKey']) . " = " . $remoteForeignKey
+    );
 
     $query
-        ->insert('#__' . $joinedTable['NToN-intermediateTable'])
-        ->columns($db->quoteName($insertColumns))
-        ->values(implode(',', $insertValues));
+        ->delete('#__' . $joinedTable['NToN-remoteId'])
+        ->where($deleteConditions);
 
     $db->setQuery($query);
-    $db->execute();
+
+    $result = $db->execute();
 }
 
 function uploadFile($input, $fieldName, $subFolder) {
