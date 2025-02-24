@@ -161,8 +161,8 @@ class TemplateModel extends ItemModel {
 
         $joinedTables = json_decode($templateConfig->joined_tables, true);
 
-        foreach ($joinedTables as $joinedTable) {
-            $joinedTable['options'] = queryJoinedTableOptions($joinedTable);
+        foreach ($joinedTables as $key => $joinedTable) {
+            $joinedTables[$key]['options'] = $this->queryJoinedTableOptions($joinedTable);
         }
 
         foreach ($data as $record) {
@@ -213,7 +213,7 @@ class TemplateModel extends ItemModel {
                     continue;
                 }
 
-                $selectedFields = $joinedTable['fields'];
+                $selectedFields = array_map('trim', explode(',', $joinedTable['foreignFields']));
 
                 if (!in_array($joinedIdFieldName, $selectedFields)) {
                     $selectedFields[] = $joinedIdFieldName;
@@ -232,7 +232,7 @@ class TemplateModel extends ItemModel {
 
                 $foreignKeyName = $joinedTable['OneToN-foreignKey'];
 
-                $selectedFields = $joinedTable['fields'];
+                $selectedFields = array_map('trim', explode(',', $joinedTable['foreignFields']));
 
                 $joinedTableQuery->select($db->quoteName($selectedFields));
                 $joinedTableQuery->from($db->quoteName('#__' . $joinedTable['name']));
@@ -252,7 +252,7 @@ class TemplateModel extends ItemModel {
 
                 $selectedFields = [$localForeignKeyField, $remoteForeignKeyField];
 
-                foreach ($joinedTable['fields'] as $field) {
+                foreach (array_map('trim', explode(',', $joinedTable['foreignFields'])) as $field) {
                     $selectedFields[] = 'remote.' . $field;
                 }
 

@@ -286,7 +286,7 @@ function dropIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForei
     );
 
     $query
-        ->delete('#__' . $joinedTable['NToN-remoteId'])
+        ->delete('#__' . $joinedTable['NToN-intermediateTable'])
         ->where($deleteConditions);
 
     $db->setQuery($query);

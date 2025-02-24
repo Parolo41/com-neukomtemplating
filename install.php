@@ -30,39 +30,37 @@ return new class () implements ServiceProviderInterface {
                 }
 
                 public function preflight(string $type, InstallerAdapter $parent): bool {
-                    if ($type == 'update') {
-                        $this->fixJsonFormats();
-                    }
-
-                    return false;
+                    return true;
                 }
 
                 public function install(InstallerAdapter $parent): bool
                 {
-                  $this->app->enqueueMessage('Successful installed.');
+                    $this->app->enqueueMessage('Successful installed.');
         
-                  return true;
+                    return true;
                 }
         
                 public function update(InstallerAdapter $parent): bool
                 {
-                  $this->app->enqueueMessage('Successful updated.');
+                    $this->app->enqueueMessage('Successful updated.');
         
-                  return true;
+                    return true;
                 }
         
                 public function uninstall(InstallerAdapter $parent): bool
                 {
-                  $this->app->enqueueMessage('Successful uninstalled.');
+                    $this->app->enqueueMessage('Successful uninstalled.');
         
-                  return true;
+                    return true;
                 }
         
                 public function postflight(string $type, InstallerAdapter $parent): bool
                 {
-                  $this->deleteUnexistingFiles();
+                    if ($type == 'update') {
+                        $this->fixJsonFormats();
+                    }
         
-                  return true;
+                    return true;
                 }
 
                 private function fixJsonFormats() {
@@ -95,9 +93,7 @@ return new class () implements ServiceProviderInterface {
                             $updatedTemplate->joined_tables = json_encode($this->getJoinedTables($template));
                         }
 
-                        error_log(var_export($updatedTemplate, true));
-
-                        // $result = $this->db->updateObject('#__neukomtemplating_templates', $updatedTemplate, 'id');
+                        $result = $this->db->updateObject('#__neukomtemplating_templates', $updatedTemplate, 'id');
                     }
                 }
 
