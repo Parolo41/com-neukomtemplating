@@ -81,19 +81,26 @@ return new class () implements ServiceProviderInterface {
                         $updatedTemplate->url_parameters = $template->url_parameters;
                         $updatedTemplate->joined_tables = $template->joined_tables;
 
+                        $doUpdate = false;
+
                         if (!json_validate($template->fields)) {
                             $updatedTemplate->fields = json_encode($this->getFields($template));
+                            $doUpdate = true;
                         }
 
                         if (!json_validate($template->url_parameters)) {
                             $updatedTemplate->url_parameters = json_encode($this->getUrlParameters($template));
+                            $doUpdate = true;
                         }
                         
                         if (!json_validate($template->joined_tables)) {
                             $updatedTemplate->joined_tables = json_encode($this->getJoinedTables($template));
+                            $doUpdate = true;
                         }
 
-                        $result = $this->db->updateObject('#__neukomtemplating_templates', $updatedTemplate, 'id');
+                        if ($doUpdate) {
+                            $result = $this->db->updateObject('#__neukomtemplating_templates', $updatedTemplate, 'id');
+                        }
                     }
                 }
 
