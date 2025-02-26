@@ -25,7 +25,7 @@ class HtmlView extends BaseHtmlView {
 
     protected function addToolbar() {
         $toolbar = Toolbar::getInstance('toolbar');
-        ToolbarHelper::title(Text::_('COM_FOOS_MANAGER_FOOS'), 'address foo');
+        ToolbarHelper::title(Text::_('COM_NEUKOMTEMPLATING_MANAGER'), 'address foo');
         $toolbar->addNew('template.add');
     }
 }

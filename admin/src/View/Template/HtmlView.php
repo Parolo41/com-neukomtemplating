@@ -24,7 +24,7 @@ class HtmlView extends BaseHtmlView {
     protected function addToolbar() {
         Factory::getApplication()->input->set('hidemainmenu', true);
         $isNew = ($this->item?->id == 0);
-        ToolbarHelper::title($isNew ? Text::_('COM_FOOS_MANAGER_FOO_NEW') : Text::_('COM_FOOS_MANAGER_FOO_EDIT'), 'address foo');
+        ToolbarHelper::title($isNew ? Text::_('COM_NEUKOMTEMPLATING_MANAGER_NEW') : Text::_('COM_NEUKOMTEMPLATING_MANAGER_EDIT'), 'address foo');
         ToolbarHelper::apply('template.apply');
         ToolbarHelper::cancel('template.cancel', 'JTOOLBAR_CLOSE');
     }
