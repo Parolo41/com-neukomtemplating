@@ -29,21 +29,10 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 <form action="<?php echo Route::_('index.php?option=com_neukomtemplating&layout=' . $layout . $tmpl . '&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="template-form" class="form-validate">
     <?php echo HTMLHelper::_('uitab.startTabSet', 'myTab', []); ?>
 
-    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', 'Details'); ?>
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'details', Text::_('COM_NEUKOMTEMPLATING_FORM_DETAILS')); ?>
     <?php echo $this->getForm()->renderField('name'); ?>
     <?php echo $this->getForm()->renderField('tablename'); ?>
     <?php echo $this->getForm()->renderField('id_field_name'); ?>
-    <?php echo $this->getForm()->renderField('spacer'); ?>
-
-    <?php echo $this->getForm()->renderField('fields_spacer'); ?>
-    <div id="template-fields-area"></div>
-    <button type="button" onclick="addField()"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_ADD_FIELD'); ?></button> <br/>
-    <?php echo $this->getForm()->renderField('spacer'); ?>
-
-    <?php echo $this->getForm()->renderField('parameters_spacer'); ?>
-    <div id="url-parameters-area"></div>
-    <button type="button" onclick="addUrlParameter()"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_ADD_PARAMETER'); ?></button> <br/>
-    <?php echo $this->getForm()->renderField('spacer'); ?>
     
     <?php echo $this->getForm()->renderField('condition'); ?>
     <div class="control-group">
@@ -57,6 +46,12 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         <div class="control-label"></div>
         <div class="controls"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_USER_ID_LINK_FIELD_TOOLTIP'); ?></div>
     </div>
+    <?php echo $this->getForm()->renderField('enable_search'); ?>
+    <?php echo $this->getForm()->renderField('enable_pagination'); ?>
+    <?php echo $this->getForm()->renderField('page_size'); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'templates_tab', 'Templates'); ?>
     <?php echo $this->getForm()->renderField('header'); ?>
     <?php echo $this->getForm()->renderField('template'); ?>
     <div class="control-group">
@@ -70,19 +65,28 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         <div class="control-label"></div>
         <div class="controls"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_SHOW_DETAIL_PAGE_TOOLTIP'); ?></div>
     </div>
-    <?php echo $this->getForm()->renderField('enable_search'); ?>
-    <?php echo $this->getForm()->renderField('enable_pagination'); ?>
-    <?php echo $this->getForm()->renderField('page_size'); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'fields_tab', Text::_('COM_NEUKOMTEMPLATING_FORM_FIELDS')); ?>
+    <div id="template-fields-area"></div>
+    <button type="button" onclick="addField()"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_ADD_FIELD'); ?></button> <br/>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'url_parameters_tab', Text::_('COM_NEUKOMTEMPLATING_FORM_URL_PARAMETERS')); ?>
+    <div id="url-parameters-area"></div>
+    <button type="button" onclick="addUrlParameter()"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_ADD_PARAMETER'); ?></button> <br/>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'joined_tables_tab', Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLES')); ?>
+    <div id="joined-tables-area"></div>
+    <button type="button" onclick="addJoinedTable()"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_ADD_JOINED_TABLE'); ?></button>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions_tab', Text::_('COM_NEUKOMTEMPLATING_FORM_PERMISSIONS')); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
     <?php echo $this->getForm()->renderField('form_send_behaviour'); ?>
     <?php echo $this->getForm()->renderField('access'); ?>
-    <?php echo HTMLHelper::_('uitab.endTab'); ?>
-
-    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'joined_tables_tab', 'Joined Tables'); ?>
-    <?php echo $this->getForm()->renderField('joined_spacer'); ?>
-    <div id="joined-tables-area"></div>
-    <button type="button" onclick="addJoinedTable()"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_ADD_JOINED_TABLE'); ?></button>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
     <?php echo HTMLHelper::_('uitab.endTabSet'); ?>

@@ -162,21 +162,6 @@
 		 />
 		 <field
 			type="spacer" 
-			name="fields_spacer" 
-			label="COM_NEUKOMTEMPLATING_FORM_FIELDS"
-		/>
-		 <field
-			type="spacer" 
-			name="parameters_spacer" 
-			label="COM_NEUKOMTEMPLATING_FORM_URL_PARAMETERS"
-		/>
-		 <field
-			type="spacer" 
-			name="joined_spacer" 
-			label="COM_NEUKOMTEMPLATING_FORM_JOINED_TABLES"
-		/>
-		 <field
-			type="spacer" 
 			name="spacer" 
 			hr="true"
 		/>
