@@ -8,6 +8,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\HTML\HTMLHelper;
 
 $root = dirname(dirname(dirname(__FILE__)));
 require_once($root . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
@@ -30,7 +31,7 @@ $twig = new \Twig\Environment($loader);
 $twig->addExtension(new Twig\Extra\Intl\IntlExtension());
 
 $emailCloakFilter = new \Twig\TwigFilter('email_cloak', function ($string, $displayText = '') {
-    return JHtml::_('email.cloak', $string, 1, ($displayText == '' ? $string : $displayText));
+    return HTMLHelper::_('email.cloak', $string, 1, ($displayText == '' ? $string : $displayText));
 });
 
 $twig->addFilter($emailCloakFilter);
