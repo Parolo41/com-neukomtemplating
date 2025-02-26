@@ -18,6 +18,9 @@ use Joomla\CMS\Router\Route;
                     <table class="table" id="templatesList">
                         <thead>
                             <tr>
+                                <td class="w-1 text-center">
+                                    <?php echo HTMLHelper::_('grid.checkall'); ?>
+                                </td>
                                 <th scope="col" style="width:1%" class="text-center d-none d-md-table-cell">
                                     <?php echo Text::_('COM_NEUKOMTEMPLATING_TABLE_TABLEHEAD_NAME'); ?>
                                 </th>
@@ -32,6 +35,9 @@ use Joomla\CMS\Router\Route;
                             foreach ($this->items as $i => $item) :
                             ?>
                                 <tr class="row<?php echo $i % 2; ?>">
+                                    <td class="text-center">
+                                        <?php echo HTMLHelper::_('grid.id', $i, $item->id, false, 'cid', 'cb', $item->name); ?>
+                                    </td>
                                     <th scope="row" class="has-context">
                                         <div>
                                             <?php echo $this->escape($item->name); ?>

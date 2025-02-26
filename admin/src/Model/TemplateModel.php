@@ -12,6 +12,10 @@ class TemplateModel extends AdminModel {
 
     public $typeAlias = 'com_neukomtemplating.template';
 
+    protected function canDelete($record) {
+        return true;
+    }
+
     public function getForm($data = array(), $loadData = true) {
         $form = $this->loadForm($this->typeAlias, 'template', array('control' => 'jform', 'load_data' => $loadData));
 
