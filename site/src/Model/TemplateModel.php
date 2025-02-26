@@ -50,7 +50,7 @@ class TemplateModel extends ItemModel {
             'joined_tables',
         ];
 
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
         $query->select(
             $db->quoteName($templateFields)
@@ -199,7 +199,7 @@ class TemplateModel extends ItemModel {
     }
 
     private function queryJoinedTables($record, $joinedTables, $idFieldName) {
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
 
         foreach ($joinedTables as $joinedTable) {
             if ($joinedTable['connectionType'] == "NToOne") {
@@ -274,7 +274,7 @@ class TemplateModel extends ItemModel {
     }
 
     private function queryJoinedTableOptions($joinedTable) {
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
 
         if ($joinedTable['showInForm'] == false) {
             return [];

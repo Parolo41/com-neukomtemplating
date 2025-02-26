@@ -47,7 +47,7 @@ $pageSize = $item->pageSize;
 $lastPageNumber = $item->lastPageNumber;
 
 if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->allowCreate) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $db = Factory::getDbo();
+    $db = Factory::getContainer()->get('DatabaseDriver');
     $input = Factory::getApplication()->input;
     $app = Factory::getApplication();
 
