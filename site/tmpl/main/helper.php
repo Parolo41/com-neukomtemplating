@@ -3,6 +3,7 @@
 <?php
 use Joomla\Filesystem\File;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 function validateInputFormat($value, $type) {
     $validationPatterns = array(
@@ -136,7 +137,7 @@ function dbInsert($input, $db, $self) {
 function dbUpdate($input, $db, $self) {
     $query = $db->getQuery(true);
     $item = $self->getModel()->getItem();
-    $recordId = $input->get('recordId', '', 'string');
+    $recordId = $input->get('recordId', 0, 'INT');
 
     if (!$item->allowEdit) {
         return 0;
@@ -229,7 +230,7 @@ function dbDelete($input, $db, $self) {
         return 0;
     }
 
-    $deleteConditions = array($db->quoteName($item->idFieldName) . " = " . $input->get('recordId', '', 'string'));
+    $deleteConditions = array($db->quoteName($item->idFieldName) . " = " . $input->get('recordId', 0, 'INT'));
 
     $query
         ->delete('#__' . $item->tableName)
@@ -241,9 +242,47 @@ function dbDelete($input, $db, $self) {
 
     foreach ($item->joinedTables as $joinedTable) {
         if ($joinedTable['connectionType'] == "NToN") {
-            dropIntermediateEntries($db, $joinedTable, $input->get('recordId', '', 'string'));
+            dropIntermediateEntries($db, $joinedTable, $input->get('recordId', 0, 'INT'));
         }
     }
+
+    return 1;
+}
+
+function sendMessage($input, $db, $self) {
+    $item = $self->getModel()->getItem();
+    $recordId = $input->get('recordId', 0, 'INT');
+
+    $senderName = $input->get('sender-name', '', 'string');
+    $senderEmail = $input->get('sender-email', '', 'string');
+    $messageSubject = $input->get('message-subject', '', 'string');
+    $messageBody = $input->get('message-body', '', 'string');
+
+    if (empty($item->data[$recordId])
+        || $item->contactEmailField == "" 
+        || empty($item->data[$recordId]->{$item->contactEmailField})
+        || !filter_var($item->data[$recordId]->{$item->contactEmailField}, FILTER_VALIDATE_EMAIL)
+        || !filter_var($senderEmail, FILTER_VALIDATE_EMAIL) || strlen($senderEmail) > 100
+        || empty($senderName) || strlen($senderName) > 50
+        || empty($messageSubject) || strlen($messageSubject) > 50
+        || empty($messageBody) || strlen($messageBody) > 500) {
+        return 0;
+    }
+
+    $to      = $item->data[$recordId]->{$item->contactEmailField};
+    $subject = Text::_('COM_NEUKOMTEMPLATING_CONTACT_FROM') . $input->get('sender-name', '', 'string');
+    $headers = 'From: ' . $input->get('sender-email', '', 'string') . "\r\n" .
+        'Reply-To: ' . $input->get('sender-email', '', 'string') . "\r\n" .
+        'X-Mailer: PHP/' . phpversion();
+    
+    $message = "<table>";
+    $message .= "<tr><th>" . Text::_('COM_NEUKOMTEMPLATING_CONTACT_SENDER_NAME') . "</th><td>" . $input->get('sender-name', '', 'string') . "</td></tr>";
+    $message .= "<tr><th>" . Text::_('COM_NEUKOMTEMPLATING_CONTACT_SENDER_EMAIL') . "</th><td>" . $input->get('sender-email', '', 'string') . "</td></tr>";
+    $message .= "<tr><th>" . Text::_('COM_NEUKOMTEMPLATING_CONTACT_MESSAGE_SUBJECT') . "</th><td>" . $input->get('message-subject', '', 'string') . "</td></tr>";
+    $message .= "<tr><th>" . Text::_('COM_NEUKOMTEMPLATING_CONTACT_MESSAGE_BODY') . "</th><td>" . wordwrap($input->get('message-body', '', 'string')) . "</td></tr>";
+    $message .= "</table>";
+    
+    mail($to, $subject, $message, $headers);
 
     return 1;
 }
@@ -359,6 +398,12 @@ function uploadFile($input, $fieldName, $subFolder) {
         $('#detailNavForm input[name="act"]').val('list');
         submitNavForm();
     }
+
+    function openContactForm(recordId) {
+        $('#detailNavForm input[name="act"]').val('contact');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
+        submitNavForm();
+}
 
     function goToPage(pageNumber) {
         $('#detailNavForm input[name="pageNumber"]').val(pageNumber);

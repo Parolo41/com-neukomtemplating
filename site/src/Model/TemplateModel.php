@@ -48,6 +48,8 @@ class TemplateModel extends ItemModel {
             'form_send_behaviour',
             'access',
             'joined_tables',
+            'contact_email_field',
+            'contact_display_name',
         ];
 
         $db = Factory::getContainer()->get('DatabaseDriver');
@@ -156,7 +158,7 @@ class TemplateModel extends ItemModel {
         if ($templateConfig->enable_pagination == "1" && intval($templateConfig->page_size) > 0) {
             $pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
 
-            $data = array_slice($data, intval($templateConfig->page_size) * ($pageNumber - 1), intval($templateConfig->page_size));
+            $data = array_slice($data, intval($templateConfig->page_size) * ($pageNumber - 1), intval($templateConfig->page_size), true);
         }
 
         $joinedTables = json_decode($templateConfig->joined_tables, true);
@@ -189,6 +191,8 @@ class TemplateModel extends ItemModel {
         $item->formSendBehaviour = $templateConfig->form_send_behaviour;
         $item->data = $data;
         $item->aliases = $aliases;
+        $item->contactEmailField = $templateConfig->contact_email_field;
+        $item->contactDisplayName = $templateConfig->contact_display_name;
         
         $item->fields = $fields;
         $item->urlParameters = $urlParameters;

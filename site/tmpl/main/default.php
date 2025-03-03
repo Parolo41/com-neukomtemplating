@@ -26,6 +26,7 @@ if (strpos($itemTemplate, 'editButton') == false && strpos($itemTemplate, 'editL
 $loader = new \Twig\Loader\ArrayLoader([
     'template' => $itemTemplate,
     'detail_template' => $item->detailTemplate,
+    'contact_display_name' => $item->contactDisplayName,
 ]);
 $twig = new \Twig\Environment($loader);
 $twig->addExtension(new Twig\Extra\Intl\IntlExtension());
@@ -39,11 +40,11 @@ $twig->addFilter($emailCloakFilter);
 $input = Factory::getApplication()->input;
 
 $act = $input->get('act', '', 'string');
-$recordId = $input->get('recordId', '', 'string');
+$recordId = $input->get('recordId', 0, 'INT');
 
 $searchTerm = $input->get('searchTerm', '', 'string');
 
-$pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
+$pageNumber = max($input->get('pageNumber', 1, 'INT'), 1);
 $pageSize = $item->pageSize;
 $lastPageNumber = $item->lastPageNumber;
 
@@ -84,9 +85,17 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_DELETE'), 'error');
         }
     }
-}
 
-$item = $this->getModel()->getItem();
+    if ($input->get('formAction', '', 'string') == "message") {
+        if (sendMessage($input, $db, $this)) {
+            $act = 'list';
+        } else {
+            $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_MESSAGE'), 'error');
+        }
+    }
+    
+    $item = $this->getModel()->getItem();
+}
 
 ?>
 
@@ -113,22 +122,14 @@ $item = $this->getModel()->getItem();
         } else {
             echo "<h2>No record found</h2>";
         }
-    } elseif ($act == 'detail' && $item->showDetailPage && $recordId != '') {
-        foreach ($item->data as $data) {
-            if ($data->{$item->idFieldName} == $recordId) {
-                require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'detailview.php');
-                break;
-            }
-        }
-    } elseif ($act == 'edit' && $item->allowEdit && $recordId != '') {
-        foreach ($item->data as $data) {
-            if ($data->{$item->idFieldName} == $recordId) {
-                require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editview.php');
-                break;
-            }
-        }
+    } elseif ($act == 'detail' && $item->showDetailPage && $recordId != 0 && !empty($item->data[$recordId])) {
+        require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'detailview.php');
+    } elseif ($act == 'edit' && $item->allowEdit && $recordId != 0 && !empty($item->data[$recordId])) {
+        require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editview.php');
     } elseif ($act == 'new' && $item->allowCreate) {
         require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'newview.php');
+    } elseif ($act == 'contact' && $item->contactEmailField != '' && $recordId != 0 && !empty($item->data[$recordId])) {
+        require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'contactview.php');
     } else {
         if ($item->enableSearch) { ?>
             <div id="neukomtemplating-search">

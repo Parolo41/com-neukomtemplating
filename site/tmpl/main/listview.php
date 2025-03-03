@@ -14,6 +14,7 @@ use Joomla\CMS\Language\Text;
                 'editButton' => $item->allowEdit ? '<button onClick="openEditForm(' . $data->{$item->idFieldName} . ')">Editieren</button>' : "",
                 'detailLink' => 'javascript:openDetailPage(' . $data->{$item->idFieldName} . ')',
                 'editLink' => 'javascript:openEditForm(' . $data->{$item->idFieldName} . ')',
+                'contactLink' => 'javascript:openContactForm(' . $data->{$item->idFieldName} . ')',
             ];
             echo $twig->render('template', array_merge($twigParams, $item->aliases));
         }

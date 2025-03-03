@@ -9,7 +9,10 @@ use Joomla\CMS\Language\Text;
 
 <div id="neukomtemplating-editform">
     <form action="<?php echo Route::_(Uri::getInstance()->toString()); ?>" enctype="multipart/form-data" method="post" name="adminForm" id="adminForm" class="form-vertical">
+        <table style="width: 100%">
         <?php
+
+        $data = $item->data[$recordId];
         $permittedTypes = ["text", "textarea", "texteditor", "date", "time", "number", "checkbox", "select", "image", "pdf"];
 
         foreach ($item->fields as $field) {
@@ -20,9 +23,10 @@ use Joomla\CMS\Language\Text;
             $fieldType = in_array($field['type'], $permittedTypes) ? $field['type'] : "text";
 
             $fieldValue = $data->{$field['name']};
-
-            echo '<div id="neukomtemplating-field-' . $field['name'] . '">';
-            echo '<label for="neukomtemplating-input-' . $field['name'] . '">' . $field['label'] . '</label>';
+            
+            echo '<tr>';
+            echo '<td><label for="neukomtemplating-input-' . $field['name'] . '">' . $field['label'] . '</label></td>';
+            echo '<td>';
 
             if ($fieldType == "texteditor") {
                 echo '<textarea id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" class="neukomtemplating-textarea" rows="4" cols="50" hidden>' . $fieldValue . '</textarea><br>';
@@ -52,9 +56,9 @@ use Joomla\CMS\Language\Text;
                 </script>
                 <?php
             } else if ($fieldType == "textarea") {
-                echo '<textarea id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" class="neukomtemplating-textarea" rows="4" cols="50">' . $fieldValue . '</textarea><br>'; 
+                echo '<textarea id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" class="neukomtemplating-textarea form-control" rows="4" cols="50">' . $fieldValue . '</textarea><br>'; 
             } else if ($fieldType == "select") {
-                echo '<select id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" class="neukomtemplating-select">';
+                echo '<select id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" class="neukomtemplating-select form-control">';
 
                 foreach (explode(',', $field['selectOptions']) as $selectOption) {
                     $selected = $selectOption == $fieldValue ? ' selected ' : '';
@@ -83,12 +87,12 @@ use Joomla\CMS\Language\Text;
                 echo '<input type="checkbox" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '"' . $checked . 'class="neukomtemplating-' . $fieldType . '" /><br>';
             } else if ($fieldType == "date") {
                 $fieldValue = $fieldValue != '' ? date('Y-m-d', strtotime($fieldValue)) : '';
-                echo '<input type="date" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" value="' . $fieldValue . '" class="neukomtemplating-' . $fieldType . '" /><br>';
+                echo '<input type="date" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" value="' . $fieldValue . '" class="neukomtemplating-' . $fieldType . ' form-control" /><br>';
             } else {
-                echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" value="' . $fieldValue . '" class="neukomtemplating-' . $fieldType . '" /><br>';
+                echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" value="' . $fieldValue . '" class="neukomtemplating-' . $fieldType . ' form-control" /><br>';
             }
 
-            echo '</div>';
+            echo '</td></tr>';
         }
 
         foreach ($item->joinedTables as $joinedTable) {
@@ -133,6 +137,8 @@ use Joomla\CMS\Language\Text;
             echo '</div>';
         }
         ?>
+
+        </table>
 
         <input type="hidden" id="formAction" name="formAction" value="update">
         <input type="hidden" id="recordId" name="recordId" value="<?php echo $data->{$item->idFieldName} ?>">

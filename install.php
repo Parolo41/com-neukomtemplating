@@ -83,17 +83,17 @@ return new class () implements ServiceProviderInterface {
 
                         $doUpdate = false;
 
-                        if (!json_validate($template->fields)) {
+                        if ($template->fields != '' && json_decode($template->fields) === null) {
                             $updatedTemplate->fields = json_encode($this->getFields($template));
                             $doUpdate = true;
                         }
 
-                        if (!json_validate($template->url_parameters)) {
+                        if ($template->url_parameters != '' && json_decode($template->url_parameters) === null) {
                             $updatedTemplate->url_parameters = json_encode($this->getUrlParameters($template));
                             $doUpdate = true;
                         }
                         
-                        if (!json_validate($template->joined_tables)) {
+                        if ($template->joined_tables != '' && json_decode($template->joined_tables) === null) {
                             $updatedTemplate->joined_tables = json_encode($this->getJoinedTables($template));
                             $doUpdate = true;
                         }

@@ -5,12 +5,13 @@ use Joomla\CMS\Language\Text;
 <div id="neukomtemplating-detailview">
     <?php
         $twigParams = [
-            'data' => $data,
+            'data' => $item->data[$recordId],
             'urlParameters' => $item->urlParameters,
             'detailButton' => $item->showDetailPage ? '<button onClick="openDetailPage(' . $recordId . ')">Detail</button>' : "",
             'editButton' => $item->allowEdit ? '<button onClick="openEditForm(' . $recordId . ')">Editieren</button>' : "",
             'detailLink' => 'javascript:openDetailPage(' . $recordId . ')',
             'editLink' => 'javascript:openEditForm(' . $recordId . ')',
+            'contactLink' => 'javascript:openContactForm(' . $recordId . ')',
         ];
         echo $twig->render('detail_template', array_merge($twigParams, $item->aliases));
     ?>

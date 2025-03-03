@@ -135,6 +135,22 @@
 			required="false"
 		 />
 		<field
+			name="contact_email_field"
+			type="text"
+			label="COM_NEUKOMTEMPLATING_FORM_CONTACT_EMAIL_FIELD"
+			description="COM_NEUKOMTEMPLATING_FORM_CONTACT_EMAIL_FIELD_D"
+			required="false"
+			size="50"
+		 />
+		<field
+			name="contact_display_name"
+			type="text"
+			label="COM_NEUKOMTEMPLATING_FORM_CONTACT_DISPLAY_NAME"
+			description="COM_NEUKOMTEMPLATING_FORM_CONTACT_DISPLAY_NAME_D"
+			required="false"
+			size="50"
+		 />
+		<field
 			name="allow_edit"
 			type="checkbox"
 			label="COM_NEUKOMTEMPLATING_FORM_ALLOW_EDIT"

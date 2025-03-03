@@ -82,6 +82,11 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <button type="button" onclick="addJoinedTable()"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_ADD_JOINED_TABLE'); ?></button>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'contact_form_tab', Text::_('COM_NEUKOMTEMPLATING_FORM_CONTACT_FORM')); ?>
+    <?php echo $this->getForm()->renderField('contact_email_field'); ?>
+    <?php echo $this->getForm()->renderField('contact_display_name'); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'permissions_tab', Text::_('COM_NEUKOMTEMPLATING_FORM_PERMISSIONS')); ?>
     <?php echo $this->getForm()->renderField('allow_edit'); ?>
     <?php echo $this->getForm()->renderField('allow_create'); ?>
