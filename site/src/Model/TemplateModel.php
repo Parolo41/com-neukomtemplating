@@ -50,6 +50,8 @@ class TemplateModel extends ItemModel {
             'joined_tables',
             'contact_email_field',
             'contact_display_name',
+            'notification_trigger',
+            'notification_recipients',
         ];
 
         $db = Factory::getContainer()->get('DatabaseDriver');
@@ -193,6 +195,8 @@ class TemplateModel extends ItemModel {
         $item->aliases = $aliases;
         $item->contactEmailField = $templateConfig->contact_email_field;
         $item->contactDisplayName = $templateConfig->contact_display_name;
+        $item->notificationTrigger = $templateConfig->notification_trigger;
+        $item->notificationRecipients = $templateConfig->notification_recipients;
         
         $item->fields = $fields;
         $item->urlParameters = $urlParameters;
@@ -293,7 +297,7 @@ class TemplateModel extends ItemModel {
             $joinedTableOptionsQuery->from($db->quoteName('#__' . $joinedTable['name']));
 
             $db->setQuery($joinedTableOptionsQuery);
-            $data = $db->loadObjectList();
+            $data = $db->loadObjectList($idFieldName);
 
             return $data;
         } else if ($joinedTable['connectionType'] == "NToN") {
@@ -305,7 +309,7 @@ class TemplateModel extends ItemModel {
             $joinedTableOptionsQuery->from($db->quoteName('#__' . $joinedTable['name']));
 
             $db->setQuery($joinedTableOptionsQuery);
-            $data = $db->loadObjectList();
+            $data = $db->loadObjectList($remoteIdField);
 
             return $data;
         }

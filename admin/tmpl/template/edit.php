@@ -82,6 +82,11 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo $this->getForm()->renderField('contact_display_name'); ?>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
+    <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'contact_form_tab', Text::_('COM_NEUKOMTEMPLATING_FORM_EMAIL_NOTIF')); ?>
+    <?php echo $this->getForm()->renderField('notification_trigger'); ?>
+    <?php echo $this->getForm()->renderField('notification_recipients'); ?>
+    <?php echo HTMLHelper::_('uitab.endTab'); ?>
+
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'contact_form_tab', Text::_('COM_NEUKOMTEMPLATING_FORM_USER_ID_LINK')); ?>
     <?php echo $this->getForm()->renderField('user_id_link_field'); ?>
     <?php echo HTMLHelper::_('uitab.endTab'); ?>

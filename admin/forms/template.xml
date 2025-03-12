@@ -173,6 +173,23 @@
 			<option value="edit_on_both">COM_NEUKOMTEMPLATING_FORM_EDIT_ON_BOTH</option>
 		</field>
 		<field
+			name="notification_trigger"
+			type="list"
+			default="on_edit"
+			label="COM_NEUKOMTEMPLATING_FORM_NOTIF_TRIGGER"
+		>
+			<option value="on_edit">COM_NEUKOMTEMPLATING_FORM_NOTIF_TRIGGER_EDIT</option>
+			<option value="on_new">COM_NEUKOMTEMPLATING_FORM_NOTIF_TRIGGER_NEW</option>
+			<option value="both">COM_NEUKOMTEMPLATING_FORM_NOTIF_TRIGGER_BOTH</option>
+		</field>
+		<field
+			name="notification_recipients"
+			type="text"
+			label="COM_NEUKOMTEMPLATING_FORM_NOTIF_RECIP"
+			default=""
+			required="false"
+		 />
+		<field
 			name="access"
 			type="accesslevel"
 			label="COM_NEUKOMTEMPLATING_FORM_ACCESS"

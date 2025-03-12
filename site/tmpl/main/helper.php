@@ -67,6 +67,8 @@ function dbInsert($input, $db, $self) {
 
     $insertColumns = array();
     $insertValues = array();
+    $fieldLabels = array();
+    $fieldValues = array();
 
     $validationFailed = false;
 
@@ -89,7 +91,10 @@ function dbInsert($input, $db, $self) {
 
         $insertColumns[] = $field['name'];
         $insertValues[] = formatInputValue($fieldValue, $field['type'], $db);
+        $fieldLabels[] = $field['label'];
     }
+
+    $fieldValues = $insertValues;
 
     foreach ($item->urlDbInserts as $urlDbInsert) {
         $insertColumns[] = $urlDbInsert;
@@ -102,6 +107,8 @@ function dbInsert($input, $db, $self) {
 
             $insertColumns[] = $joinedTable['NToOne-foreignKey'];
             $insertValues[] = formatInputValue($foreignId, "foreignId", $db);
+            $fieldLabels[] = $joinedTable['formName'];
+            $fieldValues[] = $joinedTable['options'][$foreignId]->{$joinedTable['displayField']};
         }
     }
 
@@ -121,14 +128,24 @@ function dbInsert($input, $db, $self) {
         if ($joinedTable['connectionType'] == "NToN") {
             $localForeignKey = $lastRowId;
 
+            $selectedOptions = array();
+
             foreach ($joinedTable['options'] as $option) {
                 $remoteForeignKey = $input->get($joinedTable['alias'] . '-' . $option->{$joinedTable['NToN-remoteId']}, '', 'string');
 
                 if ($remoteForeignKey != '') {
                     addIntermediateEntry($db, $joinedTable, $localForeignKey, $remoteForeignKey);
+                    $selectedOptions[] = $remoteForeignKey;
                 }
+
+                $fieldLabels = $joinedTable['formName'];
+                $fieldValues = implode(', ', $selectedOptions);
             }
         }
+    }
+
+    if ($item->notificationTrigger == 'on_new' || $item->notificationTrigger == 'both') {
+        sendNotification("Neuer Eintrag", $fieldLabels, $fieldValues, $item);
     }
 
     return $lastRowId;
@@ -144,6 +161,8 @@ function dbUpdate($input, $db, $self) {
     }
 
     $updateFields = array();
+    $fieldLabels = array();
+    $fieldValues = array();
 
     $validationFailed = false;
 
@@ -176,7 +195,11 @@ function dbUpdate($input, $db, $self) {
             $validationFailed = true;
         }
 
-        $updateFields[] = $db->quoteName($field['name']) . " = " . formatInputValue($fieldValue, $field['type'], $db);
+        $formattedValue = formatInputValue($fieldValue, $field['type'], $db);
+
+        $updateFields[] = $db->quoteName($field['name']) . " = " . $formattedValue;
+        $fieldLabels[] = $field['label'];
+        $fieldValues[] = $formattedValue;
     }
 
     foreach ($item->urlDbInserts as $urlDbInsert) {
@@ -190,8 +213,12 @@ function dbUpdate($input, $db, $self) {
             $foreignId = $input->get($joinedTable['alias'], '', 'string');
 
             $updateFields[] = $db->quoteName($joinedTable['NToOne-foreignKey']) . " = " . formatInputValue($foreignId, "foreignId", $db);
+            $fieldLabels[] = $joinedTable['formName'];
+            $fieldValues[] = $joinedTable['options'][$foreignId]->{$joinedTable['displayField']};
         } else if ($joinedTable['connectionType'] == "NToN") {
             $currentIds = array_column($item->data[$recordId]->{$joinedTable['alias']}, $joinedTable['NToN-remoteId']);
+
+            $selectedOptions = array();
 
             foreach ($joinedTable['options'] as $option) {
                 $optionId = $option->{$joinedTable['NToN-remoteId']};
@@ -202,6 +229,13 @@ function dbUpdate($input, $db, $self) {
                 } else if ($remoteForeignKey == '' && in_array($optionId, $currentIds)) {
                     dropIntermediateEntry($db, $joinedTable, $recordId, $optionId);
                 }
+
+                if ($remoteForeignKey != '') {
+                    $selectedOptions[] = $remoteForeignKey;
+                }
+
+                $fieldLabels = $joinedTable['formName'];
+                $fieldValues = implode(', ', $selectedOptions);
             }
         }
     }
@@ -218,6 +252,10 @@ function dbUpdate($input, $db, $self) {
     $db->setQuery($query);
 
     $result = $db->execute();
+
+    if ($item->notificationTrigger == 'on_edit' || $item->notificationTrigger == 'both') {
+        sendNotification("Eintrag Bearbeitet", $fieldLabels, $fieldValues, $item);
+    }
 
     return 1;
 }
@@ -354,6 +392,30 @@ function uploadFile($input, $fieldName, $subFolder) {
     } else {
         error_log("Failed to upload " . $source . " to " . $destination);
         return "";
+    }
+}
+
+function sendNotification($subject, $fieldLabels, $fieldValues, $item) {
+    if ($item->notificationRecipients == '') {
+        return;
+    }
+    
+    $message = "<table>";
+    
+    for ($i = 0; $i < count($fieldLabels); $i++) {
+        $message .= "<tr><th>" . $fieldLabels[$i] . "</th><td>" . $fieldValues[$i] . "</td></tr>";
+    }
+    
+    $message .= "</table>";
+
+    $recipients = explode(',', $item->notificationRecipients);
+
+    foreach ($recipients as $recipient) {
+        if (!filter_var(trim($recipient), FILTER_VALIDATE_EMAIL)) {
+            continue;
+        }
+
+        mail(trim($recipient), $subject, $message);
     }
 }
 ?>

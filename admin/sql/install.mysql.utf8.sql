@@ -26,5 +26,7 @@ CREATE TABLE `#__neukomtemplating_templates` (
     `user_id_link_field` VARCHAR(40) NOT NULL,
     `contact_email_field` VARCHAR(50) NOT NULL,
     `contact_display_name` VARCHAR(50) NOT NULL,
+    `notification_trigger` VARCHAR(20) NOT NULL,
+    `notification_recipients` TEXT NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB; 
