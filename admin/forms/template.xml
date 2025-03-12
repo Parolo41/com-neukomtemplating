@@ -69,6 +69,7 @@
 			name="user_id_link_field"
 			type="text"
 			label="COM_NEUKOMTEMPLATING_FORM_USER_ID_LINK_FIELD"
+			description="COM_NEUKOMTEMPLATING_FORM_USER_ID_LINK_FIELD_D"
 			default=""
 			required="false"
 		 />
