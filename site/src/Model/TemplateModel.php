@@ -162,7 +162,7 @@ class TemplateModel extends ItemModel {
         $lastPageNumber = ceil(sizeof($data) / $pageSize);
 
         if ($act == 'list' && $templateConfig->enable_pagination == "1" && intval($templateConfig->page_size) > 0) {
-            $pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
+            $pageNumber = min(max($input->get('pageNumber', 1, 'INT'), 1), $lastPageNumber);
 
             $data = array_slice($data, intval($templateConfig->page_size) * ($pageNumber - 1), intval($templateConfig->page_size), true);
         }

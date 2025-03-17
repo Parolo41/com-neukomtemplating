@@ -34,7 +34,12 @@ use Joomla\CMS\Language\Text;
 
 <?php if ($item->enablePagination) { ?>
     <div id="neukomtemplating-page-control" style="margin-top: 1em">
-        <a href="<?php echo buildUrl($this, 'list', targetPage: $pageNumber - 1); ?>" class="btn btn-primary" <?php echo $pageNumber <= 1 ? 'disabled' : '' ?>>&#8678;</a>
+        <?php if ($pageNumber <= 1) { ?>
+            <span class="btn">&#8678;</span>
+        <?php } else { ?>
+            <a href="<?php echo buildUrl($this, 'list', targetPage: $pageNumber - 1); ?>" class="btn btn-primary">&#8678;</a>
+        <?php } ?>
+        
 
         <?php for ($p = 1; $p <= $lastPageNumber; $p++) {
             if ($p == $pageNumber) {
@@ -43,7 +48,11 @@ use Joomla\CMS\Language\Text;
                 echo '<a href="' . buildUrl($this, 'list', targetPage: $p) . '" style="margin: 0.25em">' . $p . '</a>';
             }
         } ?>
-
-        <a href="<?php echo buildUrl($this, 'list', targetPage: $pageNumber + 1); ?>" class="btn btn-primary" <?php echo $pageNumber >= $lastPageNumber ? 'disabled' : '' ?>>&#8680;</a>
+        
+        <?php if ($pageNumber >= $lastPageNumber) { ?>
+            <span class="btn">&#8680;</span>
+        <?php } else { ?>
+            <a href="<?php echo buildUrl($this, 'list', targetPage: $pageNumber + 1); ?>" class="btn btn-primary">&#8680;</a>
+        <?php } ?>
     </div>
 <?php } ?>

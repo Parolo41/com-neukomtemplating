@@ -118,9 +118,9 @@ $recordId = $input->get('recordId', 0, 'INT');
 
 $searchTerm = $input->get('searchTerm', '', 'string');
 
-$pageNumber = max($input->get('pageNumber', 1, 'INT'), 1);
 $pageSize = $item->pageSize;
 $lastPageNumber = $item->lastPageNumber;
+$pageNumber = min(max($input->get('pageNumber', 1, 'INT'), 1), $lastPageNumber);
 
 ?>
 
