@@ -109,8 +109,8 @@ use Joomla\CMS\Language\Text;
         <input type="hidden" id="formAction" name="formAction" value="insert">
 
         <div id="neukomtemplating-formbuttons">
-            <button type="submit"><?php echo Text::_('COM_NEUKOMTEMPLATING_SUBMIT'); ?></button>
-            <button type="button" id="backToListButton" onClick="openListView()"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></button>
+            <button type="submit" class="btn btn-primary"><?php echo Text::_('COM_NEUKOMTEMPLATING_SUBMIT'); ?></button>
+            <a type="button" class="btn btn-primary" id="backToListButton" href="<?php echo buildUrl($this, 'list'); ?>"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></a>
         </div>
     </form>
 </div>

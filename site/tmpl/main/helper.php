@@ -4,6 +4,7 @@
 use Joomla\Filesystem\File;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 
 function validateInputFormat($value, $type) {
     $validationPatterns = array(
@@ -418,21 +419,65 @@ function sendNotification($subject, $fieldLabels, $fieldValues, $item) {
         mail(trim($recipient), $subject, $message);
     }
 }
+
+function buildUrl($self, $target, $recordId = '', $targetPage = 0) {
+    $item = $self->getModel()->getItem();
+    $input = Factory::getApplication()->input;
+    $query = array();
+
+    switch ($target) {
+        case 'list':
+            $query['act'] = 'list';
+            break;
+        case 'detail':
+            $query['act'] = 'detail';
+            $query['recordId'] = $recordId;
+            break;
+        case 'new':
+            $query['act'] = 'new';
+            break;
+        case 'edit':
+            $query['act'] = 'edit';
+            $query['recordId'] = $recordId;
+            break;
+        case 'contact':
+            $query['act'] = 'contact';
+            $query['recordId'] = $recordId;
+            break;
+    }
+
+    $searchTerm = $input->get('searchTerm', '', 'string');
+
+    if ($searchTerm != '') {
+        $query['searchTerm'] = $searchTerm;
+    }
+
+    $pageNumber = $input->get('pageNumber', 0, 'int');
+
+    if ($targetPage != 0) {
+        $query['pageNumber'] = $targetPage;
+    } elseif ($pageNumber != 0) {
+        $query['pageNumber'] = $pageNumber;
+    }
+
+    foreach ($item->urlParameters as $parameterName => $urlParameter) {
+        $parameterValue = $input->get($parameterName, false, 'string');
+
+        if ($parameterValue != false) {
+            $query[$parameterName] = $parameterValue;
+        }
+    }
+
+    return Uri::current() . '?' . Uri::buildQuery($query);
+}
+
+function setUrl($url) {
+    echo "<script>history.replaceState({},'','$url');</script>";
+}
 ?>
 
 <script>
-    <?php if ($item->allowEdit || $item->allowCreate) { ?>
-
-    function openNewForm() {
-        $('#detailNavForm input[name="act"]').val('new');
-        submitNavForm();
-    }
-
-    function openEditForm(recordId) {
-        $('#detailNavForm input[name="act"]').val('edit');
-        $('#detailNavForm input[name="recordId"]').val(recordId);
-        submitNavForm();
-    }
+    <?php if ($item->allowEdit) { ?>
 
     function confirmDelete() {
         document.getElementById("formAction").value = 'delete';
@@ -449,48 +494,4 @@ function sendNotification($subject, $fieldLabels, $fieldValues, $item) {
     }
 
     <?php } ?>
-
-    function openDetailPage(recordId) {
-        $('#detailNavForm input[name="act"]').val('detail');
-        $('#detailNavForm input[name="recordId"]').val(recordId);
-        submitNavForm();
-    }
-
-    function openListView() {
-        $('#detailNavForm input[name="act"]').val('list');
-        submitNavForm();
-    }
-
-    function openContactForm(recordId) {
-        $('#detailNavForm input[name="act"]').val('contact');
-        $('#detailNavForm input[name="recordId"]').val(recordId);
-        submitNavForm();
-}
-
-    function goToPage(pageNumber) {
-        $('#detailNavForm input[name="pageNumber"]').val(pageNumber);
-        submitNavForm();
-    }
-
-    function doSearch() {
-        $('#detailNavForm input[name="pageNumber"]').val(1);
-        $('#detailNavForm input[name="searchTerm"]').val($('#searchForm input[name="searchTerm"]').val());
-        submitNavForm();
-    }
-
-    function submitNavForm() {
-        if ($('#detailNavForm input[name="act"]').val() == '') {
-            $('#detailNavForm input[name="act"]').remove()
-        }
-
-        if ($('#detailNavForm input[name="recordId"]').val() == '') {
-            $('#detailNavForm input[name="recordId"]').remove()
-        }
-
-        if ($('#detailNavForm input[name="searchTerm"]').val() == '') {
-            $('#detailNavForm input[name="searchTerm"]').remove()
-        }
-
-        $('#detailNavForm').submit();
-    }
 </script>

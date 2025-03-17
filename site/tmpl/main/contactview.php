@@ -39,7 +39,7 @@ use Joomla\CMS\Language\Text;
 
         <div id="neukomtemplating-formbuttons">
             <button type="button" class="btn btn-primary" onclick="validateForm()"><?php echo Text::_('COM_NEUKOMTEMPLATING_SUBMIT') ?></button>
-            <button type="button" class="btn btn-primary" id="backToListButton" onClick="openListView()"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></button>
+            <a type="button" class="btn btn-primary" id="backToListButton" href="<?php echo buildUrl($this, 'list'); ?>"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></a>
         </div>
     </form>
 </div>

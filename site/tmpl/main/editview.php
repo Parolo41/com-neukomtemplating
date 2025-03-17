@@ -144,15 +144,15 @@ use Joomla\CMS\Language\Text;
         <input type="hidden" id="recordId" name="recordId" value="<?php echo $data->{$item->idFieldName} ?>">
 
         <div id="neukomtemplating-formbuttons">
-            <button type="submit"><?php echo Text::_('COM_NEUKOMTEMPLATING_SUBMIT') ?></button>
-            <button type="button" id="backToListButton" onClick="openListView()"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK') ?></button>
-            <button type="button" id="deleteRecordButton" onClick="confirmDelete()"><?php echo Text::_('COM_NEUKOMTEMPLATING_DELETE') ?></button>
+            <button type="submit" class="btn btn-primary"><?php echo Text::_('COM_NEUKOMTEMPLATING_SUBMIT') ?></button>
+            <a type="button" class="btn btn-primary" id="backToListButton" href="<?php echo buildUrl($this, 'list'); ?>"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></a>
+            <button type="button" class="btn btn-primary" id="deleteRecordButton" onClick="confirmDelete()"><?php echo Text::_('COM_NEUKOMTEMPLATING_DELETE') ?></button>
         </div>
 
         <div id="neukomtemplating-deletebuttons" style="display: none">
             <?php echo Text::_('COM_NEUKOMTEMPLATING_CONFIRM'); ?> <br>
-            <button type="submit"><?php echo Text::_('COM_NEUKOMTEMPLATING_YES'); ?></button>
-            <button type="button" onClick="cancelDelete()"><?php echo Text::_('COM_NEUKOMTEMPLATING_NO'); ?></button>
+            <button type="submit" class="btn btn-primary"><?php echo Text::_('COM_NEUKOMTEMPLATING_YES'); ?></button>
+            <button type="button" class="btn btn-primary" onClick="cancelDelete()"><?php echo Text::_('COM_NEUKOMTEMPLATING_NO'); ?></button>
         </div>
     </form>
 </div>

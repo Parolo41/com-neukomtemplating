@@ -19,7 +19,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helper.php');
 
 $itemTemplate = $item->template;
 
-if (strpos($itemTemplate, 'editButton') == false && strpos($itemTemplate, 'editLink') == false) {
+if (strpos($itemTemplate, 'editButton') == false && strpos($itemTemplate, 'editLink') == false && strpos($itemTemplate, 'editUrl') == false) {
     $itemTemplate = $itemTemplate . '{{editButton | raw}}';
 }
 
@@ -39,15 +39,6 @@ $twig->addFilter($emailCloakFilter);
 
 $input = Factory::getApplication()->input;
 
-$act = $input->get('act', '', 'string');
-$recordId = $input->get('recordId', 0, 'INT');
-
-$searchTerm = $input->get('searchTerm', '', 'string');
-
-$pageNumber = max($input->get('pageNumber', 1, 'INT'), 1);
-$pageSize = $item->pageSize;
-$lastPageNumber = $item->lastPageNumber;
-
 if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->allowCreate) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $db = Factory::getContainer()->get('DatabaseDriver');
     $input = Factory::getApplication()->input;
@@ -58,8 +49,17 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
             if ($item->formSendBehaviour == 'edit_on_insert' || $item->formSendBehaviour == 'edit_on_both') {
                 $act = 'edit';
                 $recordId = strval($lastRowId);
+
+                $input->set('act', 'edit');
+                $input->set('recordId', $recordId);
+
+                setUrl(buildUrl($this, 'edit', recordId: $recordId));
             } else {
                 $act = 'list';
+
+                $input->set('act', 'list');
+
+                setUrl(buildUrl($this, 'list'));
             }
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_INSERT'), 'error');
@@ -70,8 +70,16 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
         if (dbUpdate($input, $db, $this)) {
             if ($item->formSendBehaviour == 'edit_on_update' || $item->formSendBehaviour == 'edit_on_both') {
                 $act = 'edit';
+
+                $input->set('act', 'edit');
+
+                setUrl(buildUrl($this, 'edit', recordId: $input->get('recordId', 0, 'INT')));
             } else {
                 $act = 'list';
+
+                $input->set('act', 'list');
+
+                setUrl(buildUrl($this, 'list'));
             }
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_UPDATE'), 'error');
@@ -81,6 +89,10 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     if ($input->get('formAction', '', 'string') == "delete") {
         if (dbDelete($input, $db, $this)) {
             $act = 'list';
+
+            $input->set('act', 'list');
+
+            setUrl(buildUrl($this, 'list'));
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_DELETE'), 'error');
         }
@@ -89,6 +101,10 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     if ($input->get('formAction', '', 'string') == "message") {
         if (sendMessage($input, $db, $this)) {
             $act = 'list';
+
+            $input->set('act', 'list');
+
+            setUrl(buildUrl($this, 'list'));
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_MESSAGE'), 'error');
         }
@@ -96,6 +112,15 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     
     $item = $this->getModel()->getItem();
 }
+
+$act = $input->get('act', '', 'string');
+$recordId = $input->get('recordId', 0, 'INT');
+
+$searchTerm = $input->get('searchTerm', '', 'string');
+
+$pageNumber = max($input->get('pageNumber', 1, 'INT'), 1);
+$pageSize = $item->pageSize;
+$lastPageNumber = $item->lastPageNumber;
 
 ?>
 
@@ -136,9 +161,8 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
                 <form name="searchForm" id="searchForm">
                     <label for="searchTerm">Suche</label>
                     <input type="text" name="searchTerm" value="<?php echo $input->get('searchTerm', '', 'string') ?>" />
-                    <button type="submit"><?php echo Text::_('COM_NEUKOMTEMPLATING_SEARCH'); ?></button>
+                    <button type="submit" class="btn btn-primary"><?php echo Text::_('COM_NEUKOMTEMPLATING_SEARCH'); ?></button>
                 </form>
-                <script>$('#searchForm').submit(function(e) {doSearch(); return false;});</script>
             </div>
         <?php }
         require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'listview.php');

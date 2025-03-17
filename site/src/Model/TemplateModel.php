@@ -136,8 +136,12 @@ class TemplateModel extends ItemModel {
         }
 
         $searchTerm = $input->get('searchTerm', '', 'string');
+        $recordId = $input->get('recordId', '', 'string');
+        $act = $input->get('act', 'list', 'string');
 
-        if ($searchTerm != '' && $templateConfig->enable_search == "1") {
+        if ($recordId != '' && $act != 'list') {
+            $conditionList[] = '(' . $templateConfig->id_field_name . " = " . $recordId . ')';
+        } elseif ($searchTerm != '' && $templateConfig->enable_search == "1") {
             $searchConditions = [];
 
             foreach($fieldNames as $fieldName) {
@@ -157,7 +161,7 @@ class TemplateModel extends ItemModel {
         $pageSize = max(1, ($templateConfig->enable_pagination != "1" || intval($templateConfig->page_size) == 0) ? sizeof($data) : intval($templateConfig->page_size));
         $lastPageNumber = ceil(sizeof($data) / $pageSize);
 
-        if ($templateConfig->enable_pagination == "1" && intval($templateConfig->page_size) > 0) {
+        if ($act == 'list' && $templateConfig->enable_pagination == "1" && intval($templateConfig->page_size) > 0) {
             $pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
 
             $data = array_slice($data, intval($templateConfig->page_size) * ($pageNumber - 1), intval($templateConfig->page_size), true);
