@@ -245,6 +245,11 @@ function dbUpdate($input, $db, $self) {
         $db->quoteName($item->idFieldName) . ' = ' . $recordId
     );
 
+    if ($item->userIdLinkField != "") {
+        $user = Factory::getUser();
+        $updateConditions[] = $db->quoteName($item->userIdLinkField) . ' = ' . $user->id;
+    }
+
     $query
         ->update('#__' . $item->tableName)
         ->set($updateFields)
