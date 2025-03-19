@@ -161,7 +161,7 @@ class TemplateModel extends ItemModel {
         $pageSize = max(1, ($templateConfig->enable_pagination != "1" || intval($templateConfig->page_size) == 0) ? sizeof($data) : intval($templateConfig->page_size));
         $lastPageNumber = ceil(sizeof($data) / $pageSize);
 
-        if ($act == 'list' && $templateConfig->enable_pagination == "1" && intval($templateConfig->page_size) > 0) {
+        if ($act == 'list' && $templateConfig->enable_pagination == "1" && intval($templateConfig->page_size) > 0 && $templateConfig->user_id_link_field == "") {
             $pageNumber = min(max($input->get('pageNumber', 1, 'INT'), 1), $lastPageNumber);
 
             $data = array_slice($data, intval($templateConfig->page_size) * ($pageNumber - 1), intval($templateConfig->page_size), true);
@@ -173,9 +173,7 @@ class TemplateModel extends ItemModel {
             $joinedTables[$key]['options'] = $this->queryJoinedTableOptions($joinedTable);
         }
 
-        foreach ($data as $record) {
-            $this->queryJoinedTables($record, $joinedTables, $templateConfig->id_field_name);
-        }
+        $this->queryJoinedTables($data, $joinedTables, $templateConfig->id_field_name);
 
         $item = new \stdClass();
         $item->id = $templateConfig->id;
@@ -210,11 +208,15 @@ class TemplateModel extends ItemModel {
         return $item;
     }
 
-    private function queryJoinedTables($record, $joinedTables, $idFieldName) {
+    private function queryJoinedTables($records, $joinedTables, $idFieldName) {
         $db = Factory::getContainer()->get('DatabaseDriver');
 
         foreach ($joinedTables as $joinedTable) {
             $alias = $joinedTable['alias'] != '' ? $joinedTable['alias'] : $joinedTable['name'];
+
+            foreach ($records as $record) {
+                $record->{$alias} = array();
+            }
 
             if ($joinedTable['connectionType'] == "NToOne") {
                 $joinedTableQuery = $db->getQuery(true);
@@ -223,7 +225,7 @@ class TemplateModel extends ItemModel {
                 $joinedIdFieldName = $joinedTable['NToOne-remoteId'];
                 
                 if ($record->{$foreignKeyName} == "") {
-                    $record->{$joinedTable['name']} = [];
+                    $record->{$alias} = [];
                     continue;
                 }
 
@@ -233,14 +235,20 @@ class TemplateModel extends ItemModel {
                     $selectedFields[] = $joinedIdFieldName;
                 }
 
+                $recordIds = array_column($records, $foreignKeyName);
+
                 $joinedTableQuery->select($db->quoteName($selectedFields));
                 $joinedTableQuery->from($db->quoteName('#__' . $joinedTable['name']));
-                $joinedTableQuery->where($db->quoteName($joinedIdFieldName) . ' = ' . $record->{$foreignKeyName});
+                $joinedTableQuery->where($db->quoteName($joinedIdFieldName) . ' IN (' . implode(',', $recordIds) . ')');
 
                 $db->setQuery($joinedTableQuery);
-                $data = $db->loadObjectList();
-    
-                $record->{$alias} = $data;
+                $data = $db->loadObjectList($joinedIdFieldName);
+
+                foreach ($records as $record) {
+                    if (!empty($data[$record->{$foreignKeyName}])) {
+                        $record->{$alias}[] = $data[$record->{$foreignKeyName}];
+                    }
+                }
             } else if ($joinedTable['connectionType'] == "OneToN") {
                 $joinedTableQuery = $db->getQuery(true);
 
@@ -248,14 +256,22 @@ class TemplateModel extends ItemModel {
 
                 $selectedFields = array_map('trim', explode(',', $joinedTable['foreignFields']));
 
+                if (!in_array($foreignKeyName, $selectedFields)) {
+                    $selectedFields[] = $foreignKeyName;
+                }
+
+                $recordIds = array_column($records, $idFieldName);
+
                 $joinedTableQuery->select($db->quoteName($selectedFields));
                 $joinedTableQuery->from($db->quoteName('#__' . $joinedTable['name']));
-                $joinedTableQuery->where($db->quoteName($foreignKeyName) . ' = ' . $record->{$idFieldName});
+                $joinedTableQuery->where($db->quoteName($foreignKeyName) . ' IN (' . implode(',', $recordIds) . ')');
 
                 $db->setQuery($joinedTableQuery);
                 $data = $db->loadObjectList();
     
-                $record->{$alias} = $data;
+                foreach ($data as $entry) {
+                    $records[$entry->{$foreignKeyName}]->{$alias}[] = $entry;
+                }
             } else if ($joinedTable['connectionType'] == "NToN") {
                 $joinedTableQuery = $db->getQuery(true);
 
@@ -274,15 +290,19 @@ class TemplateModel extends ItemModel {
                     $selectedFields[] = $remoteIdField;
                 }
 
+                $recordIds = array_column($records, $idFieldName);
+
                 $joinedTableQuery->select($db->quoteName($selectedFields));
                 $joinedTableQuery->from($db->quoteName('#__' . $intermediateTableName, 'interm'));
-                $joinedTableQuery->where($db->quoteName($localForeignKeyField) . ' = ' . $record->{$idFieldName});
+                $joinedTableQuery->where($db->quoteName($localForeignKeyField) . ' IN (' . implode(',', $recordIds) . ')');
                 $joinedTableQuery->join('INNER', $db->quoteName('#__' . $joinedTable['name'], 'remote') . ' ON ' . $db->quoteName($remoteIdField) . ' = ' . $db->quoteName($remoteForeignKeyField));
                 
                 $db->setQuery($joinedTableQuery);
                 $data = $db->loadObjectList();
                 
-                $record->{$alias} = $data;
+                foreach ($data as $entry) {
+                    $records[$entry->{$localForeignKeyField}]->{$alias}[] = $entry;
+                }
             }
         }
     }
