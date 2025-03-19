@@ -214,6 +214,8 @@ class TemplateModel extends ItemModel {
         $db = Factory::getContainer()->get('DatabaseDriver');
 
         foreach ($joinedTables as $joinedTable) {
+            $alias = $joinedTable['alias'] != '' ? $joinedTable['alias'] : $joinedTable['name'];
+
             if ($joinedTable['connectionType'] == "NToOne") {
                 $joinedTableQuery = $db->getQuery(true);
 
@@ -238,7 +240,7 @@ class TemplateModel extends ItemModel {
                 $db->setQuery($joinedTableQuery);
                 $data = $db->loadObjectList();
     
-                $record->{$joinedTable['alias']} = $data;
+                $record->{$alias} = $data;
             } else if ($joinedTable['connectionType'] == "OneToN") {
                 $joinedTableQuery = $db->getQuery(true);
 
@@ -253,7 +255,7 @@ class TemplateModel extends ItemModel {
                 $db->setQuery($joinedTableQuery);
                 $data = $db->loadObjectList();
     
-                $record->{$joinedTable['alias']} = $data;
+                $record->{$alias} = $data;
             } else if ($joinedTable['connectionType'] == "NToN") {
                 $joinedTableQuery = $db->getQuery(true);
 
@@ -280,7 +282,7 @@ class TemplateModel extends ItemModel {
                 $db->setQuery($joinedTableQuery);
                 $data = $db->loadObjectList();
                 
-                $record->{$joinedTable['alias']} = $data;
+                $record->{$alias} = $data;
             }
         }
     }

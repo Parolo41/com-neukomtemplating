@@ -19,7 +19,7 @@ require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helper.php');
 
 $itemTemplate = $item->template;
 
-if (strpos($itemTemplate, 'editButton') == false && strpos($itemTemplate, 'editLink') == false && strpos($itemTemplate, 'editUrl') == false) {
+if ($item->allowEdit && strpos($itemTemplate, 'editButton') == false && strpos($itemTemplate, 'editLink') == false && strpos($itemTemplate, 'editUrl') == false) {
     $itemTemplate = $itemTemplate . '{{editButton | raw}}';
 }
 
@@ -136,7 +136,7 @@ $pageNumber = min(max($input->get('pageNumber', 1, 'INT'), 1), $lastPageNumber);
         }
 
         if (sizeof($item->data) > 0) {
-            $data = $item->data[0];
+            $recordId = array_key_first($item->data);
             require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editview.php');
             ?>
             <script>
