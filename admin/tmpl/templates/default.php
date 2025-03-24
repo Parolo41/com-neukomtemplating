@@ -21,11 +21,11 @@ use Joomla\CMS\Router\Route;
                                 <td class="w-1 text-center">
                                     <?php echo HTMLHelper::_('grid.checkall'); ?>
                                 </td>
-                                <th scope="col" style="width:1%" class="text-center d-none d-md-table-cell">
-                                    <?php echo Text::_('COM_NEUKOMTEMPLATING_TABLE_TABLEHEAD_NAME'); ?>
-                                </th>
-                                <th scope="col">
+                                <th scope="col" style="width: 1%">
                                     <?php echo Text::_('COM_NEUKOMTEMPLATING_TABLE_TABLEHEAD_ID'); ?>
+                                </th>
+                                <th scope="col" class="d-none d-md-table-cell">
+                                    <?php echo Text::_('COM_NEUKOMTEMPLATING_TABLE_TABLEHEAD_NAME'); ?>
                                 </th>
                             </tr>
                         </thead>
@@ -38,6 +38,9 @@ use Joomla\CMS\Router\Route;
                                     <td class="text-center">
                                         <?php echo HTMLHelper::_('grid.id', $i, $item->id, false, 'cid', 'cb', $item->name); ?>
                                     </td>
+                                    <td class="d-none d-md-table-cell">
+                                        <?php echo $item->id; ?>
+                                    </td>
                                     <th scope="row" class="has-context">
                                         <div>
                                             <?php echo $this->escape($item->name); ?>
@@ -46,9 +49,6 @@ use Joomla\CMS\Router\Route;
                                         <a class="hasTooltip" href="<?php echo Route::_('index.php?option=com_neukomtemplating&task=template.edit&id=' . (int) $item->id); ?>" title="<?php echo Text::_('JACTION_EDIT'); ?> <?php echo $this->escape(addslashes($item->name)); ?>">
                                             <?php echo $editIcon; ?><?php echo $this->escape($item->name); ?></a>
                                     </th>
-                                    <td class="d-none d-md-table-cell">
-                                        <?php echo $item->id; ?>
-                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
