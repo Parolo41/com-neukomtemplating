@@ -75,7 +75,7 @@ class TemplateModel extends ItemModel {
             throw new \Exception("Missing access levels for this template", 403);
         }
 
-        $fieldConfig = json_decode($templateConfig->fields, true);
+        $fieldConfig = $templateConfig->fields != '' ? json_decode($templateConfig->fields, true) : array();
         $fields = [];
         $fieldNames = [$templateConfig->id_field_name];
 
@@ -99,7 +99,7 @@ class TemplateModel extends ItemModel {
 
         $urlParameters = [];
         $urlDbInserts = [];
-        $urlParameterConfig = json_decode($templateConfig->url_parameters, true);
+        $urlParameterConfig = $templateConfig->url_parameters != '' ? json_decode($templateConfig->url_parameters, true) : array();
 
         foreach($urlParameterConfig as $config) {
             if ($config['name'] == '') {
@@ -167,7 +167,7 @@ class TemplateModel extends ItemModel {
             $data = array_slice($data, intval($templateConfig->page_size) * ($pageNumber - 1), intval($templateConfig->page_size), true);
         }
 
-        $joinedTables = json_decode($templateConfig->joined_tables, true);
+        $joinedTables = $templateConfig->joined_tables != '' ? json_decode($templateConfig->joined_tables, true) : array();
 
         foreach ($joinedTables as $key => $joinedTable) {
             $joinedTables[$key]['options'] = $this->queryJoinedTableOptions($joinedTable);
