@@ -205,6 +205,8 @@ class TemplateModel extends ItemModel {
         $item->urlDbInserts = $urlDbInserts;
         $item->joinedTables = $joinedTables;
 
+        $item->tableFields = $tableFields;
+
         return $item;
     }
 
@@ -301,7 +303,7 @@ class TemplateModel extends ItemModel {
                 $data = $db->loadObjectList();
                 
                 foreach ($data as $entry) {
-                    $records[$entry->{$localForeignKeyField}]->{$alias}[] = $entry;
+                    $records[$entry->{$joinedTable['NToN-intermediateLocalKey']}]->{$alias}[] = $entry;
                 }
             }
         }

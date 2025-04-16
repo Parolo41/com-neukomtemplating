@@ -4,12 +4,14 @@ use Joomla\CMS\Language\Text;
 
 <div id="neukomtemplating-detailview">
     <?php
+        $data = $item->data[$recordId];
+
         $detailUrl = buildUrl($this, 'detail', recordId: $data->{$item->idFieldName});
         $editUrl = buildUrl($this, 'edit', recordId: $data->{$item->idFieldName});
         $contactUrl = buildUrl($this, 'contact', recordId: $data->{$item->idFieldName});
 
         $twigParams = [
-            'data' => $item->data[$recordId],
+            'data' => $data,
             'urlParameters' => $item->urlParameters,
             'detailUrl' => $detailUrl,
             'editUrl' => $editUrl,

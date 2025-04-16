@@ -41,13 +41,29 @@ function validateInput($value, $name, $type, $required) {
     return true;
 }
 
-function formatInputValue($value, $type, $db) {
+function formatInputValue($value, $type, $dbType, $db) {
+    if ($value == "" && in_array($dbType, ['date', 'time', 'datetime']) && $type != "checkbox") {
+        return "NULL";
+    }
+
     switch ($type) {
         case "number":
+            if ($value == "" && in_array($dbType, ['varchar', 'text'])) {
+                return $db->quote($value);
+            }
+
             return ($value == "" ? "NULL" : $db->quote($value));
         case "date":
+            if ($value == "" && in_array($dbType, ['varchar', 'text'])) {
+                return $db->quote($value);
+            }
+
             return ($value == "" ? "NULL" : $db->quote($value));
         case "time":
+            if ($value == "" && in_array($dbType, ['varchar', 'text'])) {
+                return $db->quote($value);
+            }
+
             return ($value == "" ? "NULL" : $db->quote($value));
         case "checkbox":
             return ($value == "on" ? "'1'" : "'0'");
@@ -90,8 +106,10 @@ function dbInsert($input, $db, $self) {
             $validationFailed = true;
         }
 
+        $dbType = empty($item->tableFields[$field['name']]) ? $field['type'] : $item->tableFields[$field['name']];
+
         $insertColumns[] = $field['name'];
-        $insertValues[] = formatInputValue($fieldValue, $field['type'], $db);
+        $insertValues[] = formatInputValue($fieldValue, $field['type'], $dbType, $db);
         $fieldLabels[] = $field['label'];
     }
 
@@ -107,7 +125,7 @@ function dbInsert($input, $db, $self) {
             $foreignId = $input->get($joinedTable['alias'], '', 'string');
 
             $insertColumns[] = $joinedTable['NToOne-foreignKey'];
-            $insertValues[] = formatInputValue($foreignId, "foreignId", $db);
+            $insertValues[] = formatInputValue($foreignId, "foreignId", "foreignKey", $db);
             $fieldLabels[] = $joinedTable['formName'];
             $fieldValues[] = $joinedTable['options'][$foreignId]->{$joinedTable['displayField']};
         }
@@ -196,7 +214,9 @@ function dbUpdate($input, $db, $self) {
             $validationFailed = true;
         }
 
-        $formattedValue = formatInputValue($fieldValue, $field['type'], $db);
+        $dbType = empty($item->tableFields[$field['name']]) ? $field['type'] : $item->tableFields[$field['name']];
+
+        $formattedValue = formatInputValue($fieldValue, $field['type'], $dbType, $db);
 
         $updateFields[] = $db->quoteName($field['name']) . " = " . $formattedValue;
         $fieldLabels[] = $field['label'];
@@ -213,7 +233,7 @@ function dbUpdate($input, $db, $self) {
         if ($joinedTable['connectionType'] == "NToOne") {
             $foreignId = $input->get($joinedTable['alias'], '', 'string');
 
-            $updateFields[] = $db->quoteName($joinedTable['NToOne-foreignKey']) . " = " . formatInputValue($foreignId, "foreignId", $db);
+            $updateFields[] = $db->quoteName($joinedTable['NToOne-foreignKey']) . " = " . formatInputValue($foreignId, "foreignId", "foreignKey", $db);
             $fieldLabels[] = $joinedTable['formName'];
             $fieldValues[] = $joinedTable['options'][$foreignId]->{$joinedTable['displayField']};
         } else if ($joinedTable['connectionType'] == "NToN") {
