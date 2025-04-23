@@ -17,8 +17,12 @@ class TemplateModel extends ItemModel {
      */
     public function getItem($pk = null): object {
         $input = Factory::getApplication()->getInput();
+        return $this->loadTemplate($input->getString('templateConfigName'));
+    }
+
+    public function loadTemplate($templateConfigName) {
+        $input = Factory::getApplication()->getInput();
         $user = Factory::getUser();
-        $templateConfigName = $input->getString('templateConfigName');
 
         $aliases = [
             'userid' => $user->id,
