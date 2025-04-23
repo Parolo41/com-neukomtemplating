@@ -5,6 +5,7 @@ namespace Neukom\Component\NeukomTemplating\Administrator\Model;
 \defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\CMS\Factory;
 
 class TemplatesModel extends ListModel {
     public function __construct($config = []) {
@@ -12,7 +13,7 @@ class TemplatesModel extends ListModel {
     }
 
     protected function getListQuery() {
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get('DatabaseDriver');
         $query = $db->getQuery(true);
         $query->select(
             $db->quoteName(['id', 'name', 'template'])

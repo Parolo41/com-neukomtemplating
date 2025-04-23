@@ -8,56 +8,59 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\HTML\HTMLHelper;
+use Neukom\Component\NeukomTemplating\Site\Helper\Helper;
 
 $root = dirname(dirname(dirname(__FILE__)));
 require_once($root . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 
 $item = $this->getModel()->getItem();
 
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helper.php');
+$helper = Helper::getInstance();
 
 $itemTemplate = $item->template;
 
-if (strpos($itemTemplate, 'editButton') == false && strpos($itemTemplate, 'editLink') == false) {
+if ($item->allowEdit && strpos($itemTemplate, 'editButton') == false && strpos($itemTemplate, 'editLink') == false && strpos($itemTemplate, 'editUrl') == false) {
     $itemTemplate = $itemTemplate . '{{editButton | raw}}';
 }
 
 $loader = new \Twig\Loader\ArrayLoader([
     'template' => $itemTemplate,
     'detail_template' => $item->detailTemplate,
+    'contact_display_name' => $item->contactDisplayName,
 ]);
 $twig = new \Twig\Environment($loader);
 $twig->addExtension(new Twig\Extra\Intl\IntlExtension());
 
 $emailCloakFilter = new \Twig\TwigFilter('email_cloak', function ($string, $displayText = '') {
-    return JHtml::_('email.cloak', $string, 1, ($displayText == '' ? $string : $displayText));
+    return HTMLHelper::_('email.cloak', $string, 1, ($displayText == '' ? $string : $displayText));
 });
 
 $twig->addFilter($emailCloakFilter);
 
 $input = Factory::getApplication()->input;
 
-$act = $input->get('act', '', 'string');
-$recordId = $input->get('recordId', '', 'string');
-
-$searchTerm = $input->get('searchTerm', '', 'string');
-
-$pageNumber = max($input->get('pageNumber', 1, 'int'), 1);
-$pageSize = $item->pageSize;
-$lastPageNumber = $item->lastPageNumber;
-
 if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->allowCreate) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $db = Factory::getDbo();
+    $db = Factory::getContainer()->get('DatabaseDriver');
     $input = Factory::getApplication()->input;
     $app = Factory::getApplication();
 
     if ($input->get('formAction', '', 'string') == "insert") {
-        if ($lastRowId = dbInsert($input, $db, $this)) {
+        if ($lastRowId = $helper->dbInsert($input)) {
             if ($item->formSendBehaviour == 'edit_on_insert' || $item->formSendBehaviour == 'edit_on_both') {
                 $act = 'edit';
                 $recordId = strval($lastRowId);
+
+                $input->set('act', 'edit');
+                $input->set('recordId', $recordId);
+
+                $helper->setUrl($helper->buildUrl('edit', recordId: $recordId));
             } else {
                 $act = 'list';
+
+                $input->set('act', 'list');
+
+                $helper->setUrl($helper->buildUrl('list'));
             }
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_INSERT'), 'error');
@@ -65,11 +68,19 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     }
 
     if ($input->get('formAction', '', 'string') == "update") {
-        if (dbUpdate($input, $db, $this)) {
+        if ($helper->dbUpdate($input)) {
             if ($item->formSendBehaviour == 'edit_on_update' || $item->formSendBehaviour == 'edit_on_both') {
                 $act = 'edit';
+
+                $input->set('act', 'edit');
+
+                $helper->setUrl($helper->buildUrl('edit', recordId: $input->get('recordId', 0, 'INT')));
             } else {
                 $act = 'list';
+
+                $input->set('act', 'list');
+
+                $helper->setUrl($helper->buildUrl('list'));
             }
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_UPDATE'), 'error');
@@ -77,15 +88,40 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     }
 
     if ($input->get('formAction', '', 'string') == "delete") {
-        if (dbDelete($input, $db, $this)) {
+        if ($helper->dbDelete($input)) {
             $act = 'list';
+
+            $input->set('act', 'list');
+
+            $helper->setUrl($helper->buildUrl('list'));
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_DELETE'), 'error');
         }
     }
+
+    if ($input->get('formAction', '', 'string') == "message") {
+        if ($helper->sendMessage($input)) {
+            $act = 'list';
+
+            $input->set('act', 'list');
+
+            $helper->setUrl($helper->buildUrl('list'));
+        } else {
+            $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_MESSAGE'), 'error');
+        }
+    }
+    
+    $item = $this->getModel()->getItem();
 }
 
-$item = $this->getModel()->getItem();
+$act = $input->get('act', '', 'string');
+$recordId = $input->get('recordId', 0, 'INT');
+
+$searchTerm = $input->get('searchTerm', '', 'string');
+
+$pageSize = $item->pageSize;
+$lastPageNumber = $item->lastPageNumber;
+$pageNumber = min(max($input->get('pageNumber', 1, 'INT'), 1), $lastPageNumber);
 
 ?>
 
@@ -95,23 +131,13 @@ $item = $this->getModel()->getItem();
 
     echo $pageHeading != '' ? '<h1 class="title">' . $pageHeading . '</h1>' : '';
 
-    if ($act == 'detail' && $item->showDetailPage && $recordId != '') {
-        foreach ($item->data as $data) {
-            if ($data->{$item->idFieldName} == $recordId) {
-                require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'detailview.php');
-                break;
-            }
+    if ($item->userIdLinkField != "") {
+        if (!$item->allowEdit) {
+            echo "<p>Warning: Editing is not enabled. Changes can't be saved.</p>";
         }
-    } elseif ($act == 'edit' && $item->allowEdit && $recordId != '') {
-        foreach ($item->data as $data) {
-            if ($data->{$item->idFieldName} == $recordId) {
-                require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editview.php');
-                break;
-            }
-        }
-    } elseif ($item->userIdLinkField != "" && $item->allowEdit) {
+
         if (sizeof($item->data) > 0) {
-            $data = $item->data[0];
+            $recordId = array_key_first($item->data);
             require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editview.php');
             ?>
             <script>
@@ -122,17 +148,22 @@ $item = $this->getModel()->getItem();
         } else {
             echo "<h2>No record found</h2>";
         }
+    } elseif ($act == 'detail' && $item->showDetailPage && $recordId != 0 && !empty($item->data[$recordId])) {
+        require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'detailview.php');
+    } elseif ($act == 'edit' && $item->allowEdit && $recordId != 0 && !empty($item->data[$recordId])) {
+        require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'editview.php');
     } elseif ($act == 'new' && $item->allowCreate) {
         require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'newview.php');
+    } elseif ($act == 'contact' && $item->contactEmailField != '' && $recordId != 0 && !empty($item->data[$recordId])) {
+        require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'contactview.php');
     } else {
         if ($item->enableSearch) { ?>
             <div id="neukomtemplating-search">
                 <form name="searchForm" id="searchForm">
                     <label for="searchTerm">Suche</label>
                     <input type="text" name="searchTerm" value="<?php echo $input->get('searchTerm', '', 'string') ?>" />
-                    <button type="submit"><?php echo Text::_('COM_NEUKOMTEMPLATING_SEARCH'); ?></button>
+                    <button type="submit" class="btn btn-primary"><?php echo Text::_('COM_NEUKOMTEMPLATING_SEARCH'); ?></button>
                 </form>
-                <script>$('#searchForm').submit(function(e) {doSearch(); return false;});</script>
             </div>
         <?php }
         require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'listview.php');
@@ -158,3 +189,78 @@ $item = $this->getModel()->getItem();
     <input type="hidden" name="view" value="main" />
     <input type="hidden" name="templateConfigName" value="<?php echo $item->templateName; ?>" />
 </form>
+
+<script>
+    <?php if ($item->allowEdit || $item->allowCreate) { ?>
+
+    function openNewForm() {
+        $('#detailNavForm input[name="act"]').val('new');
+        submitNavForm();
+    }
+
+    function openEditForm(recordId) {
+        $('#detailNavForm input[name="act"]').val('edit');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
+        submitNavForm();
+    }
+
+    function confirmDelete() {
+        document.getElementById("formAction").value = 'delete';
+
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'none';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'block';
+    }
+
+    function cancelDelete() {
+        document.getElementById("formAction").value = "update";
+
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'block';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'none';
+    }
+
+    <?php } ?>
+
+    function openDetailPage(recordId) {
+        $('#detailNavForm input[name="act"]').val('detail');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
+        submitNavForm();
+    }
+
+    function openListView() {
+        $('#detailNavForm input[name="act"]').val('list');
+        submitNavForm();
+    }
+
+    function openContactForm(recordId) {
+        $('#detailNavForm input[name="act"]').val('contact');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
+        submitNavForm();
+}
+
+    function goToPage(pageNumber) {
+        $('#detailNavForm input[name="pageNumber"]').val(pageNumber);
+        submitNavForm();
+    }
+
+    function doSearch() {
+        $('#detailNavForm input[name="pageNumber"]').val(1);
+        $('#detailNavForm input[name="searchTerm"]').val($('#searchForm input[name="searchTerm"]').val());
+        submitNavForm();
+    }
+
+    function submitNavForm() {
+        if ($('#detailNavForm input[name="act"]').val() == '') {
+            $('#detailNavForm input[name="act"]').remove()
+        }
+
+        if ($('#detailNavForm input[name="recordId"]').val() == '') {
+            $('#detailNavForm input[name="recordId"]').remove()
+        }
+
+        if ($('#detailNavForm input[name="searchTerm"]').val() == '') {
+            $('#detailNavForm input[name="searchTerm"]').remove()
+        }
+
+        $('#detailNavForm').submit();
+    }
+</script>

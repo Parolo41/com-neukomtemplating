@@ -25,7 +25,16 @@ class HtmlView extends BaseHtmlView {
 
     protected function addToolbar() {
         $toolbar = Toolbar::getInstance('toolbar');
-        ToolbarHelper::title(Text::_('COM_FOOS_MANAGER_FOOS'), 'address foo');
+
+        ToolbarHelper::title(Text::_('COM_NEUKOMTEMPLATING_MANAGER'), 'address foo');
+
         $toolbar->addNew('template.add');
+
+		$toolbar->delete('templates.delete', 'JTOOLBAR_DELETE_FROM_TRASH')
+                ->message('JGLOBAL_CONFIRM_DELETE')
+                ->listCheck(true);
+
+		$toolbar->standardButton('copy', 'JTOOLBAR_DUPLICATE', 'templates.copy')
+			->listCheck(true);
     }
 }

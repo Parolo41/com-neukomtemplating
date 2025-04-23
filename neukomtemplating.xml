@@ -3,7 +3,7 @@
     <name>Neukom Templating</name>
     <creationDate>2022</creationDate>
     <author>Neukom</author>
-    <version>0.6.4</version>
+    <version>1.0.4</version>
     <description>COM_NEUKOMTEMPLATING_DESCRIPTION</description>
     <namespace path="src/">Neukom\Component\NeukomTemplating</namespace>
 
@@ -51,4 +51,5 @@
         </schemas>
     </update>
 
+    <scriptfile>install.php</scriptfile>
 </extension>

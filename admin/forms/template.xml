@@ -35,7 +35,7 @@
 			type="text"
 			label="COM_NEUKOMTEMPLATING_FORM_FIELDS"
 			size="200"
-			required="true"
+			required="false"
 		 />
 		<field
 			name="url_parameters"
@@ -69,6 +69,7 @@
 			name="user_id_link_field"
 			type="text"
 			label="COM_NEUKOMTEMPLATING_FORM_USER_ID_LINK_FIELD"
+			description="COM_NEUKOMTEMPLATING_FORM_USER_ID_LINK_FIELD_D"
 			default=""
 			required="false"
 		 />
@@ -135,6 +136,22 @@
 			required="false"
 		 />
 		<field
+			name="contact_email_field"
+			type="text"
+			label="COM_NEUKOMTEMPLATING_FORM_CONTACT_EMAIL_FIELD"
+			description="COM_NEUKOMTEMPLATING_FORM_CONTACT_EMAIL_FIELD_D"
+			required="false"
+			size="50"
+		 />
+		<field
+			name="contact_display_name"
+			type="text"
+			label="COM_NEUKOMTEMPLATING_FORM_CONTACT_DISPLAY_NAME"
+			description="COM_NEUKOMTEMPLATING_FORM_CONTACT_DISPLAY_NAME_D"
+			required="false"
+			size="50"
+		 />
+		<field
 			name="allow_edit"
 			type="checkbox"
 			label="COM_NEUKOMTEMPLATING_FORM_ALLOW_EDIT"
@@ -156,9 +173,31 @@
 			<option value="edit_on_both">COM_NEUKOMTEMPLATING_FORM_EDIT_ON_BOTH</option>
 		</field>
 		<field
+			name="notification_trigger"
+			type="list"
+			default="on_edit"
+			label="COM_NEUKOMTEMPLATING_FORM_NOTIF_TRIGGER"
+		>
+			<option value="on_edit">COM_NEUKOMTEMPLATING_FORM_NOTIF_TRIGGER_EDIT</option>
+			<option value="on_new">COM_NEUKOMTEMPLATING_FORM_NOTIF_TRIGGER_NEW</option>
+			<option value="both">COM_NEUKOMTEMPLATING_FORM_NOTIF_TRIGGER_BOTH</option>
+		</field>
+		<field
+			name="notification_recipients"
+			type="text"
+			label="COM_NEUKOMTEMPLATING_FORM_NOTIF_RECIP"
+			default=""
+			required="false"
+		 />
+		<field
 			name="access"
 			type="accesslevel"
 			label="COM_NEUKOMTEMPLATING_FORM_ACCESS"
 		 />
+		 <field
+			type="spacer" 
+			name="spacer" 
+			hr="true"
+		/>
 	</fieldset>
 </form>
