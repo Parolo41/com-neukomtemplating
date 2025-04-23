@@ -9,13 +9,14 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\HTML\HTMLHelper;
+use Neukom\Component\NeukomTemplating\Site\Helper\Helper;
 
 $root = dirname(dirname(dirname(__FILE__)));
 require_once($root . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php');
 
 $item = $this->getModel()->getItem();
 
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'helper.php');
+$helper = Helper::getInstance();
 
 $itemTemplate = $item->template;
 
@@ -45,7 +46,7 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     $app = Factory::getApplication();
 
     if ($input->get('formAction', '', 'string') == "insert") {
-        if ($lastRowId = dbInsert($input, $db, $this)) {
+        if ($lastRowId = $helper->dbInsert($input)) {
             if ($item->formSendBehaviour == 'edit_on_insert' || $item->formSendBehaviour == 'edit_on_both') {
                 $act = 'edit';
                 $recordId = strval($lastRowId);
@@ -53,13 +54,13 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
                 $input->set('act', 'edit');
                 $input->set('recordId', $recordId);
 
-                setUrl(buildUrl($this, 'edit', recordId: $recordId));
+                $helper->setUrl($helper->buildUrl('edit', recordId: $recordId));
             } else {
                 $act = 'list';
 
                 $input->set('act', 'list');
 
-                setUrl(buildUrl($this, 'list'));
+                $helper->setUrl($helper->buildUrl('list'));
             }
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_INSERT'), 'error');
@@ -67,19 +68,19 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     }
 
     if ($input->get('formAction', '', 'string') == "update") {
-        if (dbUpdate($input, $db, $this)) {
+        if ($helper->dbUpdate($input)) {
             if ($item->formSendBehaviour == 'edit_on_update' || $item->formSendBehaviour == 'edit_on_both') {
                 $act = 'edit';
 
                 $input->set('act', 'edit');
 
-                setUrl(buildUrl($this, 'edit', recordId: $input->get('recordId', 0, 'INT')));
+                $helper->setUrl($helper->buildUrl('edit', recordId: $input->get('recordId', 0, 'INT')));
             } else {
                 $act = 'list';
 
                 $input->set('act', 'list');
 
-                setUrl(buildUrl($this, 'list'));
+                $helper->setUrl($helper->buildUrl('list'));
             }
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_UPDATE'), 'error');
@@ -87,24 +88,24 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     }
 
     if ($input->get('formAction', '', 'string') == "delete") {
-        if (dbDelete($input, $db, $this)) {
+        if ($helper->dbDelete($input)) {
             $act = 'list';
 
             $input->set('act', 'list');
 
-            setUrl(buildUrl($this, 'list'));
+            $helper->setUrl($helper->buildUrl('list'));
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_DELETE'), 'error');
         }
     }
 
     if ($input->get('formAction', '', 'string') == "message") {
-        if (sendMessage($input, $db, $this)) {
+        if ($helper->sendMessage($input)) {
             $act = 'list';
 
             $input->set('act', 'list');
 
-            setUrl(buildUrl($this, 'list'));
+            $helper->setUrl($helper->buildUrl('list'));
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_MESSAGE'), 'error');
         }
@@ -188,3 +189,78 @@ $pageNumber = min(max($input->get('pageNumber', 1, 'INT'), 1), $lastPageNumber);
     <input type="hidden" name="view" value="main" />
     <input type="hidden" name="templateConfigName" value="<?php echo $item->templateName; ?>" />
 </form>
+
+<script>
+    <?php if ($item->allowEdit || $item->allowCreate) { ?>
+
+    function openNewForm() {
+        $('#detailNavForm input[name="act"]').val('new');
+        submitNavForm();
+    }
+
+    function openEditForm(recordId) {
+        $('#detailNavForm input[name="act"]').val('edit');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
+        submitNavForm();
+    }
+
+    function confirmDelete() {
+        document.getElementById("formAction").value = 'delete';
+
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'none';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'block';
+    }
+
+    function cancelDelete() {
+        document.getElementById("formAction").value = "update";
+
+        document.getElementById("neukomtemplating-formbuttons").style.display = 'block';
+        document.getElementById("neukomtemplating-deletebuttons").style.display = 'none';
+    }
+
+    <?php } ?>
+
+    function openDetailPage(recordId) {
+        $('#detailNavForm input[name="act"]').val('detail');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
+        submitNavForm();
+    }
+
+    function openListView() {
+        $('#detailNavForm input[name="act"]').val('list');
+        submitNavForm();
+    }
+
+    function openContactForm(recordId) {
+        $('#detailNavForm input[name="act"]').val('contact');
+        $('#detailNavForm input[name="recordId"]').val(recordId);
+        submitNavForm();
+}
+
+    function goToPage(pageNumber) {
+        $('#detailNavForm input[name="pageNumber"]').val(pageNumber);
+        submitNavForm();
+    }
+
+    function doSearch() {
+        $('#detailNavForm input[name="pageNumber"]').val(1);
+        $('#detailNavForm input[name="searchTerm"]').val($('#searchForm input[name="searchTerm"]').val());
+        submitNavForm();
+    }
+
+    function submitNavForm() {
+        if ($('#detailNavForm input[name="act"]').val() == '') {
+            $('#detailNavForm input[name="act"]').remove()
+        }
+
+        if ($('#detailNavForm input[name="recordId"]').val() == '') {
+            $('#detailNavForm input[name="recordId"]').remove()
+        }
+
+        if ($('#detailNavForm input[name="searchTerm"]').val() == '') {
+            $('#detailNavForm input[name="searchTerm"]').remove()
+        }
+
+        $('#detailNavForm').submit();
+    }
+</script>

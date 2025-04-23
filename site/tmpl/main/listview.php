@@ -4,14 +4,14 @@ use Joomla\CMS\Language\Text;
 
 <div id="neukomtemplating-listview">
     <?php
-        $newUrl = buildUrl($this, 'new');
+        $newUrl = $helper->buildUrl('new');
         echo $item->allowCreate ? '<a href="' . $newUrl . '" class="btn btn-primary"  style="margin-top: 1em">' . Text::_('COM_NEUKOMTEMPLATING_NEW') . '</a>' : "";
         echo $item->header;
 
         foreach ($item->data as $data) {
-            $detailUrl = buildUrl($this, 'detail', recordId: $data->{$item->idFieldName});
-            $editUrl = buildUrl($this, 'edit', recordId: $data->{$item->idFieldName});
-            $contactUrl = buildUrl($this, 'contact', recordId: $data->{$item->idFieldName});
+            $detailUrl = $helper->buildUrl('detail', recordId: $data->{$item->idFieldName});
+            $editUrl = $helper->buildUrl('edit', recordId: $data->{$item->idFieldName});
+            $contactUrl = $helper->buildUrl('contact', recordId: $data->{$item->idFieldName});
 
             $twigParams = [
                 'data' => $data,
@@ -37,7 +37,7 @@ use Joomla\CMS\Language\Text;
         <?php if ($pageNumber <= 1) { ?>
             <span class="btn">&#8678;</span>
         <?php } else { ?>
-            <a href="<?php echo buildUrl($this, 'list', targetPage: $pageNumber - 1); ?>" class="btn btn-primary">&#8678;</a>
+            <a href="<?php echo $helper->buildUrl('list', targetPage: $pageNumber - 1); ?>" class="btn btn-primary">&#8678;</a>
         <?php } ?>
         
 
@@ -45,14 +45,14 @@ use Joomla\CMS\Language\Text;
             if ($p == $pageNumber) {
                 echo '<span style="margin: 0.25em">' . $p . '</span>';
             } else {
-                echo '<a href="' . buildUrl($this, 'list', targetPage: $p) . '" style="margin: 0.25em">' . $p . '</a>';
+                echo '<a href="' . $helper->buildUrl('list', targetPage: $p) . '" style="margin: 0.25em">' . $p . '</a>';
             }
         } ?>
         
         <?php if ($pageNumber >= $lastPageNumber) { ?>
             <span class="btn">&#8680;</span>
         <?php } else { ?>
-            <a href="<?php echo buildUrl($this, 'list', targetPage: $pageNumber + 1); ?>" class="btn btn-primary">&#8680;</a>
+            <a href="<?php echo $helper->buildUrl('list', targetPage: $pageNumber + 1); ?>" class="btn btn-primary">&#8680;</a>
         <?php } ?>
     </div>
 <?php } ?>

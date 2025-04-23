@@ -145,7 +145,7 @@ use Joomla\CMS\Language\Text;
 
         <div id="neukomtemplating-formbuttons">
             <button type="submit" class="btn btn-primary"><?php echo Text::_('COM_NEUKOMTEMPLATING_SUBMIT') ?></button>
-            <a type="button" class="btn btn-primary" id="backToListButton" href="<?php echo buildUrl($this, 'list'); ?>"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></a>
+            <a type="button" class="btn btn-primary" id="backToListButton" href="<?php echo $helper->buildUrl('list'); ?>"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></a>
             <button type="button" class="btn btn-primary" id="deleteRecordButton" onClick="confirmDelete()"><?php echo Text::_('COM_NEUKOMTEMPLATING_DELETE') ?></button>
         </div>
 

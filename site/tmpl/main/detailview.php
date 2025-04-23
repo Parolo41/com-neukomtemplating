@@ -6,9 +6,9 @@ use Joomla\CMS\Language\Text;
     <?php
         $data = $item->data[$recordId];
 
-        $detailUrl = buildUrl($this, 'detail', recordId: $data->{$item->idFieldName});
-        $editUrl = buildUrl($this, 'edit', recordId: $data->{$item->idFieldName});
-        $contactUrl = buildUrl($this, 'contact', recordId: $data->{$item->idFieldName});
+        $detailUrl = $helper->buildUrl('detail', recordId: $data->{$item->idFieldName});
+        $editUrl = $helper->buildUrl('edit', recordId: $data->{$item->idFieldName});
+        $contactUrl = $helper->buildUrl('contact', recordId: $data->{$item->idFieldName});
 
         $twigParams = [
             'data' => $data,
@@ -27,6 +27,6 @@ use Joomla\CMS\Language\Text;
     ?>
 
     <div id="neukomtemplating-formbuttons">
-        <a type="button" class="btn btn-primary" id="backToListButton" href="<?php echo buildUrl($this, 'list'); ?>"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></a>
+        <a type="button" class="btn btn-primary" id="backToListButton" href="<?php echo $helper->buildUrl('list'); ?>"><?php echo Text::_('COM_NEUKOMTEMPLATING_BACK'); ?></a>
     </div>
 </div>
