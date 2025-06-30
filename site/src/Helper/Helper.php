@@ -22,8 +22,6 @@ class Helper {
             ->createModel('Template', 'Site');
 
         $this->db = Factory::getContainer()->get('DatabaseDriver');
-
-        error_log('contruct called');
     }
 
     public static function getInstance(): Helper {
@@ -158,7 +156,7 @@ class Helper {
                 if ($input->get($field['name'] . '-delete', '', 'string') == '1') {
                     $fieldValue = '';
                 } else {
-                    $fieldValue = $this->uploadFile($input, "/images/documentuploads/");
+                    $fieldValue = $this->uploadFile($input, $field, "/images/documentuploads/");
     
                     if ($fieldValue == "") { continue; }
                 }

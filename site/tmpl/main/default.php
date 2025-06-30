@@ -99,19 +99,17 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
         }
     }
 
+    $item = $this->getModel()->getItem();
+} else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($input->get('formAction', '', 'string') == "message") {
         if ($helper->sendMessage($input)) {
-            $act = 'list';
+            $act = 'contactsuccess';
 
-            $input->set('act', 'list');
-
-            $helper->setUrl($helper->buildUrl('list'));
+            $input->set('act', 'contactsuccess');
         } else {
             $app->enqueueMessage(Text::_('COM_NEUKOMTEMPLATING_ERROR_MESSAGE'), 'error');
         }
     }
-    
-    $item = $this->getModel()->getItem();
 }
 
 $act = $input->get('act', '', 'string');
@@ -156,6 +154,8 @@ $pageNumber = min(max($input->get('pageNumber', 1, 'INT'), 1), $lastPageNumber);
         require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'newview.php');
     } elseif ($act == 'contact' && $item->contactEmailField != '' && $recordId != 0 && !empty($item->data[$recordId])) {
         require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'contactview.php');
+    } elseif ($act == 'contactsuccess') {
+        require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'contactsuccess.php');
     } else {
         if ($item->enableSearch) { ?>
             <div id="neukomtemplating-search">
