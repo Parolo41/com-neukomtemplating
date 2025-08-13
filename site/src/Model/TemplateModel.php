@@ -7,6 +7,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\ItemModel;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Component\ComponentHelper;
 
 class TemplateModel extends ItemModel {
 
@@ -16,8 +17,9 @@ class TemplateModel extends ItemModel {
      * @return object Message object
      */
     public function getItem($pk = null): object {
-        $input = Factory::getApplication()->getInput();
-        return $this->loadTemplate($input->getString('templateConfigName'));
+        $app = Factory::getApplication();
+        $params = $app->getParams();
+        return $this->loadTemplate($params->get('templateConfigName'));
     }
 
     public function loadTemplate($templateConfigName) {
@@ -67,6 +69,10 @@ class TemplateModel extends ItemModel {
         $query->where('name = "' . $templateConfigName . '"');
         $db->setQuery($query);
         $templateConfig = $db->loadObject();
+
+        if (empty($templateConfig)) {
+            throw new \Exception("Template not found", 404);
+        }
 
         $loader = new \Twig\Loader\ArrayLoader([
             'condition' => $templateConfig->condition,

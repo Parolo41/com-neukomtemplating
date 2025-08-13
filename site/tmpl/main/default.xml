@@ -3,8 +3,8 @@
     <layout title="Neukom Templating">
         <message>COM_NEUKOMTEMPLATING_MAIN_MESSAGE</message>
     </layout>
-    <fields name="request">
-        <fieldset name="request">
+    <fields name="params">
+		<fieldset name="basic" label="JOPTIONS">
             <field  name="templateConfigName"
                     type="string"
                     label="Template Config Name"

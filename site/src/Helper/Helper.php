@@ -8,6 +8,7 @@ use Joomla\Filesystem\File;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Router\Route;
 
 class Helper {
     private static ?Helper $instance = null;
@@ -312,11 +313,10 @@ class Helper {
     public function buildUrl($target, $recordId = '', $targetPage = 0) {
         $item = $this->model->getItem();
         $input = Factory::getApplication()->input;
-        $query = array();
+        $query = array('option' => 'com_neukomtemplating', 'view' => 'main', 'Itemid' => 108);
     
         switch ($target) {
             case 'list':
-                $query['act'] = 'list';
                 break;
             case 'detail':
                 $query['act'] = 'detail';
@@ -356,8 +356,29 @@ class Helper {
                 $query[$parameterName] = $parameterValue;
             }
         }
+
+        $link = Uri::base();
+        
+        $app = Factory::getApplication();
+        $activeMenuitem = $app->getMenu()->getActive();
+
+        if (str_contains(Uri::current(), 'index.php')) {
+            $link .= 'index.php';
+
+            if (!empty($activeMenuitem->route)) {
+                $link .= '/';
+            }
+        }
+
+        if (!empty($activeMenuitem->route)) {
+            $link .= $activeMenuitem->route;
+        }
+
+        if (!empty($query)) {
+            $link .= '?' . Uri::buildQuery($query);
+        }
     
-        return Uri::current() . '?' . Uri::buildQuery($query);
+        return Route::link('site', $link);
     }
     
     public function setUrl($url) {
