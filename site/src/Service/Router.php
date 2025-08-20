@@ -11,6 +11,10 @@ class Router implements RouterInterface
     public function __construct($application, $menu, CategoryFactoryInterface $categoryFactory, DatabaseInterface $db) {}
 
     public function build(&$query) {
+        if (!empty($query['templateConfigName'])) {
+            unset($query['templateConfigName']);
+        }
+
         if (!empty($query['act'])) {
             if (in_array($query['act'], array('detail', 'edit', 'contact')) && !empty($query['recordId']) && is_numeric($query['recordId'])) {
                 $segments = array($query['act'], $query['recordId']);
@@ -73,7 +77,6 @@ class Router implements RouterInterface
     }
 
     public function preprocess($query) {
-        error_log(var_export($query, true));
         return $query;
     }
 }

@@ -313,7 +313,7 @@ class Helper {
     public function buildUrl($target, $recordId = '', $targetPage = 0) {
         $item = $this->model->getItem();
         $input = Factory::getApplication()->input;
-        $query = array('option' => 'com_neukomtemplating', 'view' => 'main', 'Itemid' => 108);
+        $query = array('option' => 'com_neukomtemplating', 'Itemid' => $input->get('Itemid'));
     
         switch ($target) {
             case 'list':
@@ -356,29 +356,8 @@ class Helper {
                 $query[$parameterName] = $parameterValue;
             }
         }
-
-        $link = Uri::base();
-        
-        $app = Factory::getApplication();
-        $activeMenuitem = $app->getMenu()->getActive();
-
-        if (str_contains(Uri::current(), 'index.php')) {
-            $link .= 'index.php';
-
-            if (!empty($activeMenuitem->route)) {
-                $link .= '/';
-            }
-        }
-
-        if (!empty($activeMenuitem->route)) {
-            $link .= $activeMenuitem->route;
-        }
-
-        if (!empty($query)) {
-            $link .= '?' . Uri::buildQuery($query);
-        }
     
-        return Route::link('site', $link);
+        return Route::_('index.php?' . Uri::buildQuery($query));
     }
     
     public function setUrl($url) {
