@@ -58,6 +58,7 @@ return new class () implements ServiceProviderInterface {
                 {
                     if ($type == 'update') {
                         $this->fixJsonFormats();
+                        $this->fixTemplateParams();
                     }
         
                     return true;
@@ -101,6 +102,47 @@ return new class () implements ServiceProviderInterface {
                         if ($doUpdate) {
                             $result = $this->db->updateObject('#__neukomtemplating_templates', $updatedTemplate, 'id');
                         }
+                    }
+                }
+
+                private function fixTemplateParams() {
+                    $query = $this->db->getQuery(true);
+
+                    $conditions = array(
+                        $this->db->quoteName('link') . " LIKE '%option=com_neukomtemplating%'",
+                        $this->db->quoteName('link') . " LIKE '%templateConfigName=%'"
+                    );
+
+                    $query->select($this->db->quoteName(['id', 'link', 'params']));
+                    $query->from($this->db->quoteName('#__menu'));
+                    $query->where($conditions);
+
+                    $this->db->setQuery($query);
+
+                    $menuItems = $this->db->loadObjectList();
+
+                    foreach ($menuItems as $menuItem) {
+                        if (!preg_match('/(\?|\&)templateConfigName=(?<templateName>(?:(?!$|\&|\?|\s).)+)/', $menuItem->link, $matches)) {
+                            continue;
+                        }
+
+                        $templateName = $matches['templateName'];
+
+                        $updatedMenuItem = new stdClass();
+                        $updatedMenuItem->id = $menuItem->id;
+                        $updatedMenuItem->link = preg_replace('/(\?|\&)templateConfigName=(?<templateName>(?:(?!$|\&|\?|\s).)+)/', '', $menuItem->link);
+
+                        $params = json_decode($menuItem->params);
+
+                        if ($params === null) {
+                            continue;
+                        }
+
+                        $params->templateConfigName = $templateName;
+
+                        $updatedMenuItem->params = json_encode($params);
+
+                        $result = $this->db->updateObject('#__menu', $updatedMenuItem, 'id');
                     }
                 }
 
