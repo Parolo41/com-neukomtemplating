@@ -97,6 +97,10 @@ class TemplateModel extends AdminModel {
             $values = Factory::getApplication()->input->getVar('joined_' . $input, array(), 'post', 'array');
 
             for ($i = 0; $i < count($values); $i++) {
+                if (!array_key_exists($i, $joinedTables)) {
+                    $joinedTables[$i] = array();
+                }
+
                 $joinedTables[$i][$input] = $values[$i];
             }
         }
