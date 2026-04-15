@@ -89,7 +89,7 @@ use Joomla\CMS\Language\Text;
                 $fieldValue = $fieldValue != '' ? date('Y-m-d', strtotime($fieldValue)) : '';
                 echo '<input type="date" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" value="' . $fieldValue . '" class="neukomtemplating-' . $fieldType . ' form-control" /><br>';
             } else {
-                echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" value="' . $fieldValue . '" class="neukomtemplating-' . $fieldType . ' form-control" /><br>';
+                echo '<input type="' . $fieldType . '" id="neukomtemplating-input-' . $field['name'] . '" name="' . $field['name'] . '" value="' . htmlspecialchars($fieldValue) . '" class="neukomtemplating-' . $fieldType . ' form-control" /><br>';
             }
 
             echo '</td></tr>';
