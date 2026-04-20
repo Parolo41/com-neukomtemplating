@@ -87,7 +87,7 @@ use Joomla\CMS\Language\Text;
                 echo '<option value="NULL">Null</option>';
 
                 foreach ($joinedTable['options'] as $option) {
-                    echo '<option value="' . $option->{$joinedTable['NToN-intermediateLocalKey']} . '">' . $option->{$joinedTable['displayField']} . '</option>';
+                    echo '<option value="' . $option->{$joinedTable['NToOne-remoteId']} . '">' . $option->{$joinedTable['displayField']} . '</option>';
                 }
                 
                 echo '</select><br>';

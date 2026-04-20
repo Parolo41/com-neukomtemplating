@@ -223,8 +223,9 @@ class TemplateModel extends ItemModel {
     private function queryJoinedTables($records, $joinedTables, $idFieldName) {
         $db = Factory::getContainer()->get('DatabaseDriver');
 
-        foreach ($joinedTables as $joinedTable) {
+        foreach ($joinedTables as $key => $joinedTable) {
             $alias = $joinedTable['alias'] != '' ? $joinedTable['alias'] : $joinedTable['name'];
+            $joinedTables[$key]['alias'] = $alias;
 
             foreach ($records as $record) {
                 $record->{$alias} = array();
@@ -235,11 +236,6 @@ class TemplateModel extends ItemModel {
 
                 $foreignKeyName = $joinedTable['NToOne-foreignKey'];
                 $joinedIdFieldName = $joinedTable['NToOne-remoteId'];
-                
-                if ($record->{$foreignKeyName} == "") {
-                    $record->{$alias} = [];
-                    continue;
-                }
 
                 $selectedFields = array_map('trim', explode(',', $joinedTable['foreignFields']));
 
