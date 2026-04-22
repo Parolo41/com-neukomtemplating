@@ -184,6 +184,10 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <span class="joined-table-info-label" name="alias-label" title="<?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_ALIAS_D'); ?>">
         <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_ALIAS'); ?></span>
     <input class="joined-table-alias-input joined_input joined_alias" type="text" name="joined_alias[__ID__]" /> <br/>
+    
+    <span class="joined-table-info-label" name="overTable-label" title="<?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_OVERTABLE_D'); ?>">
+        <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_OVERTABLE'); ?></span>
+    <input class="joined-table-overTable-input joined_input joined_overTable" type="text" name="joined_overTable[__ID__]" /> <br/>
 
     <span class="joined-table-info-label" name="formName-label" title="<?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_FORM_NAME_D'); ?>">
         <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_FORM_NAME'); ?></span>
@@ -242,6 +246,10 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
         <span class="joined-table-info-label" name="OneToN-foreignKey-label" title="<?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_REMOTE_FOREIGN_KEY_D'); ?>">
             <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_REMOTE_FOREIGN_KEY'); ?></span>
         <input type="text" name="joined_OneToN-foreignKey[__ID__]" class="joined_input joined_OneToN-foreignKey" /> <br/>
+
+        <span class="joined-table-info-label" name="OneToN-remoteId-label" title="<?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_REMOTE_ID_D'); ?>">
+            <?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_JOINED_TABLE_REMOTE_ID'); ?></span>
+        <input type="text" name="joined_OneToN-remoteId[__ID__]" class="joined_input joined_OneToN-remoteId" /> <br/>
         <hr class="solid">
     </div>
     

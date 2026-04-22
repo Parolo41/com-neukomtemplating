@@ -185,13 +185,24 @@ class TemplateModel extends ItemModel {
             $data = array_slice($data, intval($templateConfig->page_size) * ($pageNumber - 1), intval($templateConfig->page_size), true);
         }
 
+        $joinedTableAliases = array();
+
         foreach ($joinedTables as $key => $joinedTable) {
             if (empty($joinedTable['alias'])) {
                 $joinedTables[$key]['alias'] = $joinedTable['name'];
+                $joinedTable['alias'] = $joinedTable['name'];
             }
+
+            if (in_array($joinedTable['alias'], $joinedTableAliases)) {
+                throw new \Exception("Duplicate joined table names found :" . $joinedTable['alias'] . " in " . var_export($joinedTableAliases, true), 500);
+            }
+
+            $joinedTableAliases[] = $joinedTable['alias'];
 
             $joinedTables[$key]['options'] = $this->queryJoinedTableOptions($joinedTable);
         }
+
+        $joinedTables = $this->restructureJoinedTables($joinedTables);
 
         $this->queryJoinedTables($data, $joinedTables, $templateConfig->id_field_name);
 
@@ -230,101 +241,167 @@ class TemplateModel extends ItemModel {
         return $item;
     }
 
+    private function restructureJoinedTables($joinedTables) {
+        $restructJoinedTables = array_filter($joinedTables, function ($v) {
+            return trim($v['overTable']) == '';
+        });
+        
+        foreach ($restructJoinedTables as $key => $topTable) {
+            $restructJoinedTables[$key]['subTables'] = $this->getSubTables($topTable, $joinedTables);
+        }
+
+        return $restructJoinedTables;
+    }
+
+    private function getSubTables($topTable, $joinedTables) {
+        $topTableAlias = $topTable['alias'];
+
+        $subTables = array_filter($joinedTables, function ($v) use ($topTableAlias) {
+            return trim($v['overTable']) == $topTableAlias;
+        });
+
+        foreach ($subTables as $key => $subTable) {
+            $subTables[$key]['subTables'] = $this->getSubTables($subTable, $joinedTables);
+        }
+
+        return $subTables;
+    }
+
     private function queryJoinedTables($records, $joinedTables, $idFieldName) {
+        if (count($records) == 0) {
+            return;
+        }
+
+        foreach ($joinedTables as $joinedTable) {
+            $this->queryJoinedTable($records, $joinedTable, $idFieldName);
+        }
+    }
+
+    private function queryJoinedTable($records, $joinedTable, $idFieldName) {
         if (count($records) == 0) {
             return;
         }
 
         $db = Factory::getContainer()->get('DatabaseDriver');
 
-        foreach ($joinedTables as $joinedTable) {
-            $alias = $joinedTable['alias'];
+        $alias = $joinedTable['alias'];
+
+        foreach ($records as $record) {
+            $record->{$alias} = array();
+        }
+
+        $data = array();
+        $remoteIdField = "";
+
+        if ($joinedTable['connectionType'] == "NToOne") {
+            $joinedTableQuery = $db->getQuery(true);
+
+            $foreignKeyName = $joinedTable['NToOne-foreignKey'];
+            $remoteIdField = $joinedTable['NToOne-remoteId'];
+
+            $selectedFields = array_map('trim', explode(',', $joinedTable['foreignFields']));
+
+            if (!in_array($remoteIdField, $selectedFields)) {
+                $selectedFields[] = $remoteIdField;
+            }
+
+            $recordIds = array_column($records, $foreignKeyName);
+
+            $joinedTableQuery->select($db->quoteName($selectedFields));
+            $joinedTableQuery->from($db->quoteName('#__' . $joinedTable['name']));
+            $joinedTableQuery->where($db->quoteName($remoteIdField) . ' IN (' . implode(',', $recordIds) . ')');
+
+            $db->setQuery($joinedTableQuery);
+            $data = $db->loadObjectList($remoteIdField);
 
             foreach ($records as $record) {
-                $record->{$alias} = array();
+                if (!empty($record->{$foreignKeyName}) && array_key_exists($record->{$foreignKeyName}, $data)) {
+                    $record->{$alias}[] = $data[$record->{$foreignKeyName}];
+                }
+            }
+        } else if ($joinedTable['connectionType'] == "OneToN") {
+            $joinedTableQuery = $db->getQuery(true);
+
+            $foreignKeyName = $joinedTable['OneToN-foreignKey'];
+            $remoteIdField = $joinedTable['OneToN-remoteId'];
+
+            $selectedFields = array_map('trim', explode(',', $joinedTable['foreignFields']));
+
+            if (!in_array($foreignKeyName, $selectedFields)) {
+                $selectedFields[] = $foreignKeyName;
             }
 
-            if ($joinedTable['connectionType'] == "NToOne") {
-                $joinedTableQuery = $db->getQuery(true);
+            if (!in_array($remoteIdField, $selectedFields) && !empty($remoteIdField)) {
+                $selectedFields[] = $remoteIdField;
+            }
 
-                $foreignKeyName = $joinedTable['NToOne-foreignKey'];
-                $joinedIdFieldName = $joinedTable['NToOne-remoteId'];
+            $recordIds = array_column($records, $idFieldName);
 
-                $selectedFields = array_map('trim', explode(',', $joinedTable['foreignFields']));
+            $joinedTableQuery->select($db->quoteName($selectedFields));
+            $joinedTableQuery->from($db->quoteName('#__' . $joinedTable['name']));
+            $joinedTableQuery->where($db->quoteName($foreignKeyName) . ' IN (' . implode(',', $recordIds) . ')');
 
-                if (!in_array($joinedIdFieldName, $selectedFields)) {
-                    $selectedFields[] = $joinedIdFieldName;
-                }
+            $db->setQuery($joinedTableQuery);
 
-                $recordIds = array_column($records, $foreignKeyName);
+            if (empty($remoteIdField)) {
+                Factory::getApplication()->enqueueMessage("Missing ID field for joined table: " . $alias);
+            }
 
-                $joinedTableQuery->select($db->quoteName($selectedFields));
-                $joinedTableQuery->from($db->quoteName('#__' . $joinedTable['name']));
-                $joinedTableQuery->where($db->quoteName($joinedIdFieldName) . ' IN (' . implode(',', $recordIds) . ')');
+            $data = $db->loadObjectList($remoteIdField);
 
-                $db->setQuery($joinedTableQuery);
-                $data = $db->loadObjectList($joinedIdFieldName);
-
-                foreach ($records as $record) {
-                    if (!empty($data[$record->{$foreignKeyName}])) {
-                        $record->{$alias}[] = $data[$record->{$foreignKeyName}];
-                    }
-                }
-            } else if ($joinedTable['connectionType'] == "OneToN") {
-                $joinedTableQuery = $db->getQuery(true);
-
-                $foreignKeyName = $joinedTable['OneToN-foreignKey'];
-
-                $selectedFields = array_map('trim', explode(',', $joinedTable['foreignFields']));
-
-                if (!in_array($foreignKeyName, $selectedFields)) {
-                    $selectedFields[] = $foreignKeyName;
-                }
-
-                $recordIds = array_column($records, $idFieldName);
-
-                $joinedTableQuery->select($db->quoteName($selectedFields));
-                $joinedTableQuery->from($db->quoteName('#__' . $joinedTable['name']));
-                $joinedTableQuery->where($db->quoteName($foreignKeyName) . ' IN (' . implode(',', $recordIds) . ')');
-
-                $db->setQuery($joinedTableQuery);
-                $data = $db->loadObjectList();
-    
-                foreach ($data as $entry) {
+            foreach ($data as $entry) {
+                if (array_key_exists($entry->{$foreignKeyName}, $records)) {
                     $records[$entry->{$foreignKeyName}]->{$alias}[] = $entry;
                 }
-            } else if ($joinedTable['connectionType'] == "NToN") {
-                $joinedTableQuery = $db->getQuery(true);
+            }
+        } else if ($joinedTable['connectionType'] == "NToN") {
+            $intermTableQuery = $db->getQuery(true);
 
-                $intermediateTableName = $joinedTable['NToN-intermediateTable'];
-                $localForeignKeyField = 'interm.' . $joinedTable['NToN-intermediateLocalKey'];
-                $remoteForeignKeyField = 'interm.' . $joinedTable['NToN-intermediateRemoteKey'];
-                $remoteIdField = 'remote.' . $joinedTable['NToN-remoteId'];
+            $intermediateTableName = $joinedTable['NToN-intermediateTable'];
+            $localForeignKeyField = $joinedTable['NToN-intermediateLocalKey'];
+            $remoteForeignKeyField = $joinedTable['NToN-intermediateRemoteKey'];
+            $remoteIdField = $joinedTable['NToN-remoteId'];
 
-                $selectedFields = [$localForeignKeyField, $remoteForeignKeyField];
+            $intermFields = [$localForeignKeyField, $remoteForeignKeyField];
+            $selectedFields = [];
 
-                foreach (array_map('trim', explode(',', $joinedTable['foreignFields'])) as $field) {
-                    $selectedFields[] = 'remote.' . $field;
-                }
+            foreach (array_map('trim', explode(',', $joinedTable['foreignFields'])) as $field) {
+                $selectedFields[] = $field;
+            }
 
-                if (!in_array($remoteIdField, $selectedFields)) {
-                    $selectedFields[] = $remoteIdField;
-                }
+            if (!in_array($remoteIdField, $selectedFields)) {
+                $selectedFields[] = $remoteIdField;
+            }
 
-                $recordIds = array_column($records, $idFieldName);
+            $recordIds = array_column($records, $idFieldName);
 
-                $joinedTableQuery->select($db->quoteName($selectedFields));
-                $joinedTableQuery->from($db->quoteName('#__' . $intermediateTableName, 'interm'));
-                $joinedTableQuery->where($db->quoteName($localForeignKeyField) . ' IN (' . implode(',', $recordIds) . ')');
-                $joinedTableQuery->join('INNER', $db->quoteName('#__' . $joinedTable['name'], 'remote') . ' ON ' . $db->quoteName($remoteIdField) . ' = ' . $db->quoteName($remoteForeignKeyField));
-                
-                $db->setQuery($joinedTableQuery);
-                $data = $db->loadObjectList();
-                
-                foreach ($data as $entry) {
-                    $records[$entry->{$joinedTable['NToN-intermediateLocalKey']}]->{$alias}[] = $entry;
+            $intermTableQuery->select($db->quoteName($intermFields));
+            $intermTableQuery->from($db->quoteName('#__' . $intermediateTableName));
+            $intermTableQuery->where($db->quoteName($localForeignKeyField) . ' IN (' . implode(',', $recordIds) . ')');
+
+            $db->setQuery($intermTableQuery);
+            $intermData = $db->loadObjectList();
+
+            $remoteIds = array_column($intermData, $remoteForeignKeyField);
+
+            $joinedTableQuery = $db->getQuery(true);
+
+            $joinedTableQuery->select($db->quoteName($selectedFields));
+            $joinedTableQuery->from($db->quoteName('#__' . $joinedTable['name']));
+            $joinedTableQuery->where($db->quoteName($remoteIdField) . ' IN (' . implode(',', $remoteIds) . ')');
+
+            $db->setQuery($joinedTableQuery);
+            $data = $db->loadObjectList($remoteIdField);
+
+            foreach ($intermData as $entry) {
+                if (array_key_exists($entry->{$localForeignKeyField}, $records) && array_key_exists($entry->{$remoteForeignKeyField}, $data)) {
+                    $records[$entry->{$localForeignKeyField}]->{$alias}[] = $data[$entry->{$remoteForeignKeyField}];
                 }
             }
+        }
+
+        foreach ($joinedTable['subTables'] as $subTable) {
+            $this->queryJoinedTable($data, $subTable, $remoteIdField);
         }
     }
 
