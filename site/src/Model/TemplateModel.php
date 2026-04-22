@@ -89,6 +89,8 @@ class TemplateModel extends ItemModel {
         $fields = [];
         $fieldNames = [$templateConfig->id_field_name];
 
+        $joinedTables = $templateConfig->joined_tables != '' ? json_decode($templateConfig->joined_tables, true) : array();
+
         $tableFields = $db->getTableColumns('#__' . $templateConfig->tablename);
 
         foreach ($fieldConfig as $field) {
@@ -104,6 +106,12 @@ class TemplateModel extends ItemModel {
             
             if (!array_key_exists($field['type'], $aliases)) {
                 $fieldNames[] = $field['name'];
+            }
+        }
+
+        foreach ($joinedTables as $joinedTable) {
+            if ($joinedTable['connectionType'] == "NToOne" && !in_array($joinedTable['NToOne-foreignKey'], $fieldNames)) {
+                $fieldNames[] = $joinedTable['NToOne-foreignKey'];
             }
         }
 
@@ -177,9 +185,11 @@ class TemplateModel extends ItemModel {
             $data = array_slice($data, intval($templateConfig->page_size) * ($pageNumber - 1), intval($templateConfig->page_size), true);
         }
 
-        $joinedTables = $templateConfig->joined_tables != '' ? json_decode($templateConfig->joined_tables, true) : array();
-
         foreach ($joinedTables as $key => $joinedTable) {
+            if (empty($joinedTable['alias'])) {
+                $joinedTables[$key]['alias'] = $joinedTable['name'];
+            }
+
             $joinedTables[$key]['options'] = $this->queryJoinedTableOptions($joinedTable);
         }
 
@@ -221,11 +231,14 @@ class TemplateModel extends ItemModel {
     }
 
     private function queryJoinedTables($records, $joinedTables, $idFieldName) {
+        if (count($records) == 0) {
+            return;
+        }
+
         $db = Factory::getContainer()->get('DatabaseDriver');
 
-        foreach ($joinedTables as $key => $joinedTable) {
-            $alias = $joinedTable['alias'] != '' ? $joinedTable['alias'] : $joinedTable['name'];
-            $joinedTables[$key]['alias'] = $alias;
+        foreach ($joinedTables as $joinedTable) {
+            $alias = $joinedTable['alias'];
 
             foreach ($records as $record) {
                 $record->{$alias} = array();
