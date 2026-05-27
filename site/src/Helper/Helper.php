@@ -297,7 +297,8 @@ class Helper {
         $subject = Text::_('COM_NEUKOMTEMPLATING_CONTACT_FROM') . $input->get('sender-name', '', 'string');
         $headers = 'From: ' . $input->get('sender-email', '', 'string') . "\r\n" .
             'Reply-To: ' . $input->get('sender-email', '', 'string') . "\r\n" .
-            'X-Mailer: PHP/' . phpversion();
+            'X-Mailer: PHP/' . phpversion() . "\r\n" .
+            'Content-Type: text/html; charset=UTF-8\r\n';
         
         $message = "<table>";
         $message .= "<tr><th>" . Text::_('COM_NEUKOMTEMPLATING_CONTACT_SENDER_NAME') . "</th><td>" . $input->get('sender-name', '', 'string') . "</td></tr>";
@@ -316,7 +317,8 @@ class Helper {
             $subject = Text::_('COM_NEUKOMTEMPLATING_CONTACT_CONFIRMATION_SUBJECT');
             $headers = 'From: ' . $mailfrom . "\r\n" .
             'Reply-To: ' . $mailfrom . "\r\n" .
-            'X-Mailer: PHP/' . phpversion();
+            'X-Mailer: PHP/' . phpversion() . "\r\n" .
+            'Content-Type: text/html; charset=UTF-8\r\n';
         
             mail($to, $subject, $message, $headers);
         }
