@@ -25,6 +25,11 @@ use Joomla\CMS\Language\Text;
         </div>
 
         <div class="neukomtemplating-contact-field">
+            <input class="neukomtemplating-contact-input" name="receive-confirmation" id="receive-confirmation" type="checkbox" />
+            <label class="neukomtemplating-contact-label" for="receive-confirmation"><?php echo Text::_('COM_NEUKOMTEMPLATING_CONTACT_RECEIVE_CONFIRMATION'); ?></label>
+        </div>
+
+        <div class="neukomtemplating-contact-field">
             <label class="neukomtemplating-contact-label" for="message-subject"><?php echo Text::_('COM_NEUKOMTEMPLATING_CONTACT_MESSAGE_SUBJECT') . '*'; ?></label>
             <input class="neukomtemplating-contact-input form-control" name="message-subject" id="message-subject" type="text" />
         </div>

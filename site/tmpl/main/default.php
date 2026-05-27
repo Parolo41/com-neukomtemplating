@@ -100,7 +100,9 @@ if (($this->getModel()->getItem()->allowEdit || $this->getModel()->getItem()->al
     }
 
     $item = $this->getModel()->getItem();
-} else if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($input->get('formAction', '', 'string') == "message") {
         if ($helper->sendMessage($input)) {
             $act = 'contactsuccess';

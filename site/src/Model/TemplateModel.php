@@ -243,7 +243,7 @@ class TemplateModel extends ItemModel {
 
     private function restructureJoinedTables($joinedTables) {
         $restructJoinedTables = array_filter($joinedTables, function ($v) {
-            return trim($v['overTable']) == '';
+            return array_key_exists('overTable', $v) && trim($v['overTable']) == '';
         });
         
         foreach ($restructJoinedTables as $key => $topTable) {
@@ -381,6 +381,10 @@ class TemplateModel extends ItemModel {
 
             $db->setQuery($intermTableQuery);
             $intermData = $db->loadObjectList();
+
+            if (empty($intermData)) {
+                return;
+            }
 
             $remoteIds = array_column($intermData, $remoteForeignKeyField);
 

@@ -278,6 +278,7 @@ class Helper {
     
         $senderName = $input->get('sender-name', '', 'string');
         $senderEmail = $input->get('sender-email', '', 'string');
+        $receiveConfirmation = $input->get('receive-confirmation', '', 'string');
         $messageSubject = $input->get('message-subject', '', 'string');
         $messageBody = $input->get('message-body', '', 'string');
     
@@ -306,6 +307,19 @@ class Helper {
         $message .= "</table>";
         
         mail($to, $subject, $message, $headers);
+
+        $config = Factory::getApplication()->getConfig();
+        $mailfrom = $config->get('mailfrom');
+
+        if (!empty($receiveConfirmation) && filter_var($mailfrom, FILTER_VALIDATE_EMAIL)) {
+            $to      = $senderEmail;
+            $subject = Text::_('COM_NEUKOMTEMPLATING_CONTACT_CONFIRMATION_SUBJECT');
+            $headers = 'From: ' . $mailfrom . "\r\n" .
+            'Reply-To: ' . $mailfrom . "\r\n" .
+            'X-Mailer: PHP/' . phpversion();
+        
+            mail($to, $subject, $message, $headers);
+        }
     
         return 1;
     }
