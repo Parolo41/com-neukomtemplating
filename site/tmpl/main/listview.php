@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
             $twigParams = [
                 'data' => $data,
                 'urlParameters' => $item->urlParameters,
+                'joinedTables' => $item->joinedTableObjects,
                 'detailUrl' => $detailUrl,
                 'editUrl' => $editUrl,
                 'contactUrl' => $contactUrl,

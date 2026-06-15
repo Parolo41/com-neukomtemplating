@@ -187,6 +187,8 @@ class TemplateModel extends ItemModel {
 
         $joinedTableAliases = array();
 
+        $joinedTableObjects = new \stdClass();
+
         foreach ($joinedTables as $key => $joinedTable) {
             if (empty($joinedTable['alias'])) {
                 $joinedTables[$key]['alias'] = $joinedTable['name'];
@@ -199,7 +201,12 @@ class TemplateModel extends ItemModel {
 
             $joinedTableAliases[] = $joinedTable['alias'];
 
-            $joinedTables[$key]['options'] = $this->queryJoinedTableOptions($joinedTable);
+            $joinedTableOptions = $this->queryJoinedTableOptions($joinedTable);
+
+            $joinedTables[$key]['options'] = $joinedTableOptions;
+
+            $joinedTableObjects->{$joinedTable['alias']} = new \stdClass();
+            $joinedTableObjects->{$joinedTable['alias']}->options = $joinedTableOptions;
         }
 
         $joinedTables = $this->restructureJoinedTables($joinedTables);
@@ -235,6 +242,7 @@ class TemplateModel extends ItemModel {
         $item->urlParameters = $urlParameters;
         $item->urlDbInserts = $urlDbInserts;
         $item->joinedTables = $joinedTables;
+        $item->joinedTableObjects = $joinedTableObjects;
 
         $item->tableFields = $tableFields;
 
