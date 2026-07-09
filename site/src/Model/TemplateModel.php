@@ -29,6 +29,7 @@ class TemplateModel extends ItemModel {
         $aliases = [
             'userid' => $user->id,
             'username' => $user->name,
+            'root' => Uri::root(),
         ];
 
         $templateFields = [

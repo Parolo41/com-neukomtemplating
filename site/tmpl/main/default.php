@@ -25,7 +25,9 @@ if ($item->allowEdit && strpos($itemTemplate, 'editButton') == false && strpos($
 }
 
 $loader = new \Twig\Loader\ArrayLoader([
+    'header' => $item->header,
     'template' => $itemTemplate,
+    'footer' => $item->footer,
     'detail_template' => $item->detailTemplate,
     'contact_display_name' => $item->contactDisplayName,
 ]);

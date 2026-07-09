@@ -6,7 +6,7 @@ use Joomla\CMS\Language\Text;
     <?php
         $newUrl = $helper->buildUrl('new');
         echo $item->allowCreate ? '<a href="' . $newUrl . '" class="btn btn-primary"  style="margin-top: 1em">' . Text::_('COM_NEUKOMTEMPLATING_NEW') . '</a>' : "";
-        echo $item->header;
+        echo $twig->render('header', $item->aliases);
 
         foreach ($item->data as $data) {
             $detailUrl = $helper->buildUrl('detail', recordId: $data->{$item->idFieldName});
@@ -29,7 +29,8 @@ use Joomla\CMS\Language\Text;
             ];
             echo $twig->render('template', array_merge($twigParams, $item->aliases));
         }
-        echo $item->footer;
+
+        echo $twig->render('footer', $item->aliases);
     ?>
 </div>
 
