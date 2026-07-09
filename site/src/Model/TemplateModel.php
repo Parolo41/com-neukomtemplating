@@ -188,7 +188,7 @@ class TemplateModel extends ItemModel {
 
         $joinedTableAliases = array();
 
-        $joinedTableObjects = new \stdClass();
+        $joinedTableObjects = array();
 
         foreach ($joinedTables as $key => $joinedTable) {
             if (empty($joinedTable['alias'])) {
@@ -202,12 +202,12 @@ class TemplateModel extends ItemModel {
 
             $joinedTableAliases[] = $joinedTable['alias'];
 
-            $joinedTableOptions = $this->queryJoinedTableOptions($joinedTable);
+            [$joinedTableOptions, $optionsList] = $this->queryJoinedTableOptions($joinedTable);
 
             $joinedTables[$key]['options'] = $joinedTableOptions;
 
-            $joinedTableObjects->{$joinedTable['alias']} = new \stdClass();
-            $joinedTableObjects->{$joinedTable['alias']}->options = $joinedTableOptions;
+            $joinedTableObjects[$joinedTable['alias']] = array();
+            $joinedTableObjects[$joinedTable['alias']]['options'] = $optionsList;
         }
 
         $joinedTables = $this->restructureJoinedTables($joinedTables);
@@ -435,8 +435,10 @@ class TemplateModel extends ItemModel {
 
             $db->setQuery($joinedTableOptionsQuery);
             $data = $db->loadObjectList($idFieldName);
+            $db->setQuery($joinedTableOptionsQuery);
+            $list = $db->loadAssocList($idFieldName);
 
-            return $data;
+            return [$data, $list];
         } else if ($joinedTable['connectionType'] == "NToN") {
             $joinedTableOptionsQuery = $db->getQuery(true);
 
@@ -447,8 +449,10 @@ class TemplateModel extends ItemModel {
 
             $db->setQuery($joinedTableOptionsQuery);
             $data = $db->loadObjectList($remoteIdField);
+            $db->setQuery($joinedTableOptionsQuery);
+            $list = $db->loadAssocList($remoteIdField);
 
-            return $data;
+            return [$data, $list];
         }
     }
 }

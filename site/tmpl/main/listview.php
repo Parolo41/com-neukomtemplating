@@ -6,7 +6,7 @@ use Joomla\CMS\Language\Text;
     <?php
         $newUrl = $helper->buildUrl('new');
         echo $item->allowCreate ? '<a href="' . $newUrl . '" class="btn btn-primary"  style="margin-top: 1em">' . Text::_('COM_NEUKOMTEMPLATING_NEW') . '</a>' : "";
-        echo $twig->render('header', $item->aliases);
+        echo $twig->render('header', array_merge($item->aliases, ['urlParameters' => $item->urlParameters, 'joinedTables' => $item->joinedTableObjects]));
 
         foreach ($item->data as $data) {
             $detailUrl = $helper->buildUrl('detail', recordId: $data->{$item->idFieldName});
@@ -30,7 +30,7 @@ use Joomla\CMS\Language\Text;
             echo $twig->render('template', array_merge($twigParams, $item->aliases));
         }
 
-        echo $twig->render('footer', $item->aliases);
+        echo $twig->render('footer', array_merge($item->aliases, ['urlParameters' => $item->urlParameters, 'joinedTables' => $item->joinedTableObjects]));
     ?>
 </div>
 

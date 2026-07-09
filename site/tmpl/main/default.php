@@ -31,8 +31,9 @@ $loader = new \Twig\Loader\ArrayLoader([
     'detail_template' => $item->detailTemplate,
     'contact_display_name' => $item->contactDisplayName,
 ]);
-$twig = new \Twig\Environment($loader);
+$twig = new \Twig\Environment($loader, ['debug' => true]);
 $twig->addExtension(new Twig\Extra\Intl\IntlExtension());
+$twig->addExtension(new \Twig\Extension\DebugExtension());
 
 $emailCloakFilter = new \Twig\TwigFilter('email_cloak', function ($string, $displayText = '') {
     return HTMLHelper::_('email.cloak', $string, 1, ($displayText == '' ? $string : $displayText));
