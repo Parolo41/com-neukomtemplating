@@ -51,17 +51,17 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'templates_tab', 'Templates'); ?>
     <h2>Header</h2>
-    <div id="header-editor" style="height:250px; fontSize:16px;"></div>
+    <div id="header-editor" style="height:400px; font-size:16px;"></div>
     <h2>Template</h2>
-    <div id="template-editor" style="height:250px; fontSize:16px;"></div>
+    <div id="template-editor" style="height:400px; font-size:16px;"></div>
     <div class="control-group">
         <div class="control-label"></div>
         <div class="controls"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_TEMPLATE_TOOLTIP'); ?></div>
     </div>
     <h2>Footer</h2>
-    <div id="footer-editor" style="height:250px; fontSize:16px;"></div>
+    <div id="footer-editor" style="height:400px; font-size:16px;"></div>
     <h2>Detail Template</h2>
-    <div id="detailtemplate-editor" style="height:250px; fontSize:16px;"></div>
+    <div id="detailtemplate-editor" style="height:400px; font-size:16px;"></div>
     <?php echo $this->getForm()->renderField('show_detail_page'); ?>
     <div class="control-group">
         <div class="control-label"></div>
@@ -475,6 +475,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 
     headerEditor.setTheme("ace/theme/textmate");
     headerEditor.session.setMode("ace/mode/twig");
+    headerEditor.session.setTabSize(2);
 
     headerEditor.setValue(document.adminForm.jform_header.value);
 
@@ -486,6 +487,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 
     templateEditor.setTheme("ace/theme/textmate");
     templateEditor.session.setMode("ace/mode/twig");
+    templateEditor.session.setTabSize(2);
 
     templateEditor.setValue(document.adminForm.jform_template.value);
 
@@ -497,6 +499,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 
     footerEditor.setTheme("ace/theme/textmate");
     footerEditor.session.setMode("ace/mode/twig");
+    footerEditor.session.setTabSize(2);
 
     footerEditor.setValue(document.adminForm.jform_footer.value);
 
@@ -508,6 +511,7 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 
     detailTemplateEditor.setTheme("ace/theme/textmate");
     detailTemplateEditor.session.setMode("ace/mode/twig");
+    detailTemplateEditor.session.setTabSize(2);
 
     detailTemplateEditor.setValue(document.adminForm.jform_detail_template.value);
 
