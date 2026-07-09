@@ -18,6 +18,9 @@ $layout  = 'edit';
 $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
 ?>
 
+<script src="https://cdn.jsdelivr.net/npm/ace-builds@1.44.0/src-min-noconflict/ace.min.js" type="text/javascript" charset="utf-8"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ace-builds@1.44.0/css/ace.min.css">
+
 <style>
     .field-info-label {display: inline-block;width: 120px;}
     .joined-table-info-label {display: inline-block;width: 200px;}
@@ -47,19 +50,31 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'templates_tab', 'Templates'); ?>
-    <?php echo $this->getForm()->renderField('header'); ?>
-    <?php echo $this->getForm()->renderField('template'); ?>
+    <h2>Header</h2>
+    <div id="header-editor" style="height:250px; fontSize:16px;"></div>
+    <h2>Template</h2>
+    <div id="template-editor" style="height:250px; fontSize:16px;"></div>
     <div class="control-group">
         <div class="control-label"></div>
         <div class="controls"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_TEMPLATE_TOOLTIP'); ?></div>
     </div>
-    <?php echo $this->getForm()->renderField('footer'); ?>
-    <?php echo $this->getForm()->renderField('detail_template'); ?>
+    <h2>Footer</h2>
+    <div id="footer-editor" style="height:250px; fontSize:16px;"></div>
+    <h2>Detail Template</h2>
+    <div id="detailtemplate-editor" style="height:250px; fontSize:16px;"></div>
     <?php echo $this->getForm()->renderField('show_detail_page'); ?>
     <div class="control-group">
         <div class="control-label"></div>
         <div class="controls"><?php echo Text::_('COM_NEUKOMTEMPLATING_FORM_SHOW_DETAIL_PAGE_TOOLTIP'); ?></div>
     </div>
+
+    <div hidden>
+        <?php echo $this->getForm()->renderField('header'); ?>
+        <?php echo $this->getForm()->renderField('template'); ?>
+        <?php echo $this->getForm()->renderField('footer'); ?>
+        <?php echo $this->getForm()->renderField('detail_template'); ?>
+    </div>
+
     <?php echo HTMLHelper::_('uitab.endTab'); ?>
 
     <?php echo HTMLHelper::_('uitab.addTab', 'myTab', 'fields_tab', Text::_('COM_NEUKOMTEMPLATING_FORM_FIELDS')); ?>
@@ -455,6 +470,51 @@ $tmpl = $input->get('tmpl', '', 'cmd') === 'component' ? '&tmpl=component' : '';
             console.error(error);
         }
     }
+
+    var headerEditor = ace.edit("header-editor");
+
+    headerEditor.setTheme("ace/theme/textmate");
+    headerEditor.session.setMode("ace/mode/twig");
+
+    headerEditor.setValue(document.adminForm.jform_header.value);
+
+    headerEditor.session.on('change', function(delta) {
+        document.adminForm.jform_header.value = headerEditor.getValue();
+    });
+
+    var templateEditor = ace.edit("template-editor");
+
+    templateEditor.setTheme("ace/theme/textmate");
+    templateEditor.session.setMode("ace/mode/twig");
+
+    templateEditor.setValue(document.adminForm.jform_template.value);
+
+    templateEditor.session.on('change', function(delta) {
+        document.adminForm.jform_template.value = templateEditor.getValue();
+    });
+
+    var footerEditor = ace.edit("footer-editor");
+
+    footerEditor.setTheme("ace/theme/textmate");
+    footerEditor.session.setMode("ace/mode/twig");
+
+    footerEditor.setValue(document.adminForm.jform_footer.value);
+
+    footerEditor.session.on('change', function(delta) {
+        document.adminForm.jform_footer.value = footerEditor.getValue();
+    });
+
+    var detailTemplateEditor = ace.edit("detailtemplate-editor");
+
+    detailTemplateEditor.setTheme("ace/theme/textmate");
+    detailTemplateEditor.session.setMode("ace/mode/twig");
+
+    detailTemplateEditor.setValue(document.adminForm.jform_detail_template.value);
+
+    detailTemplateEditor.session.on('change', function(delta) {
+        document.adminForm.jform_detail_template.value = detailTemplateEditor.getValue();
+    });
+
 
     updateFieldInputVisibility();
     updateJoinedTableInputVisibility();
